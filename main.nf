@@ -2,19 +2,20 @@
 
 nextflow.enable.dsl=2
 
-params.analysis = "${projectDir}/ampliseq_results"
+params.input = "${projectDir}/ampliseq_results"
 params.outdir = "results"
 
 log.info """\
          V I S U A L I Z E   P I P E L I N E    
          ===================================
-         analysis : ${params.analysis}
+         input    : ${params.input }
          outdir   : ${params.outdir}
          """
          .stripIndent()
 
 
 process REPORT01BARPLOT{
+
     input:
 
     path analysis_files
@@ -30,6 +31,6 @@ process REPORT01BARPLOT{
 }
 
 workflow{
-    input_ch = Channel.fromPath(params.analysis)
+    input_ch = Channel.fromPath(params.input)
     REPORT01BARPLOT(input_ch)
 }
