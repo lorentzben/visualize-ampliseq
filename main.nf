@@ -22,7 +22,9 @@ process REPORT01BARPLOT{
     script:
 
     """
-    println(${analysis_files})    
+    #!/usr/bin/env python3
+
+    print(${analysis_files})    
     """
 
 }
