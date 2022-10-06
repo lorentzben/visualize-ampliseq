@@ -25,7 +25,7 @@ process REPORT01BARPLOT{
     """
     #!/usr/bin/env python3
 
-    print(${analysis_files})    
+    print('${analysis_files}')    
     """
 
 }
