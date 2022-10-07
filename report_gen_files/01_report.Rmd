@@ -67,7 +67,7 @@ new_table_df <- new_table_df[2:length(new_table_df[1,])]
 new_table_ps <- otu_table(new_table_df, taxa_are_rows=T)
 
 #import taxonomy table from ampliseq analysis
-new_tax_file <- "new-files/ASV_tax.tsv"
+new_tax_file <- "new-files/ASV_tax_species.tsv"
 new_tax <- read_tsv(new_tax_file)
 new_tax_df <- data.frame(new_tax)
 rownames(new_tax_df) <- new_tax_df[,1]
@@ -127,7 +127,7 @@ tax.clean[i, 5:7] <- order
 family <- paste("Family_", tax.clean[i,5], sep = "")
 tax.clean[i, 6:7] <- family
 } else if (tax.clean[i,7] == ""){
-tax.clean$Genus[i] <- paste("Genus",tax.clean$Genus[i], sep = "_")
+tax.clean$Species[i] <- paste("Genus",tax.clean$Genus[i], sep = "_")
 }
 }
 
@@ -314,7 +314,7 @@ tax.clean[i, 5:7] <- order
 family <- paste("Family_", tax.clean[i,5], sep = "")
 tax.clean[i, 6:7] <- family
 } else if (tax.clean[i,7] == ""){
-tax.clean$Genus[i] <- paste("Genus",tax.clean$Genus[i], sep = "_")
+tax.clean$Species[i] <- paste("Genus",tax.clean$Genus[i], sep = "_")
 }
 }
 
@@ -498,7 +498,7 @@ tax.clean[i, 5:7] <- order
 family <- paste("Family_", tax.clean[i,5], sep = "")
 tax.clean[i, 6:7] <- family
 } else if (tax.clean[i,7] == ""){
-tax.clean$Genus[i] <- paste("Genus",tax.clean$Genus[i], sep = "_")
+tax.clean$Species[i] <- paste("Genus",tax.clean$Genus[i], sep = "_")
 }
 }
 
