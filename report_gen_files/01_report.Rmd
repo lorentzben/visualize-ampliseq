@@ -211,7 +211,7 @@ if (length(as.vector(na.exclude(names(cycle_n_names)))) <= topN){
   taxvec <- c("Other","Other","Other","Other","Other", "Other","Other")
   taxlist <- list(OTU1=parse_taxonomy_default(taxvec))
   tax_tab <- build_tax_table(taxlist)
-  colnames(tax_tab) <- c("Kingdom","Phylum","Class","Order","Family","Genus","Species")
+  colnames(tax_tab) <- c("Domain","Kingdom","Phylum","Class","Order","Family","Genus","Species")
   rownames(tax_tab) <- rownames(tax_table(rest_merge))
   tax_table(rest_merge) <- tax_tab
 
@@ -395,7 +395,7 @@ if (length(as.vector(na.exclude(names(cycle_n_names)))) <= topN){
   taxvec <- c("Other","Other","Other","Other","Other", "Other","Other")
   taxlist <- list(OTU1=parse_taxonomy_default(taxvec))
   tax_tab <- build_tax_table(taxlist)
-  colnames(tax_tab) <- c("Kingdom","Phylum","Class","Order","Family","Genus","Species")
+  colnames(tax_tab) <- c("Domain","Kingdom","Phylum","Class","Order","Family","Genus","Species")
   rownames(tax_tab) <- rownames(tax_table(rest_merge))
   tax_table(rest_merge) <- tax_tab
 
@@ -581,7 +581,7 @@ if (length(as.vector(na.exclude(names(cycle_n_names)))) <= topN){
   taxvec <- c("Other","Other","Other","Other","Other", "Other","Other")
   taxlist <- list(OTU1=parse_taxonomy_default(taxvec))
   tax_tab <- build_tax_table(taxlist)
-  colnames(tax_tab) <- c("Kingdom","Phylum","Class","Order","Family","Genus","Species")
+  colnames(tax_tab) <- c("Domain","Kingdom","Phylum","Class","Order","Family","Genus","Species")
   rownames(tax_tab) <- rownames(tax_table(rest_merge))
   tax_table(rest_merge) <- tax_tab
 
