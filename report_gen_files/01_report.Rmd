@@ -167,7 +167,7 @@ if (length(as.vector(na.exclude(names(cycle_n_names)))) <= topN){
   ggsave("stacked_bar_phylum_by_sample.png", plot=by_sample, path=outdir)
 
   #calculates relative abundance based on item of interest provided in original bash script
-  try:
+  
   cy_phylum <- cycle_n %>%
     tax_glom(taxrank = level) %>%
     merge_samples(group =ioi,fun=sum) %>%
