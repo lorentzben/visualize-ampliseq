@@ -103,35 +103,35 @@ cycle_1 <- phyloseq(new_table_ps, new_tax_ps, new_tree_ps, new_metadata_ps)
 #cycle_1 <- qza_to_phyloseq(table_dada2,rooted_tree,taxonomy_file,metadata_file)
 # ------------------------------------------------------------------------------ #
 
-# #from https://github.com/joey711/phyloseq/issues/850#issuecomment-394771087
-# tax.clean <- data.frame(tax_table(cycle_1))
+#from https://github.com/joey711/phyloseq/issues/850#issuecomment-394771087
+tax.clean <- data.frame(tax_table(cycle_1))
 
-# for (i in 1:7){ tax.clean[,i] <- as.character(tax.clean[,i])}
-# tax.clean[is.na(tax.clean[,1]),1] <- "Unidentified"
-# tax.clean[is.na(tax.clean)] <- ""
+for (i in 1:7){ tax.clean[,i] <- as.character(tax.clean[,i])}
+tax.clean[is.na(tax.clean[,1]),1] <- "Unidentified"
+tax.clean[is.na(tax.clean)] <- ""
 
-# for (i in 1:nrow(tax.clean)){
-# if (tax.clean[i,2] == ""){
-# kingdom <- paste("Kingdom_", tax.clean[i,1], sep = "")
-# tax.clean[i, 2:7] <- kingdom
-# } else if (tax.clean[i,3] == ""){
-# phylum <- paste("Phylum_", tax.clean[i,2], sep = "")
-# tax.clean[i, 3:7] <- phylum
-# } else if (tax.clean[i,4] == ""){
-# class <- paste("Class_", tax.clean[i,3], sep = "")
-# tax.clean[i, 4:7] <- class
-# } else if (tax.clean[i,5] == ""){
-# order <- paste("Order_", tax.clean[i,4], sep = "")
-# tax.clean[i, 5:7] <- order
-# } else if (tax.clean[i,6] == ""){
-# family <- paste("Family_", tax.clean[i,5], sep = "")
-# tax.clean[i, 6:7] <- family
-# } else if (tax.clean[i,7] == ""){
-# tax.clean$Genus[i] <- paste("Genus",tax.clean$Genus[i], sep = "_")
-# }
-# }
+for (i in 1:nrow(tax.clean)){
+if (tax.clean[i,2] == ""){
+kingdom <- paste("Kingdom_", tax.clean[i,1], sep = "")
+tax.clean[i, 2:7] <- kingdom
+} else if (tax.clean[i,3] == ""){
+phylum <- paste("Phylum_", tax.clean[i,2], sep = "")
+tax.clean[i, 3:7] <- phylum
+} else if (tax.clean[i,4] == ""){
+class <- paste("Class_", tax.clean[i,3], sep = "")
+tax.clean[i, 4:7] <- class
+} else if (tax.clean[i,5] == ""){
+order <- paste("Order_", tax.clean[i,4], sep = "")
+tax.clean[i, 5:7] <- order
+} else if (tax.clean[i,6] == ""){
+family <- paste("Family_", tax.clean[i,5], sep = "")
+tax.clean[i, 6:7] <- family
+} else if (tax.clean[i,7] == ""){
+tax.clean$Genus[i] <- paste("Genus",tax.clean$Genus[i], sep = "_")
+}
+}
 
-# tax_table(cycle_1) <- as.matrix(tax.clean)
+tax_table(cycle_1) <- as.matrix(tax.clean)
 
 #Select number of taxa at phylum level to plot
 topN <- 10
@@ -167,6 +167,7 @@ if (length(as.vector(na.exclude(names(cycle_n_names)))) <= topN){
   ggsave("stacked_bar_phylum_by_sample.png", plot=by_sample, path=outdir)
 
   #calculates relative abundance based on item of interest provided in original bash script
+  try:
   cy_phylum <- cycle_n %>%
     tax_glom(taxrank = level) %>%
     merge_samples(group =ioi,fun=sum) %>%
@@ -313,7 +314,7 @@ tax.clean[i, 5:7] <- order
 family <- paste("Family_", tax.clean[i,5], sep = "")
 tax.clean[i, 6:7] <- family
 } else if (tax.clean[i,7] == ""){
-tax.clean$Species[i] <- paste("Genus",tax.clean$Genus[i], sep = "_")
+tax.clean$Genus[i] <- paste("Genus",tax.clean$Genus[i], sep = "_")
 }
 }
 
@@ -497,7 +498,7 @@ tax.clean[i, 5:7] <- order
 family <- paste("Family_", tax.clean[i,5], sep = "")
 tax.clean[i, 6:7] <- family
 } else if (tax.clean[i,7] == ""){
-tax.clean$Species[i] <- paste("Genus",tax.clean$Genus[i], sep = "_")
+tax.clean$Genus[i] <- paste("Genus",tax.clean$Genus[i], sep = "_")
 }
 }
 
