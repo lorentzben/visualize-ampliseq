@@ -282,7 +282,7 @@ library(ggplot2)
 
 level = "Genus"
 
-cycle_1 <- phyloseq(new_table_ps, new_tax_ps, new_tree_ps, new_metadata)
+cycle_1 <- phyloseq(new_table_ps, new_tax_ps, new_tree_ps, new_metadata_ps)
 
 #TODO remove if no longer relevant
 # ----------------------------------------------------------------------------- #
@@ -466,7 +466,7 @@ library(tidyverse)
 
 level = "Species"
 
-cycle_1 <- phyloseq(new_table_ps, new_tax_ps, new_tree_ps, new_metadata)
+cycle_1 <- phyloseq(new_table_ps, new_tax_ps, new_tree_ps, new_metadata_ps)
 
 # TODO Remove if no longer relevant 
 # ---------------------------------------------------------------------------- #
