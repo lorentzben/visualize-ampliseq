@@ -104,34 +104,34 @@ cycle_1 <- phyloseq(new_table_ps, new_tax_ps, new_tree_ps, new_metadata_ps)
 # ------------------------------------------------------------------------------ #
 
 #from https://github.com/joey711/phyloseq/issues/850#issuecomment-394771087
-tax.clean <- data.frame(tax_table(cycle_1))
+# tax.clean <- data.frame(tax_table(cycle_1))
 
-for (i in 1:7){ tax.clean[,i] <- as.character(tax.clean[,i])}
-tax.clean[is.na(tax.clean[,1]),1] <- "Unidentified"
-tax.clean[is.na(tax.clean)] <- ""
+# for (i in 1:7){ tax.clean[,i] <- as.character(tax.clean[,i])}
+# tax.clean[is.na(tax.clean[,1]),1] <- "Unidentified"
+# tax.clean[is.na(tax.clean)] <- ""
 
-for (i in 1:nrow(tax.clean)){
-if (tax.clean[i,2] == ""){
-kingdom <- paste("Kingdom_", tax.clean[i,1], sep = "")
-tax.clean[i, 2:7] <- kingdom
-} else if (tax.clean[i,3] == ""){
-phylum <- paste("Phylum_", tax.clean[i,2], sep = "")
-tax.clean[i, 3:7] <- phylum
-} else if (tax.clean[i,4] == ""){
-class <- paste("Class_", tax.clean[i,3], sep = "")
-tax.clean[i, 4:7] <- class
-} else if (tax.clean[i,5] == ""){
-order <- paste("Order_", tax.clean[i,4], sep = "")
-tax.clean[i, 5:7] <- order
-} else if (tax.clean[i,6] == ""){
-family <- paste("Family_", tax.clean[i,5], sep = "")
-tax.clean[i, 6:7] <- family
-} else if (tax.clean[i,7] == ""){
-tax.clean$Species[i] <- paste("Genus",tax.clean$Genus[i], sep = "_")
-}
-}
+# for (i in 1:nrow(tax.clean)){
+# if (tax.clean[i,2] == ""){
+# kingdom <- paste("Kingdom_", tax.clean[i,1], sep = "")
+# tax.clean[i, 2:7] <- kingdom
+# } else if (tax.clean[i,3] == ""){
+# phylum <- paste("Phylum_", tax.clean[i,2], sep = "")
+# tax.clean[i, 3:7] <- phylum
+# } else if (tax.clean[i,4] == ""){
+# class <- paste("Class_", tax.clean[i,3], sep = "")
+# tax.clean[i, 4:7] <- class
+# } else if (tax.clean[i,5] == ""){
+# order <- paste("Order_", tax.clean[i,4], sep = "")
+# tax.clean[i, 5:7] <- order
+# } else if (tax.clean[i,6] == ""){
+# family <- paste("Family_", tax.clean[i,5], sep = "")
+# tax.clean[i, 6:7] <- family
+# } else if (tax.clean[i,7] == ""){
+# tax.clean$Species[i] <- paste("Genus",tax.clean$Genus[i], sep = "_")
+# }
+# }
 
-tax_table(cycle_1) <- as.matrix(tax.clean)
+# tax_table(cycle_1) <- as.matrix(tax.clean)
 
 #Select number of taxa at phylum level to plot
 topN <- 10
@@ -291,34 +291,34 @@ cycle_1 <- phyloseq(new_table_ps, new_tax_ps, new_tree_ps, new_metadata_ps)
 # ------------------------------------------------------------------------------ #
 
 #from https://github.com/joey711/phyloseq/issues/850#issuecomment-394771087
-tax.clean <- data.frame(tax_table(cycle_1))
+# tax.clean <- data.frame(tax_table(cycle_1))
 
-for (i in 1:7){ tax.clean[,i] <- as.character(tax.clean[,i])}
+# for (i in 1:7){ tax.clean[,i] <- as.character(tax.clean[,i])}
 
-tax.clean[is.na(tax.clean)] <- ""
+# tax.clean[is.na(tax.clean)] <- ""
 
-for (i in 1:nrow(tax.clean)){
-if (tax.clean[i,2] == ""){
-kingdom <- paste("Kingdom_", tax.clean[i,1], sep = "")
-tax.clean[i, 2:7] <- kingdom
-} else if (tax.clean[i,3] == ""){
-phylum <- paste("Phylum_", tax.clean[i,2], sep = "")
-tax.clean[i, 3:7] <- phylum
-} else if (tax.clean[i,4] == ""){
-class <- paste("Class_", tax.clean[i,3], sep = "")
-tax.clean[i, 4:7] <- class
-} else if (tax.clean[i,5] == ""){
-order <- paste("Order_", tax.clean[i,4], sep = "")
-tax.clean[i, 5:7] <- order
-} else if (tax.clean[i,6] == ""){
-family <- paste("Family_", tax.clean[i,5], sep = "")
-tax.clean[i, 6:7] <- family
-} else if (tax.clean[i,7] == ""){
-tax.clean$Species[i] <- paste("Genus",tax.clean$Genus[i], sep = "_")
-}
-}
+# for (i in 1:nrow(tax.clean)){
+# if (tax.clean[i,2] == ""){
+# kingdom <- paste("Kingdom_", tax.clean[i,1], sep = "")
+# tax.clean[i, 2:7] <- kingdom
+# } else if (tax.clean[i,3] == ""){
+# phylum <- paste("Phylum_", tax.clean[i,2], sep = "")
+# tax.clean[i, 3:7] <- phylum
+# } else if (tax.clean[i,4] == ""){
+# class <- paste("Class_", tax.clean[i,3], sep = "")
+# tax.clean[i, 4:7] <- class
+# } else if (tax.clean[i,5] == ""){
+# order <- paste("Order_", tax.clean[i,4], sep = "")
+# tax.clean[i, 5:7] <- order
+# } else if (tax.clean[i,6] == ""){
+# family <- paste("Family_", tax.clean[i,5], sep = "")
+# tax.clean[i, 6:7] <- family
+# } else if (tax.clean[i,7] == ""){
+# tax.clean$Species[i] <- paste("Genus",tax.clean$Genus[i], sep = "_")
+# }
+# }
 
-tax_table(cycle_1) <- as.matrix(tax.clean)
+# tax_table(cycle_1) <- as.matrix(tax.clean)
 
 
 #Select number of taxa at genus level to plot
@@ -475,34 +475,34 @@ cycle_1 <- phyloseq(new_table_ps, new_tax_ps, new_tree_ps, new_metadata_ps)
 # ----------------------------------------------------------------------------- #
 
 #from https://github.com/joey711/phyloseq/issues/850#issuecomment-394771087
-tax.clean <- data.frame(tax_table(cycle_1))
+# tax.clean <- data.frame(tax_table(cycle_1))
 
-for (i in 1:7){ tax.clean[,i] <- as.character(tax.clean[,i])}
+# for (i in 1:7){ tax.clean[,i] <- as.character(tax.clean[,i])}
 
-tax.clean[is.na(tax.clean)] <- ""
+# tax.clean[is.na(tax.clean)] <- ""
 
-for (i in 1:nrow(tax.clean)){
-if (tax.clean[i,2] == ""){
-kingdom <- paste("Kingdom_", tax.clean[i,1], sep = "")
-tax.clean[i, 2:7] <- kingdom
-} else if (tax.clean[i,3] == ""){
-phylum <- paste("Phylum_", tax.clean[i,2], sep = "")
-tax.clean[i, 3:7] <- phylum
-} else if (tax.clean[i,4] == ""){
-class <- paste("Class_", tax.clean[i,3], sep = "")
-tax.clean[i, 4:7] <- class
-} else if (tax.clean[i,5] == ""){
-order <- paste("Order_", tax.clean[i,4], sep = "")
-tax.clean[i, 5:7] <- order
-} else if (tax.clean[i,6] == ""){
-family <- paste("Family_", tax.clean[i,5], sep = "")
-tax.clean[i, 6:7] <- family
-} else if (tax.clean[i,7] == ""){
-tax.clean$Species[i] <- paste("Genus",tax.clean$Genus[i], sep = "_")
-}
-}
+# for (i in 1:nrow(tax.clean)){
+# if (tax.clean[i,2] == ""){
+# kingdom <- paste("Kingdom_", tax.clean[i,1], sep = "")
+# tax.clean[i, 2:7] <- kingdom
+# } else if (tax.clean[i,3] == ""){
+# phylum <- paste("Phylum_", tax.clean[i,2], sep = "")
+# tax.clean[i, 3:7] <- phylum
+# } else if (tax.clean[i,4] == ""){
+# class <- paste("Class_", tax.clean[i,3], sep = "")
+# tax.clean[i, 4:7] <- class
+# } else if (tax.clean[i,5] == ""){
+# order <- paste("Order_", tax.clean[i,4], sep = "")
+# tax.clean[i, 5:7] <- order
+# } else if (tax.clean[i,6] == ""){
+# family <- paste("Family_", tax.clean[i,5], sep = "")
+# tax.clean[i, 6:7] <- family
+# } else if (tax.clean[i,7] == ""){
+# tax.clean$Species[i] <- paste("Genus",tax.clean$Genus[i], sep = "_")
+# }
+# }
 
-tax_table(cycle_1) <- as.matrix(tax.clean)
+# tax_table(cycle_1) <- as.matrix(tax.clean)
 
 #Select number of taxa at species level to plot
 topN <- 10
