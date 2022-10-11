@@ -1,0 +1,111 @@
+---
+title: "01 16s Analysis Report"
+output:
+  pdf_document:
+    df_print: kable
+  html_document:
+    df_print: kable
+    smart: false
+---
+
+```{r init renv, message=FALSE, warning=FALSE, include=FALSE}
+#library(renv)
+#renv::isolate()
+#renv::settings$snapshot.type("all")
+#renv::restore()
+```
+
+
+
+```{r parse item of interest and make outdir for figures, echo=FALSE, message=FALSE, warning=FALSE}
+#this may be required for each file
+#item of interest, comes from bash and python script that orchestrates everything
+#wd <- readLines("work_dir.txt")
+#setwd(wd)
+wd <- getwd()
+print(wd)
+ioi <- readLines(paste0("item_of_interest.csv"))
+ioi<-as.character(ioi)
+
+ioi_ord <- read.csv("order_item_of_interest.csv")
+colnames(ioi_ord) <- ioi
+ioi_ord <- as.list(ioi_ord)[[ioi]]
+
+outdir_name <- "Figures"
+if(!dir.exists(outdir_name)) {dir.create(outdir_name)}
+outdir <- outdir_name
+```
+
+## 1 Species Distribution 
+
+### 1.1 Relative Abundance of Top 10 Phyla
+
+```{r stacked bar chart at Phylum level, echo=FALSE, fig.height=12, fig.width=18, message=FALSE, warning=FALSE}
+library(MicrobiomeAnalystR)
+library(dplyr)
+library(tidyr)
+#library(qiime2R)
+
+list.files()
+
+prepend <- "../../"
+mbadir <- "microbiome_analyst_tmp"
+
+if (!file.exists(mbadir)){
+  dir.create(mbadir)
+}
+
+
+mbSet <- Init.mbSetObj()
+mbSet<-SetModuleType(mbSet, "mdp")
+
+options(bitmapType='cairo')
+level = "Phylum"
+
+#function from https://community.rstudio.com/t/convert-tibble-into-matrix/68262/2
+make_matrix <- function(df,rownames = NULL){
+  my_matrix <-  as.matrix(df)
+  if(!is.null(rownames))
+    rownames(my_matrix) = rownames
+  my_matrix
+}
+
+#import ASV table from ampliseq analysis and write out properly fomatted one
+new_table_file <- paste0(prepend,"qiime2/rel_abundance_tables/rel-table-ASV.tsv")
+new_table <- read.csv(new_table_file,sep='\t', skip=1)
+new_table_df <- data.frame(new_table)
+colnames(new_table_df)[1] <- "#NAME"
+write.table(new_table_df,file = paste0(mbadir,"/rel-ASV-tab.txt"),sep='\t',row.names = F)
+
+mbSet <- Read16SAbundData(mbSet,paste0(mbadir,"/rel-ASV-tab.txt"),"text",'SILVA','T')
+
+#import taxonomy table from ampliseq analysis
+new_tax_file <- paste0(prepend,"dada2/ASV_tax_species.tsv")
+new_tax <- read.csv(new_tax_file,sep='\t')
+new_tax_df <- data.frame(new_tax)
+colnames(new_tax_df)[1] <- "#TAXONOMY"
+new_tax_df <- new_tax_df %>%
+  select(-c(confidence,sequence))
+write.table(new_tax_df,file = paste0(mbadir,"/ASV_tax_species.txt"),sep='\t',row.names = F,quote = F)
+
+mbSet <- Read16STaxaTable(mbSet, paste0(mbadir,"/ASV_tax_species.txt"))
+
+#import rooted tree from ampliseq analysis 
+new_tree_file <- paste0(prepend,"qiime2/phylogenetic_tree/tree.nwk")
+
+mbSet <- ReadTreeFile(mbSet,new_tree_file)
+
+#import metadata file 
+new_metadata_file <- paste0(prepend,"all_days_sbm_cec_nf_treatment_metadata.tsv")
+new_metadata <- read.csv(new_metadata_file,sep = '\t')
+new_metadata_df <- data.frame(new_metadata)
+colnames(new_metadata_df)[1]<-"#NAME"
+write.table(new_metadata_df,file = paste0(mbadir,"/metadata.txt"),sep='\t',row.names = F,quote = F)
+
+mbSet <- ReadSampleTable(mbSet,paste0(mbadir,"/metadata.txt"))
+
+mbSet<-SanityCheckData(mbSet, "txt")
+
+mbSet<-PlotLibSizeView(mbSet, "norm_libsizes_0","png")
+
+```
