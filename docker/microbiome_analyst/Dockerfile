@@ -8,6 +8,7 @@ RUN R -e 'devtools::install_github("kylebittinger/qiimer@7d7721315fbdfde808cecbe
 RUN R -e 'devtools::install_github("joey711/biom@d37425bee2c61189e6cfe24ff2c7e629966000de", build=TRUE)'
 RUN R -e 'devtools::install_github("nick-youngblut/Tax4Fun@1.0",build=TRUE)'
 RUN R -e 'install.packages("ppcor",INSTALL_opts="--no-lock")'
+RUN R -e 'devtools::install_github("jbisanz/qiime2R@d1ad96657ada993cf6c2841b29113a4f635c6b56")'
 COPY renv.lock renv.lock
 RUN R -e 'renv::restore()'
 #CMD ["bash"]
