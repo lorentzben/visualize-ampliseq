@@ -59,13 +59,17 @@ options(bitmapType='cairo')
 level = "Phylum"
 
 #import ASV table from ampliseq analysis and write out properly fomatted one
-new_table_file <- paste0(prepend,"qiime2/rel_abundance_tables/rel-table-ASV.tsv")
+
+new_table_file <- paste0(prepend,"qiime2/abundance_tables/feature-table.tsv")
 new_table <- read.csv(new_table_file,sep='\t', skip=1)
 new_table_df <- data.frame(new_table)
 colnames(new_table_df)[1] <- "#NAME"
-write.table(new_table_df,file = paste0(mbadir,"/rel-ASV-tab.txt"),sep='\t',row.names = F)
+write.table(new_table_df,file = paste0(mbadir,"/ASV-tab.txt"),sep='\t',row.names = F)
 
-mbSet <- Read16SAbundData(mbSet,paste0(mbadir,"/rel-ASV-tab.txt"),"text",'SILVA','T')
+mbSet <- Read16SAbundData(mbSet,paste0(mbadir,"/ASV-tab.txt"),"text",'SILVA','T')
+
+
+
 
 #import taxonomy table from ampliseq analysis
 new_tax_file <- paste0(prepend,"dada2/ASV_tax_species.tsv")
@@ -94,7 +98,19 @@ mbSet <- ReadSampleTable(mbSet,paste0(mbadir,"/metadata.txt"))
 
 mbSet<-SanityCheckData(mbSet, "txt")
 
+#TODO get this into the figure directory
 mbSet<-PlotLibSizeView(mbSet, "norm_libsizes_0","png")
+
+mbSet<-CreatePhyloseqObj(mbSet, "text","SILVA","F")
+
+#Abundance filter (should have been handled by QIIME2)
+#mbSet<-ApplyAbundanceFilter(mbSet, "prevalence", 4, 0.2);
+
+#Varience filter (probably should be handled by QIIME2)
+#mbSet<-ApplyVarianceFilter(mbSet, "iqr", 0.1)
+
+# Data Normalization (maybe handled by QIIME2)
+#mbSet<-PerformNormalization(mbSet, "none", "none", "none")
 
 ```
 
@@ -104,4 +120,33 @@ mbSet<-PlotLibSizeView(mbSet, "norm_libsizes_0","png")
 library(MicrobiomeAnalystR)
 
 
+# Merges taxa with count lower than 10 relative abundance
+mbSet<-PlotTaxaAundanceBar(mbSet, "taxa_alpha_merge_relative_phylum","Phylum","condition", "none", "barnorm",10, "set3","sum",10, "bottom", "T", "png")
+
+# Shows top 10 taxa (Will error out if less than 10) relative abundance
+#TODO Create some code to check for top 10
+mbSet<-PlotTaxaAundanceBar(mbSet, "taxa_alpha_subset_relative_phylum","Phylum","condition", "none", "barnorm",10, "set3","sum",10, "top", "T", "png")
+
+# Merges taxa with counts lower than 10 absolute abundance
+mbSet<-PlotTaxaAundanceBar(mbSet, "taxa_alpha_merge_absolute_phylum","Phylum","condition", "none", "barraw",10, "set3","sum",10, "bottom", "T", "png")
+
+# Subsets top 10 taxa absolute
+mbSet<-PlotTaxaAundanceBar(mbSet, "taxa_alpha_subset_absolute_phylum","Phylum","condition", "none", "barraw",10, "set3","sum",10, "top", "T", "png")
 ```
+
+### 1.2 Relative Abundance of Top 10 Genera
+
+```{r stacked bar chart at Genus level, echo=FALSE, fig.height=12, fig.width=18, message=FALSE, warning=FALSE}
+library(MicrobiomeAnalystR)
+
+
+# Merges taxa with count lower than 10 
+mbSet<-PlotTaxaAundanceBar(mbSet, "taxa_alpha_13","Genus","condition", "none", "barnorm",10, "set3","sum",10, "bottom", "T", "png")
+
+# Shows top 10 taxa (Will error out if less than 10)
+#TODO Create some code to check for top 10
+mbSet<-PlotTaxaAundanceBar(mbSet, "taxa_alpha_14","Genus","condition", "none", "barnorm",10, "set3","sum",10, "top", "T", "png")
+
+```
+
+### 1.3 Relative Abundance of Top 10 Species
