@@ -38,15 +38,11 @@ outdir <- outdir_name
 
 ## 1 Species Distribution 
 
-### 1.1 Relative Abundance of Top 10 Phyla
-
-```{r stacked bar chart at Phylum level, echo=FALSE, fig.height=12, fig.width=18, message=FALSE, warning=FALSE}
+```{r import data into Microbiome Analyst Format, message=FALSE, warning=FALSE}
 library(MicrobiomeAnalystR)
 library(dplyr)
 library(tidyr)
-#library(qiime2R)
 
-list.files()
 
 prepend <- "../../"
 mbadir <- "microbiome_analyst_tmp"
@@ -61,14 +57,6 @@ mbSet<-SetModuleType(mbSet, "mdp")
 
 options(bitmapType='cairo')
 level = "Phylum"
-
-#function from https://community.rstudio.com/t/convert-tibble-into-matrix/68262/2
-make_matrix <- function(df,rownames = NULL){
-  my_matrix <-  as.matrix(df)
-  if(!is.null(rownames))
-    rownames(my_matrix) = rownames
-  my_matrix
-}
 
 #import ASV table from ampliseq analysis and write out properly fomatted one
 new_table_file <- paste0(prepend,"qiime2/rel_abundance_tables/rel-table-ASV.tsv")
@@ -107,5 +95,13 @@ mbSet <- ReadSampleTable(mbSet,paste0(mbadir,"/metadata.txt"))
 mbSet<-SanityCheckData(mbSet, "txt")
 
 mbSet<-PlotLibSizeView(mbSet, "norm_libsizes_0","png")
+
+```
+
+### 1.1 Relative Abundance of Top 10 Phyla
+
+```{r stacked bar chart at Phylum level, echo=FALSE, fig.height=12, fig.width=18, message=FALSE, warning=FALSE}
+library(MicrobiomeAnalystR)
+
 
 ```
