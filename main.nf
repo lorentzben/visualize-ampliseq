@@ -32,7 +32,7 @@ process REPORT01BARPLOT{
     path 'results'
     path metadata
     path report
-    val 'item_of_interest.csv'
+    path 'item_of_interest.csv'
         
     script:
 
