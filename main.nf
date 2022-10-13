@@ -18,7 +18,7 @@ log.info """\
          .stripIndent()
 
 
-process REPORT01BARPLOT(input,metadata,01-report){
+process REPORT01BARPLOT{
 
     publishDir "results/pdf", pattern: "*.pdf", mode: "copy"
     publishDir "results/html", pattern: "*.html", mode: "copy"
