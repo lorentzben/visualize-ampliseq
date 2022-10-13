@@ -61,5 +61,5 @@ ioi_ch = Channel.of(params.ioi)
 
 workflow{
     
-    REPORT01BARPLOT(input_ch,metadata_ch, one-report-ch, ioi_ch)
+    REPORT01BARPLOT(input_ch,metadata_ch, report_one_ch, ioi_ch)
 }
