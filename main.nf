@@ -31,7 +31,7 @@ process REPORT01BARPLOT{
     
     path metadata
     
-    path 01-report
+    path report
     val item-of-interest
     path input+"/qiime2/abundance_tables/feature-table.tsv"
     path input+"/dada2/ASV_tax_species.tsv"
