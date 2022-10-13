@@ -21,7 +21,7 @@ log.info """\
 process REPORT01BARPLOT{
 
     publishDir "results/html", pattern: "*.html", mode: "copy"
-    publishDir "results/Figures", pattern: "*/*.png", mode: "copy"
+    publishDir "results", pattern: "*/*.png", mode: "copy"
 
     container 'lorentzb/microbiome_analyst:1.1'
 
