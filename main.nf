@@ -33,6 +33,11 @@ process REPORT01BARPLOT{
     path metadata
     path report
     file 'item_of_interest.csv'
+
+    output:
+
+    file "01_report_*.html"
+    file "01_report_*.pdf"
         
     script:
 
