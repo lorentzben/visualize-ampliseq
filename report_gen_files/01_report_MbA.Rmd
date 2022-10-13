@@ -27,7 +27,7 @@ print(wd)
 ioi <- readLines(paste0("item_of_interest.csv"))
 ioi<-as.character(ioi)
 
-outdir_name <- "Figures"
+outdir_name <- "barplots"
 if(!dir.exists(outdir_name)) {dir.create(outdir_name)}
 outdir <- outdir_name
 ```
