@@ -20,7 +20,6 @@ log.info """\
 
 process REPORT01BARPLOT{
 
-    publishDir "results/pdf", pattern: "*.pdf", mode: "copy"
     publishDir "results/html", pattern: "*.html", mode: "copy"
     publishDir "results/Figures", pattern: "*.png", mode: "copy"
 
@@ -37,7 +36,8 @@ process REPORT01BARPLOT{
     output:
 
     file "01_report_*.html"
-    file "01_report_*.pdf"
+    path "Figures/*"
+    
         
     script:
 
