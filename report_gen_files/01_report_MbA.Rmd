@@ -44,7 +44,7 @@ library(dplyr)
 library(tidyr)
 
 
-prepend <- "../../"
+#prepend <- "../../"
 mbadir <- "microbiome_analyst_tmp"
 
 if (!file.exists(mbadir)){
