@@ -23,7 +23,7 @@ process REPORT01BARPLOT{
     publishDir "results/pdf", pattern: "*.pdf", mode: "copy"
     publishDir "results/html", pattern: "*.html", mode: "copy"
 
-    container 'docker://lorentzb/microbiome_analyst:1.1'
+    container 'lorentzb/microbiome_analyst:1.1'
 
 
     input:
