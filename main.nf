@@ -36,7 +36,7 @@ process REPORT01BARPLOT{
     output:
 
     file "01_report_*.html"
-    path "Figures/*"
+    file "Figures/*.png"
     
         
     script:
