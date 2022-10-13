@@ -38,7 +38,7 @@ process REPORT01BARPLOT{
     '''
     #!/usr/bin/env bash
 
-    echo !{item-of-interest} > item_of_interest.csv
+    echo !{item_of_interest} > item_of_interest.csv
     
     dt=$(date '+%d-%m-%Y_%H.%M.%S');
 
