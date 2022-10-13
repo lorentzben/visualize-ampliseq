@@ -57,7 +57,7 @@ process REPORT01BARPLOT(input,metadata,01-report){
 workflow{
     input_ch = Channel.fromPath(params.input)
     metadata_ch = Channel.fromPath(params.metadata)
-    01-report-ch = Channel.fromPath(${projectDir}"/report_gen_files/01_report_MbA.Rmd")
+    one-report-ch = Channel.fromPath(${projectDir}"/report_gen_files/01_report_MbA.Rmd")
     ioi_ch = Channel.fromValue(params.ioi)
-    REPORT01BARPLOT(input_ch,metadata_ch,01-report-ch, ioi_ch)
+    REPORT01BARPLOT(input_ch,metadata_ch,one-report-ch, ioi_ch)
 }
