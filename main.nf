@@ -38,9 +38,7 @@ process REPORT01BARPLOT{
 
     '''
     #!/usr/bin/env bash
-
-    #echo "!{params.ioi}" > item_of_interest.csv
-    
+   
     dt=$(date '+%d-%m-%Y_%H.%M.%S');
 
     Rscript -e "rmarkdown::render('01_report_MbA.Rmd', output_file='$PWD/01_report_$dt.html', output_format='html_document', clean=TRUE, knit_root_dir='$PWD')"
