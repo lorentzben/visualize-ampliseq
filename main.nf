@@ -32,14 +32,14 @@ process REPORT01BARPLOT{
     path 'results'
     path metadata
     path report
-    val item_of_interest
+    val 'item_of_interest.csv'
         
     script:
 
     '''
     #!/usr/bin/env bash
 
-    echo "!{params.ioi}" > item_of_interest.csv
+    #echo "!{params.ioi}" > item_of_interest.csv
     
     dt=$(date '+%d-%m-%Y_%H.%M.%S');
 
