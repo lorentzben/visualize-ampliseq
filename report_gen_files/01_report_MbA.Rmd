@@ -27,10 +27,9 @@ print(wd)
 ioi <- readLines(paste0("item_of_interest.csv"))
 ioi<-as.character(ioi)
 
-# TODO remove this block if not needed.
-#ioi_ord <- read.csv("order_item_of_interest.csv")
-#colnames(ioi_ord) <- ioi
-#ioi_ord <- as.list(ioi_ord)[[ioi]]
+ioi_ord <- read.csv("order_item_of_interest.csv")
+colnames(ioi_ord) <- ioi
+ioi_ord <- as.list(ioi_ord)[[ioi]]
 
 outdir_name <- "Figures"
 if(!dir.exists(outdir_name)) {dir.create(outdir_name)}
@@ -39,7 +38,7 @@ outdir <- outdir_name
 
 ## 1 Species Distribution 
 
-```{r import data into Microbiome Analyst Format, message=FALSE, warning=FALSE}
+```{r import data into Microbiome Analyst Format, echo=FALSE, message=FALSE, warning=FALSE}
 library(MicrobiomeAnalystR)
 library(dplyr)
 library(tidyr)
@@ -117,13 +116,14 @@ mbSet<-PerformNormalization(mbSet, "none", "none", "none")
 
 ### 1.1 Relative Abundance of Top 10 Phyla
 
-```{r stacked bar chart at Phylum level, echo=FALSE, fig.height=12, fig.width=18,  message=FALSE, warning=FALSE}
+```{r stacked bar chart at Phylum level, echo=FALSE, fig.height=12, fig.width=18, message=FALSE, warning=FALSE}
 library(MicrobiomeAnalystR)
 
 select_top <- 10
 taxa_level <- "Phylum"
 #ioi <- 'condition'
 dpi <- 160
+dpi2 <- 72
 topN <- length(unique(mbSet$dataSet$taxa_table[,taxa_level]))
 
 if (topN < select_top){
@@ -142,7 +142,25 @@ mbSet<-PlotTaxaAundanceBar(mbSet, paste0(outdir,"/taxa_alpha_merge_absolute_",ta
 
 # Subsets top 10 taxa absolute
 mbSet<-PlotTaxaAundanceBar(mbSet, paste0(outdir,"/taxa_alpha_subset_absolute_",taxa_level),taxa_level,ioi, "none", "barraw",10, "set3","sum",select_top, "top", "F", "png",dpi = dpi)
+
+# merge taxa with count lower than 10 relative and merges item of interest
+mbSet <- mbSet<-PlotTaxaAbundanceBarSamGrp(mbSet, paste0(outdir,"/taxa_alpha_merge_relative_ioi_",taxa_level),taxa_level, ioi, "none", "barnorm",10,"set3","sum", 10, "bottom", "F", "png",dpi = dpi2)
+
+# subsets top 10/N taxa relative and merges item of interest
+mbSet <- mbSet<-PlotTaxaAbundanceBarSamGrp(mbSet, paste0(outdir,"/taxa_alpha_subset_relative_ioi_",taxa_level),taxa_level,ioi, "none", "barnorm",10,"set3","sum", select_top, "top", "F", "png",dpi=dpi2)
+
+
 ```
+
+![Stacked Bar Plot of Relative Abundance Subsetted Phyla Over 10 count](Figures/taxa_alpha_merge_relative_Phylum.png)
+![Stacked Bar Plot of Relative Abundance top 10 Phyla](Figures/taxa_alpha_subset_relative_Phylum.png)
+![Stacked Bar Plot of Relative Abundance Merged Phyla Over 10 count](Figures/taxa_alpha_merge_absolute_Phylum.png)
+![Stacked Bar Plot of Absolute Abundance top 10 Phyla](Figures/taxa_alpha_subset_absolute_Phylum.png)
+
+![Stacked Bar Plot of Relative Abundance Merged Phyla over 10 Count Item of interest](Figures/taxa_alpha_merge_relative_ioi_Phylum.png)
+
+
+![Stacked Bar Plot of Relative Abundance top 10 Phyla Merged Item of interest](Figures/taxa_alpha_subset_relative_ioi_Phylum.png)
 
 ### 1.2 Relative Abundance of Top 10 Genera
 
@@ -172,7 +190,22 @@ mbSet<-PlotTaxaAundanceBar(mbSet, paste0(outdir,"/taxa_alpha_merge_absolute_",ta
 # Subsets top 10 taxa absolute
 mbSet<-PlotTaxaAundanceBar(mbSet, paste0(outdir,"/taxa_alpha_subset_absolute_",taxa_level),taxa_level,ioi, "none", "barraw",10, "set3","sum",select_top, "top", "F", "png",dpi = dpi)
 
+# merge taxa with count lower than 10 relative and merges item of interest
+mbSet <- mbSet<-PlotTaxaAbundanceBarSamGrp(mbSet, paste0(outdir,"/taxa_alpha_merge_relative_ioi_",taxa_level),taxa_level, ioi, "none", "barnorm",10,"set3","sum", 10, "bottom", "F", "png",dpi=dpi2)
+
+# subsets top 10/N taxa relative and merges item of interest
+mbSet <- mbSet<-PlotTaxaAbundanceBarSamGrp(mbSet, paste0(outdir,"/taxa_alpha_subset_relative_ioi_",taxa_level),taxa_level,ioi, "none", "barnorm",10,"set3","sum", select_top, "top", "F", "png",dpi=dpi2)
+
 ```
+
+![Stacked Bar Plot of Relative Abundance of Merged Genera Over 10 count](Figures/taxa_alpha_merge_relative_Genus.png)
+![Stacked Bar Plot of Relative Abundance top 10 Genera](Figures/taxa_alpha_subset_relative_Genus.png)
+![Stacked Bar Plot of Absolute Abundance of Merged Genera Over 10 count](Figures/taxa_alpha_merge_absolute_Genus.png)
+![Stacked Bar Plot of Absolute Abundance top 10 Genera](Figures/taxa_alpha_subset_absolute_Genus.png)
+
+![Stacked Bar Plot of Relative Abundance Merged Phyla over 10 Count Item of interest](Figures/taxa_alpha_merge_relative_ioi_Genus.png)
+
+![Stacked Bar Plot of Relative Abundance top 10 Phyla Merged Item of interest](Figures/taxa_alpha_subset_relative_ioi_Genus.png)
 
 ### 1.3 Relative Abundance of Top 10 Species
 
@@ -202,4 +235,19 @@ mbSet<-PlotTaxaAundanceBar(mbSet, paste0(outdir,"/taxa_alpha_merge_absolute_",ta
 # Subsets top 10 taxa absolute
 mbSet<-PlotTaxaAundanceBar(mbSet, paste0(outdir,"/taxa_alpha_subset_absolute_",taxa_level),taxa_level,ioi, "none", "barraw",10, "set3","sum",select_top, "top", "F", "png",dpi = dpi)
 
+# merge taxa with count lower than 10 relative and merges item of interest
+mbSet <- mbSet<-PlotTaxaAbundanceBarSamGrp(mbSet, paste0(outdir,"/taxa_alpha_merge_relative_ioi_",taxa_level),taxa_level, ioi, "none", "barnorm",10,"set3","sum", 10, "bottom", "F", "png",dpi=dpi2)
+
+# subsets top 10/N taxa relative and merges item of interest
+mbSet <- mbSet<-PlotTaxaAbundanceBarSamGrp(mbSet, paste0(outdir,"/taxa_alpha_subset_relative_ioi_",taxa_level),taxa_level,ioi, "none", "barnorm",10,"set3","sum", select_top, "top", "F", "png",dpi=dpi2)
+
 ```
+
+![Stacked Bar Plot of Relative Abundance Subsetted Species Over 10 count](Figures/taxa_alpha_merge_relative_Species.png)
+![Stacked Bar Plot of Relative Abundance top 10 Species](Figures/taxa_alpha_subset_relative_Species.png)
+![Stacked bar plot absolute of merged Species with count less than 10 ](Figures/taxa_alpha_merge_absolute_Species.png)
+![Stacked bar plot absolute of top 10 subsetted Species ](Figures/taxa_alpha_subset_absolute_Species.png)
+
+![Stacked Bar Plot of Relative Abundance Merged Phyla over 10 Count Item of interest](Figures/taxa_alpha_merge_relative_ioi_Species.png)
+
+![Stacked Bar Plot of Relative Abundance top 10 Phyla Merged Item of interest](Figures/taxa_alpha_subset_relative_ioi_Species.png)
