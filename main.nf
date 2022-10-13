@@ -25,7 +25,6 @@ process REPORT01BARPLOT{
 
     container 'lorentzb/microbiome_analyst:1.1'
 
-
     input:
 
     path 'results'
@@ -37,8 +36,7 @@ process REPORT01BARPLOT{
 
     file "01_report_*.html"
     file "barplots/*"
-    
-        
+     
     script:
 
     '''
@@ -50,12 +48,11 @@ process REPORT01BARPLOT{
 
     #Rscript -e "rmarkdown::render('01_report_MbA.Rmd', output_file='$PWD/01_report_$dt.pdf', output_format='pdf_document', clean=TRUE, knit_root_dir='$PWD')"
     '''
-
 }
 
 input_ch = Channel.fromPath(params.input)
 metadata_ch = Channel.fromPath(params.metadata)
-report_one_ch = Channel.fromPath("report_gen_files/01_report_MbA.Rmd")
+report_one_ch = Channel.fromPath("${baseDir}/report_gen_files/01_report_MbA.Rmd")
 ioi_ch = Channel.of(params.ioi)
 
 workflow{
