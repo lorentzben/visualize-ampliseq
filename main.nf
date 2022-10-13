@@ -18,24 +18,25 @@ log.info """\
          .stripIndent()
 
 
-process REPORT01BARPLOT{
+process REPORT01BARPLOT(input,metadata,01-report){
 
     publishDir "results/pdf", pattern: "*.pdf", mode: "copy"
     publishDir "results/html", pattern: "*.html", mode: "copy"
 
-    container 'docker://lorentzb/r_01:2.0'
+    container 'docker://lorentzb/microbiome_analyst:1.1'
 
 
     input:
 
-    path core-metric
-    path rooted-tree
-    path taxonomy
+    
     path metadata
-    path order-item-of-interest
+    
     path 01-report
     val item-of-interest
-    
+    path input+"/qiime2/abundance_tables/feature-table.tsv"
+    path input+"/dada2/ASV_tax_species.tsv"
+    path input+"/qiime2/phylogenetic_tree/tree.nwk"
+    path metadata
 
     script:
 
@@ -46,9 +47,9 @@ process REPORT01BARPLOT{
     
     dt=$(date '+%d-%m-%Y_%H.%M.%S');
 
-    Rscript -e "rmarkdown::render('01_report.Rmd', output_file='$PWD/01_report_$dt.html', output_format='html_document', clean=TRUE, knit_root_dir='$PWD')"
+    Rscript -e "rmarkdown::render('01_report_MbA.Rmd', output_file='$PWD/01_report_$dt.html', output_format='html_document', clean=TRUE, knit_root_dir='$PWD')"
 
-    Rscript -e "rmarkdown::render('01_report.Rmd', output_file='$PWD/01_report_$dt.pdf', output_format='pdf_document', clean=TRUE, knit_root_dir='$PWD')"
+    Rscript -e "rmarkdown::render('01_report_MbA.Rmd', output_file='$PWD/01_report_$dt.pdf', output_format='pdf_document', clean=TRUE, knit_root_dir='$PWD')"
     '''
 
 }
@@ -56,6 +57,7 @@ process REPORT01BARPLOT{
 workflow{
     input_ch = Channel.fromPath(params.input)
     metadata_ch = Channel.fromPath(params.metadata)
-    core-metric = Channel.fromPath(params.input+'/qiime2/')
-    REPORT01BARPLOT(input_ch)
+    01_report_ch = Channel.fromPath(${projectDir}"/report_gen_files/01_report_MbA.Rmd")
+    ioi_ch = Channel.fromValue(params.ioi)
+    REPORT01BARPLOT(input_ch,metadata_ch,01_report_ch, ioi_ch)
 }
