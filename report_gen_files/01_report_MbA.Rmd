@@ -27,9 +27,10 @@ print(wd)
 ioi <- readLines(paste0("item_of_interest.csv"))
 ioi<-as.character(ioi)
 
-ioi_ord <- read.csv("order_item_of_interest.csv")
-colnames(ioi_ord) <- ioi
-ioi_ord <- as.list(ioi_ord)[[ioi]]
+# TODO remove this block if not needed.
+#ioi_ord <- read.csv("order_item_of_interest.csv")
+#colnames(ioi_ord) <- ioi
+#ioi_ord <- as.list(ioi_ord)[[ioi]]
 
 outdir_name <- "Figures"
 if(!dir.exists(outdir_name)) {dir.create(outdir_name)}
