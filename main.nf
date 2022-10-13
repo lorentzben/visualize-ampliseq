@@ -36,17 +36,17 @@ process REPORT01BARPLOT{
         
     script:
 
-    '''
+    """
     #!/usr/bin/env bash
 
-    echo '!{item_of_interest}' > item_of_interest.csv
+    echo ${item_of_interest} > item_of_interest.csv
     
     dt=$(date '+%d-%m-%Y_%H.%M.%S');
 
     Rscript -e "rmarkdown::render('01_report_MbA.Rmd', output_file='$PWD/01_report_$dt.html', output_format='html_document', clean=TRUE, knit_root_dir='$PWD')"
 
     Rscript -e "rmarkdown::render('01_report_MbA.Rmd', output_file='$PWD/01_report_$dt.pdf', output_format='pdf_document', clean=TRUE, knit_root_dir='$PWD')"
-    '''
+    """
 
 }
 
