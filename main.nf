@@ -39,7 +39,7 @@ process REPORT01BARPLOT{
     '''
     #!/usr/bin/env bash
 
-    #echo "!{params.ioi}" > item_of_interest.csv
+    echo "!{params.ioi}" > item_of_interest.csv
     
     dt=$(date '+%d-%m-%Y_%H.%M.%S');
 
