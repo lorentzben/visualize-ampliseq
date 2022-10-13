@@ -32,9 +32,9 @@ process REPORT01BARPLOT{
     path metadata
     path report
     val item_of_interest
-    path input+"/qiime2/abundance_tables/feature-table.tsv"
-    path input+"/dada2/ASV_tax_species.tsv"
-    path input+"/qiime2/phylogenetic_tree/tree.nwk"
+    //path input+"/qiime2/abundance_tables/feature-table.tsv"
+    //path input+"/dada2/ASV_tax_species.tsv"
+    //path input+"/qiime2/phylogenetic_tree/tree.nwk"
     
     script:
 
