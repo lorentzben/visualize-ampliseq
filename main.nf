@@ -318,7 +318,7 @@ process LefseAnalysis{
 
 workflow {
     REPORT01BARPLOT(input_ch , metadata_ch , report_one_ch , ioi_ch)
-    graphlan_biom, taxonomy_qza = GENERATEBIOMFORGRAPHLAN(metadata_ch , ioi_ch , input_ch)
+    (graphlan_biom, taxonomy_qza) = GENERATEBIOMFORGRAPHLAN(metadata_ch , ioi_ch , input_ch)
     graphlan_dir = RUNGRAPHLAN(metadata_ch, ioi_ch, taxonomy_qza, graph_sh_ch, graphlan_biom)
     REPORT02GRAPHLANPHYLOGENETICTREE(graphlan_dir, ioi_ch)
 }
