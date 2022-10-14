@@ -23,13 +23,14 @@ ioi_ch = Channel.of(params.ioi)
 report_one_ch = Channel.fromPath("${projectDir}/report_gen_files/01_report_MbA.Rmd")
 filter_samples_ch = Channel.fromPath("${projectDir}/python_scripts/filter_samples.py")
 graph_sh_ch = Channel.fromPath("${projectDir}/bash_scripts/graph.sh")
+report_two_ch = Channel.fromPath("${projectDir}/report_gen_files/02_report.Rmd")
 
 workflow {
     REPORT01BARPLOT(input_ch, metadata_ch, report_one_ch, ioi_ch)
     tax_qza = REFORMATANDQZATAX(input_ch)
     (graphlan_biom, taxonomy_qza) = GENERATEBIOMFORGRAPHLAN(metadata_ch, ioi_ch, input_ch, filter_samples_ch, tax_qza)
     graphlan_dir = RUNGRAPHLAN(metadata_ch, ioi_ch, tax_qza, graph_sh_ch, graphlan_biom)
-    REPORT02GRAPHLANPHYLOGENETICTREE(graphlan_dir, ioi_ch)
+    REPORT02GRAPHLANPHYLOGENETICTREE(graphlan_dir, ioi_ch, report_two_ch)
 }
 
 process REPORT01BARPLOT{
@@ -296,6 +297,7 @@ process REPORT02GRAPHLANPHYLOGENETICTREE{
 
     path "phylo_trees/*" 
     file 'item_of_interest.csv'
+    file "report_02.Rmd"
 
     output:
 
