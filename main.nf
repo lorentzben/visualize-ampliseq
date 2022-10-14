@@ -224,7 +224,7 @@ process GENERATEBIOMFORGRAPHLAN{
 process RUNGRAPHLAN{
     publishDir "${params.outdir}/graphlan", mode: 'copy'
 
-    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/py2_test:2.0' : 'lorentzb/lorentzb/py2_test:2.0' }"
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/py2_test:2.0' : 'lorentzb/py2_test:2.0' }"
     //container "docker://lorentzb/py2_test:2.0"
 
     input:
@@ -289,7 +289,7 @@ process REPORT02GRAPHLANPHYLOGENETICTREE{
     publishDir "results/html", pattern: "*.html", mode: "copy"
     publishDir "results/figures", pattern: "*/*.png", mode: "copy"
 
-    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/r_02:2.0' : 'lorentzb/lorentzb/r_02:2.0' }"
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/r_02:2.0' : 'lorentzb/r_02:2.0' }"
     //container 'lorentzb/microbiome_analyst:1.1'
 
     input:
