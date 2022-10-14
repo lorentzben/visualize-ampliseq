@@ -316,7 +316,7 @@ process LefseAnalysis{
     """
 }
 
-workflow{
+workflow {
     
     REPORT01BARPLOT(input_ch ,metadata_ch, report_one_ch, ioi_ch)
     graphlan_biom, taxonomy_qza = GENERATEBIOMFORGRAPHLAN(metadata_ch, ioi_ch, input_ch,)
