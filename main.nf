@@ -297,7 +297,7 @@ process REPORT02GRAPHLANPHYLOGENETICTREE{
 
     path "phylo_trees/*" 
     file 'item_of_interest.csv'
-    file "report_02.Rmd"
+    file "02_report.Rmd"
 
     output:
 
