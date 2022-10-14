@@ -22,11 +22,7 @@ wd <- getwd()
 ioi <- read.csv("item_of_interest.csv")
 ioi<-as.character(ioi)
 
-ioi_ord <- read.csv("order_item_of_interest.csv")
-colnames(ioi_ord) <- ioi
-ioi_ord <- as.list(ioi_ord)[[ioi]]
-
-outdir_name <- "Figures"
+outdir_name <- "graphlan_trees"
 if(!dir.exists(outdir_name)) {dir.create(outdir_name)}
 outdir <- outdir_name
 ```
