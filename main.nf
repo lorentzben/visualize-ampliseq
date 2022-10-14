@@ -65,10 +65,65 @@ process REPORT01BARPLOT{
     '''
 }
 
+process REFORMATANDQZATAX{
+
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/automate_16_nf:2.0' : 'lorentzb/automate_16_nf:2.0' }"
+    
+    input:
+    path 'results'
+
+    output:
+    file "taxonomy.qza"
+
+    script:
+    """
+    #!/usr/bin/env python3
+    import subprocess
+    import pandas as pd
+    import numpy as np 
+    import time
+
+    tax_tab = pd.read_table('results/dada2/ASV_tax_species.tsv', sep='\t')
+    tax_tab.columns = tax_tab.columns.str.replace('ASV_ID', 'Feature ID')
+
+    tax_tab[['Domain','Kingdom']] = tax_tab[['Domain','Kingdom']].fillna(value="Unassigned")
+
+    tax_tab['Kingdom'] = 'D_0__' + tax_tab['Kingdom'].astype(str) + ';'
+    tax_tab['Phylum'] = 'D_1__' + tax_tab[~tax_tab['Phylum'].isnull()]["Phylum"].astype(str) + ';'
+    tax_tab['Class'] = 'D_2__' + tax_tab[~tax_tab['Class'].isnull()]["Class"].astype(str) + ';'
+    tax_tab['Order'] = 'D_3__' + tax_tab[~tax_tab['Order'].isnull()]["Order"].astype(str) + ';'
+    tax_tab['Family'] = 'D_4__' + tax_tab[~tax_tab['Family'].isnull()]["Family"].astype(str) + ';'
+    tax_tab['Genus'] = 'D_5__' + tax_tab[~tax_tab['Genus'].isnull()]["Genus"].astype(str) + ';'
+    tax_tab['Species'] = 'D_6__' + tax_tab[~tax_tab['Species'].isnull()]["Species"].astype(str) + ';'
+
+    tax_tab = tax_tab.fillna('')
+
+
+    cols = ['Kingdom', 'Phylum', 'Class', 'Order', 'Family','Genus', 'Species']
+    tax_tab['Taxon'] = tax_tab[cols].apply(lambda row: ''.join(row.values.astype(str)), axis=1)
+    
+    tax_tab = tax_tab.drop(columns=['Domain', 'Kingdom', 'Phylum', 'Class', 'Order', 'Family','Genus', 'Species','sequence'])
+
+    colnames  = ['Feature ID', 'Taxon', 'confidence']
+
+    tax_tab = tax_tab.reindex(columns = colnames)
+
+    tax_tab.to_csv("taxonomy.tsv",sep='\t',index=False)
+    
+    create_tax_qza_command = "qiime tools import \
+    --input-path taxonomy.tsv \
+    --type 'FeatureData[Taxonomy]' \
+    --input-format TSVTaxonomyFormat \
+    --output-path taxonomy.qza"
+    result = subprocess.run([create_tax_qza_command], shell=True)
+
+    """
+}
+
 process GENERATEBIOMFORGRAPHLAN{
     //publishDir "${params.outdir}/graphlan", mode: 'copy'
 
-    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/lorentzb/automate_16_nf:2.0' : 'lorentzb/automate_16_nf:2.0' }"
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/automate_16_nf:2.0' : 'lorentzb/automate_16_nf:2.0' }"
 
     //container "docker://lorentzb/automate_16_nf:2.0"
 
@@ -109,15 +164,6 @@ process GENERATEBIOMFORGRAPHLAN{
     --input-format BIOMV210Format \
     --output-path feature-table.qza"
     result = subprocess.run([create_qza_command], shell=True)
-
-    create_tax_qza_command = "qiime tools import \
-    --input-path results/dada2/ASV_tax_species.tsv \
-    --type 'FeatureData[Taxonomy]' \
-    --input-format TSVTaxonomyFormat \
-    --output-path taxonomy.qza"
-    result = subprocess.run([create_tax_qza_command], shell=True)
-   
-
 
     # iterates over the items of interest to produce a circular phylogenetic tree per category e.g. CONTROL TREATMENT
     for item in ioi_set:
@@ -176,7 +222,7 @@ process GENERATEBIOMFORGRAPHLAN{
 process RUNGRAPHLAN{
     publishDir "${params.outdir}/graphlan", mode: 'copy'
 
-    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/lorentzb/py2_test:2.0' : 'lorentzb/lorentzb/py2_test:2.0' }"
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/py2_test:2.0' : 'lorentzb/lorentzb/py2_test:2.0' }"
     //container "docker://lorentzb/py2_test:2.0"
 
     input:
@@ -241,7 +287,7 @@ process REPORT02GRAPHLANPHYLOGENETICTREE{
     publishDir "results/html", pattern: "*.html", mode: "copy"
     publishDir "results/figures", pattern: "*/*.png", mode: "copy"
 
-    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/lorentzb/r_02:2.0' : 'lorentzb/lorentzb/r_02:2.0' }"
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/r_02:2.0' : 'lorentzb/lorentzb/r_02:2.0' }"
     //container 'lorentzb/microbiome_analyst:1.1'
 
     input:
