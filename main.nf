@@ -36,7 +36,9 @@ process REPORT01BARPLOT{
     publishDir "results/html", pattern: "*.html", mode: "copy"
     publishDir "results/figures", pattern: "*/*.png", mode: "copy"
 
-    container 'lorentzb/microbiome_analyst:1.1'
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/microbiome_analyst:1.1' : 'lorentzb/microbiome_analyst:1.1' }"
+
+    //container 'lorentzb/microbiome_analyst:1.1'
 
     input:
 
@@ -64,9 +66,11 @@ process REPORT01BARPLOT{
 }
 
 process GENERATEBIOMFORGRAPHLAN{
-    publishDir "${params.outdir}/graphlan", mode: 'copy'
+    //publishDir "${params.outdir}/graphlan", mode: 'copy'
 
-    container "docker://lorentzb/automate_16_nf:2.0"
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/lorentzb/automate_16_nf:2.0' : 'lorentzb/automate_16_nf:2.0' }"
+
+    //container "docker://lorentzb/automate_16_nf:2.0"
 
     input:
     file metadata 
@@ -171,7 +175,8 @@ process GENERATEBIOMFORGRAPHLAN{
 process RUNGRAPHLAN{
     publishDir "${params.outdir}/graphlan", mode: 'copy'
 
-    container "docker://lorentzb/py2_test:2.0"
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/lorentzb/py2_test:2.0' : 'lorentzb/lorentzb/py2_test:2.0' }"
+    //container "docker://lorentzb/py2_test:2.0"
 
     input:
 
@@ -235,7 +240,8 @@ process REPORT02GRAPHLANPHYLOGENETICTREE{
     publishDir "results/html", pattern: "*.html", mode: "copy"
     publishDir "results/figures", pattern: "*/*.png", mode: "copy"
 
-    container 'lorentzb/microbiome_analyst:1.1'
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/lorentzb/r_02:2.0' : 'lorentzb/lorentzb/r_02:2.0' }"
+    //container 'lorentzb/microbiome_analyst:1.1'
 
     input:
 
