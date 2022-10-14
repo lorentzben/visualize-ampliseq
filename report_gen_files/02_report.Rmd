@@ -51,4 +51,4 @@ outdir <- outdir_name
 # }
 ```
 
-![Graphlan Trees]("phylo_trees/*.png")
+![Graphlan Trees](phylo_trees/*.png)
