@@ -36,7 +36,7 @@ outdir <- outdir_name
   tree_filenames <- list.files("phylo_trees",pattern="*_image_graph.png",full.names=T)
   tree_filenames <- mixedsort(tree_filenames)
 
-  #include_graphics(tree_filenames)
+  include_graphics(normalizePath(tree_filenames))
   
 #} 
 # 
@@ -51,4 +51,3 @@ outdir <- outdir_name
 # }
 ```
 
-![Graphlan Trees](phylo_trees/*.png)
