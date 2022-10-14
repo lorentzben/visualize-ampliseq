@@ -103,18 +103,19 @@ process GENERATEBIOMFORGRAPHLAN{
     subprocess.run(['mkdir phylo_trees'], shell=True)
     subprocess.run(['mkdir biom_tabs'], shell=True)
 
-    create_qza_command = qiime tools import \
+    create_qza_command = "qiime tools import \
     --input-path results/qiime2/abundance_tables/feature-table.biom \
     --type 'FeatureTable[Frequency]' \
     --input-format BIOMV210Format \
-    --output-path feature-table.qza
+    --output-path feature-table.qza"
     result = subprocess.run([create_qza_command], shell=True)
 
-    create_tax_qza_command = qiime tools import \
+    create_tax_qza_command = "qiime tools import \
     --input-path results/dada2/ASV_tax_species.tsv \
     --type 'FeatureData[Taxonomy]' \
     --input-format TSVTaxonomyFormat \
-    --output-path taxonomy.qza
+    --output-path taxonomy.qza"
+    result = subprocess.run([create_tax_qza_command], shell=True)
    
 
 
