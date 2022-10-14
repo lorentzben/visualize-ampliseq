@@ -26,8 +26,9 @@ graph_sh_ch = Channel.fromPath("${projectDir}/bash_scripts/graph.sh")
 
 workflow {
     REPORT01BARPLOT(input_ch, metadata_ch, report_one_ch, ioi_ch)
-    (graphlan_biom, taxonomy_qza) = GENERATEBIOMFORGRAPHLAN(metadata_ch, ioi_ch, input_ch, filter_samples_ch)
-    graphlan_dir = RUNGRAPHLAN(metadata_ch, ioi_ch, taxonomy_qza, graph_sh_ch, graphlan_biom)
+    tax_qza = REFORMATANDQZATAX(input_ch)
+    (graphlan_biom, taxonomy_qza) = GENERATEBIOMFORGRAPHLAN(metadata_ch, ioi_ch, input_ch, filter_samples_ch, tax_qza)
+    graphlan_dir = RUNGRAPHLAN(metadata_ch, ioi_ch, tax_qza, graph_sh_ch, graphlan_biom)
     REPORT02GRAPHLANPHYLOGENETICTREE(graphlan_dir, ioi_ch)
 }
 
@@ -132,11 +133,12 @@ process GENERATEBIOMFORGRAPHLAN{
     val ioi 
     path 'results'
     file "filter_samples.py" 
+    file "taxonomy.qza"
 
     output:
     
     path "biom_tabs/*" 
-    file "taxonomy.qza"
+    
 
     //TODO add these labels back in
     //label 'process_medium'
