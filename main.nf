@@ -25,13 +25,6 @@ filter_samples_ch = Channel.fromPath("${projectDir}/python_scripts/filter_sample
 graph_sh_ch = Channel.fromPath("${projectDir}/bash_scripts/graph.sh")
 
 
-workflow{
-    
-    REPORT01BARPLOT(input_ch ,metadata_ch, report_one_ch, ioi_ch)
-    graphlan_biom, taxonomy_qza = GENERATEBIOMFORGRAPHLAN(metadata_ch, ioi_ch, input_ch,)
-    graphlan_dir = RUNGRAPHLAN(metadata_ch, ioi_ch, taxonomy_qza, graph_sh_ch, graphlan_biom)
-    REPORT02GRAPHLANPHYLOGENETICTREE(graphlan_dir, ioi_ch)
-}
 
 process REPORT01BARPLOT{
 
@@ -321,4 +314,12 @@ process LefseAnalysis{
     mkdir result
     bash lefse_analysis.sh
     """
+}
+
+workflow{
+    
+    REPORT01BARPLOT(input_ch ,metadata_ch, report_one_ch, ioi_ch)
+    graphlan_biom, taxonomy_qza = GENERATEBIOMFORGRAPHLAN(metadata_ch, ioi_ch, input_ch,)
+    graphlan_dir = RUNGRAPHLAN(metadata_ch, ioi_ch, taxonomy_qza, graph_sh_ch, graphlan_biom)
+    REPORT02GRAPHLANPHYLOGENETICTREE(graphlan_dir, ioi_ch)
 }
