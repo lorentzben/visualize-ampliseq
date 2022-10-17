@@ -302,7 +302,6 @@ process REPORT02GRAPHLANPHYLOGENETICTREE{
     output:
 
     file "02_report_*.html"
-    file "graphlan_trees/*"
      
     script:
 
