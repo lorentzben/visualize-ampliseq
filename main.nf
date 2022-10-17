@@ -25,12 +25,14 @@ filter_samples_ch = Channel.fromPath("${projectDir}/python_scripts/filter_sample
 graph_sh_ch = Channel.fromPath("${projectDir}/bash_scripts/graph.sh")
 report_two_ch = Channel.fromPath("${projectDir}/report_gen_files/02_report.Rmd")
 
+
 workflow {
     REPORT01BARPLOT(input_ch, metadata_ch, report_one_ch, ioi_ch)
     tax_qza = REFORMATANDQZATAX(input_ch)
-    (graphlan_biom, taxonomy_qza) = GENERATEBIOMFORGRAPHLAN(metadata_ch, ioi_ch, input_ch, filter_samples_ch, tax_qza)
+    (graphlan_biom, table_qza) = GENERATEBIOMFORGRAPHLAN(metadata_ch, ioi_ch, input_ch, filter_samples_ch, tax_qza)
     graphlan_dir = RUNGRAPHLAN(metadata_ch, ioi_ch, tax_qza, graph_sh_ch, graphlan_biom)
     REPORT02GRAPHLANPHYLOGENETICTREE(graphlan_dir, ioi_ch, report_two_ch)
+    REPORT03HEATMAP(input_ch, table_qza, tax_qza, metadata_ch)
 }
 
 process REPORT01BARPLOT{
@@ -139,6 +141,7 @@ process GENERATEBIOMFORGRAPHLAN{
     output:
     
     path "biom_tabs/*" 
+    file "feature-table.qza"
     
 
     //TODO add these labels back in
@@ -317,6 +320,38 @@ process REPORT02GRAPHLANPHYLOGENETICTREE{
     Rscript -e "rmarkdown::render('02_report.Rmd', output_file='$PWD/02_report_$dt.html', output_format='html_document', clean=TRUE, knit_root_dir='$PWD')"
 
     #Rscript -e "rmarkdown::render('02_report.Rmd', output_file='$PWD/02_report_$dt.pdf', output_format='pdf_document', clean=TRUE, knit_root_dir='$PWD')"
+    '''
+}
+
+process REPORT03HEATMAP{
+
+    publishDir "results/html", pattern: "*.html", mSode: "copy"
+    publishDir "results/figures", pattern: "*/*.png", mode: "copy"
+
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/r_03:2.0' : 'lorentzb/r_03:2.0' }"
+
+    input: 
+
+    path 'results'
+    file 'feature-table.qza'
+    file 'taxonomy.qza'
+    file 'metadata.tsv'
+
+    output:
+
+    file "03_report_*.html"
+    file "03_report_*.pdf"
+     
+    script:
+
+    '''
+    #!/usr/bin/env bash
+   
+    dt=$(date '+%d-%m-%Y_%H.%M.%S');
+
+    Rscript -e "rmarkdown::render('03_report.Rmd', output_file='$PWD/03_report_$dt.html', output_format='html_document', clean=TRUE, knit_root_dir='$PWD')"
+
+    Rscript -e "rmarkdown::render('03_report.Rmd', output_file='$PWD/03_report_$dt.pdf', output_format='pdf_document', clean=TRUE, knit_root_dir='$PWD')"
     '''
 }
 
