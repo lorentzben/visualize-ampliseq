@@ -368,7 +368,7 @@ process REPORT02GRAPHLANPHYLOGENETICTREE{
 process REPORT03HEATMAP{
 
     publishDir "${params.outdir}/html", pattern: "*.html", mSode: "copy"
-    publishDir "${params.outdir}/pdf", pattern: "*.html", mSode: "copy"
+    publishDir "${params.outdir}/pdf", pattern: "*.pdf", mSode: "copy"
     publishDir "${params.outdir}/heatmap", pattern: "*/*.png", mode: "copy"
     
 
