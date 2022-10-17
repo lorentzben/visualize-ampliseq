@@ -5,6 +5,7 @@ nextflow.enable.dsl=2
 params.input = "${projectDir}/ampliseq_results"
 params.metadata = "${projectDir}/metadata.tsv"
 params.ioi = "treatment"
+params.ordioi = "ordered_item_of_interest.csv"
 params.outdir = "results"
 
 log.info """\
@@ -13,6 +14,7 @@ log.info """\
          input    : ${params.input }
          metadata : ${params.metadata}
          item of interest : ${params.ioi}
+         ordered item of interst : ${params.ordioi}
          outdir   : ${params.outdir}
          """
          .stripIndent()
@@ -20,6 +22,7 @@ log.info """\
 input_ch = Channel.fromPath(params.input, checkIfExists: true)
 metadata_ch = Channel.fromPath(params.metadata, checkIfExists: true)
 ioi_ch = Channel.of(params.ioi)
+ord_ioi_ch = Channel.of(params.ordioi,checkIfExists: false)
 report_one_ch = Channel.fromPath("${projectDir}/report_gen_files/01_report_MbA.Rmd")
 filter_samples_ch = Channel.fromPath("${projectDir}/python_scripts/filter_samples.py")
 graph_sh_ch = Channel.fromPath("${projectDir}/bash_scripts/graph.sh")
@@ -28,12 +31,48 @@ report_three_ch = Channel.fromPath("${projectDir}/report_gen_files/03_report.Rmd
 
 
 workflow {
+    ord_ioi = ORDERIOI(ioi_ch, metadata_ch, ord_ioi_ch)
     REPORT01BARPLOT(input_ch, metadata_ch, report_one_ch, ioi_ch)
     tax_qza = REFORMATANDQZATAX(input_ch)
     (graphlan_biom, table_qza) = GENERATEBIOMFORGRAPHLAN(metadata_ch, ioi_ch, input_ch, filter_samples_ch, tax_qza)
     graphlan_dir = RUNGRAPHLAN(metadata_ch, ioi_ch, tax_qza, graph_sh_ch, graphlan_biom)
     REPORT02GRAPHLANPHYLOGENETICTREE(graphlan_dir, ioi_ch, report_two_ch)
-    REPORT03HEATMAP(input_ch, table_qza, tax_qza, metadata_ch, report_three_ch, ioi_ch)
+    REPORT03HEATMAP(input_ch, table_qza, tax_qza, metadata_ch, report_three_ch, ioi_ch, ord_ioi)
+}
+
+process ORDERIOI{
+
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/automate_16_nf:2.0' : 'lorentzb/automate_16_nf:2.0' }"
+
+    input:
+    val ioi
+    file 'metadata.tsv'
+    file 'order_item_of_interest.csv'
+
+    output:
+
+    file 'order_item_of_interest.csv'
+
+    script:
+
+    """
+    #!/usr/bin/env python3
+    import pandas as pd
+
+    try:
+        # if the order ioi exists then write file out and move to following chunks
+        read_ord_ioi = pd.read_table(${ord_ioi},index_col=0,sep=',')
+
+    except FileNotFoundError:
+        # generate the ordered ioi by sorting it and saves it out
+
+        read_metadata = pd.read_table('metadata.tsv', index_col=0, sep='\t')
+
+        iois = list(pd.Series.unique(read_metadata['${ioi}']))
+        ioisdf = pd.DataFrame(iois[1:])
+        ioisdf.columns = ['${ioi}'].sort_values()
+        pd.DataFrame.to_csv(ioisdf, 'order_item_of_interest.csv', index=False)
+    """
 }
 
 process REPORT01BARPLOT{
@@ -339,6 +378,7 @@ process REPORT03HEATMAP{
     file 'metadata.tsv'
     file '03_report.Rmd'
     file 'item_of_interest.csv'
+    file 'order_item_of_interest.csv'
 
     output:
 
