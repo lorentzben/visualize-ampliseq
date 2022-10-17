@@ -47,7 +47,7 @@ process ORDERIOI{
     input:
     val ioi
     path metadata
-    file ord_ioi
+    path ord_ioi
 
     output:
 
