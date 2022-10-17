@@ -117,7 +117,7 @@ phyloseq_to_ampvis2 <- function(physeq) {
 
 ## 3 Species Abundance Heatmap
 
-```{r heatmap at the Genus level annotatted with item of interest, echo=FALSE, fig.height=14, fig.width=28, message=FALSE, warning=FALSE}
+```{r heatmap at the Genus level annotated with item of interest, echo=FALSE, fig.height=14, fig.width=28, message=FALSE, warning=FALSE}
 #original height 10 width 14
 library(qiime2R)
 library(phyloseq)
