@@ -57,7 +57,7 @@ process REPORT01BARPLOT{
     script:
 
     '''
-    #!/usr/bin/env bash
+    #!/bin/bash
    
     dt=$(date '+%d-%m-%Y_%H.%M.%S');
 
@@ -79,7 +79,7 @@ process REFORMATANDQZATAX{
 
     script:
     """
-    #!/usr/bin/env python3
+    #!/bin/python3
     import subprocess
     import pandas as pd
     import numpy as np 
@@ -146,7 +146,7 @@ process GENERATEBIOMFORGRAPHLAN{
 
     script:
     """
-    #!/usr/bin/env python3
+    #!/bin/python3
     import subprocess
     import pandas as pd
     import numpy as np 
@@ -244,7 +244,7 @@ process RUNGRAPHLAN{
 
     script:
     """
-    #!/usr/bin/env python2
+    #!/bin/python2
     import subprocess
     import csv
     import pandas as pd
@@ -307,7 +307,7 @@ process REPORT02GRAPHLANPHYLOGENETICTREE{
     script:
 
     '''
-    #!/usr/bin/env bash
+    #!/bin/bash
    
     dt=$(date '+%d-%m-%Y_%H.%M.%S');
 
@@ -349,7 +349,7 @@ process LefseFormat {
 
     script:
     """
-    #!/usr/bin/env bash
+    #!/bin/bash
     mkdir combos
     cp ${metadata} "metadata.tsv"
     Rscript qiime_to_lefse.R ${ioi}
@@ -376,7 +376,7 @@ process LefseAnalysis{
 
     script:
     """
-    #!/usr/bin/env bash
+    #!/bin/bash
     mkdir result
     bash lefse_analysis.sh
     """
