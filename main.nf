@@ -47,7 +47,7 @@ process ORDERIOI{
     input:
     val ioi
     file 'metadata.tsv'
-    file 'order_item_of_interest.csv'
+    file ord_ioi
 
     output:
 
@@ -61,7 +61,8 @@ process ORDERIOI{
 
     try:
         # if the order ioi exists then write file out and move to following chunks
-        read_ord_ioi = pd.read_table('order_item_of_interest.csv',index_col=0,sep=',')
+        read_ord_ioi = pd.read_table(${ord_ioi},index_col=0,sep=',')
+        pd.DataFrame.to_csv(read_ord_ioi, 'order_item_of_interest.csv', index=False)
 
     except FileNotFoundError:
         # generate the ordered ioi by sorting it and saves it out
