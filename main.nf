@@ -22,7 +22,7 @@ log.info """\
 input_ch = Channel.fromPath(params.input, checkIfExists: true)
 metadata_ch = Channel.fromPath(params.metadata, checkIfExists: true)
 ioi_ch = Channel.of(params.ioi)
-ord_ioi_ch = Channel.of(params.ordioi,checkIfExists: false)
+ord_ioi_ch = Channel.of(params.ordioi, checkIfExists: false)
 report_one_ch = Channel.fromPath("${projectDir}/report_gen_files/01_report_MbA.Rmd")
 filter_samples_ch = Channel.fromPath("${projectDir}/python_scripts/filter_samples.py")
 graph_sh_ch = Channel.fromPath("${projectDir}/bash_scripts/graph.sh")
@@ -61,7 +61,7 @@ process ORDERIOI{
 
     try:
         # if the order ioi exists then write file out and move to following chunks
-        read_ord_ioi = pd.read_table(${ord_ioi},index_col=0,sep=',')
+        read_ord_ioi = pd.read_table("${ord_ioi}",index_col=0,sep=',')
         pd.DataFrame.to_csv(read_ord_ioi, 'order_item_of_interest.csv', index=False)
 
     except FileNotFoundError:
