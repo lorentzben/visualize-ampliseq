@@ -33,7 +33,7 @@ workflow {
     (graphlan_biom, table_qza) = GENERATEBIOMFORGRAPHLAN(metadata_ch, ioi_ch, input_ch, filter_samples_ch, tax_qza)
     graphlan_dir = RUNGRAPHLAN(metadata_ch, ioi_ch, tax_qza, graph_sh_ch, graphlan_biom)
     REPORT02GRAPHLANPHYLOGENETICTREE(graphlan_dir, ioi_ch, report_two_ch)
-    REPORT03HEATMAP(input_ch, table_qza, tax_qza, metadata_ch, report_three_ch)
+    REPORT03HEATMAP(input_ch, table_qza, tax_qza, metadata_ch, report_three_ch, ioi_ch)
 }
 
 process REPORT01BARPLOT{
@@ -338,6 +338,7 @@ process REPORT03HEATMAP{
     file 'taxonomy.qza'
     file 'metadata.tsv'
     file '03_report.Rmd'
+    file 'item_of_interest.csv'
 
     output:
 
