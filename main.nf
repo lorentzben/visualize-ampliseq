@@ -79,8 +79,8 @@ process ORDERIOI{
 
 process REPORT01BARPLOT{
 
-    publishDir "results/html", pattern: "*.html", mode: "copy"
-    publishDir "results/figures", pattern: "*/*.png", mode: "copy"
+    publishDir "${params.outdir}/html", pattern: "*.html", mode: "copy"
+    publishDir "${params.outdir}/figures", pattern: "*/*.png", mode: "copy"
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/microbiome_analyst:1.1' : 'lorentzb/microbiome_analyst:1.1' }"
 
@@ -332,8 +332,8 @@ process RUNGRAPHLAN{
 
 process REPORT02GRAPHLANPHYLOGENETICTREE{
 
-    publishDir "results/html", pattern: "*.html", mode: "copy"
-    publishDir "results/figures", pattern: "*/*.png", mode: "copy"
+    publishDir "${params.outdir}/html", pattern: "*.html", mode: "copy"
+    publishDir "${params.outdir}/figures", pattern: "*/*.png", mode: "copy"
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/r_02:2.0' : 'lorentzb/r_02:2.0' }"
     //container 'lorentzb/microbiome_analyst:1.1'
@@ -367,8 +367,10 @@ process REPORT02GRAPHLANPHYLOGENETICTREE{
 
 process REPORT03HEATMAP{
 
-    publishDir "results/html", pattern: "*.html", mSode: "copy"
-    publishDir "results/figures", pattern: "*/*.png", mode: "copy"
+    publishDir "${params.outdir}/html", pattern: "*.html", mSode: "copy"
+    publishDir "${params.outdir}/pdf", pattern: "*.html", mSode: "copy"
+    publishDir "${params.outdir}/heatmap", pattern: "*/*.png", mode: "copy"
+    
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/r_03:2.0' : 'lorentzb/r_03:2.0' }"
 
