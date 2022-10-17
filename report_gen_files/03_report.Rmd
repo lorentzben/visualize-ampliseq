@@ -151,26 +151,11 @@ ggsave("heatmap.png", plot=heatmap, path=outdir)
 ```
 
 
-```{r read in cutoffs used by qiime, echo=FALSE, message=FALSE, warning=FALSE}
+
+```{r make data table for samples across analysis, echo=FALSE, message=FALSE, warning=FALSE}
 library(tidyverse)
 library(kableExtra)
-cutoffs = read.csv("cutoffs.csv",sep = ',',strip.white = TRUE)
-#cutoffs = knitr::kable(cutoffs)
-cutoffs %>% kbl() %>% kable_styling(bootstrap_options = c("striped","condensed","responsive"))
-```
-
-
-```{r make data table for dada2 stats from qiime, echo=FALSE, message=FALSE, warning=FALSE}
-library(tidyverse)
-library(kableExtra)
-dadastat = read.csv("dada2_stats.tsv",sep = '\t',strip.white = TRUE)
+dadastat = read.csv("results/overall_summary.tsv",sep = '\t',strip.white = TRUE)
 #dadastat_t = dadastat %>% kbl() %>% kable_classic(full_width = F)
 dadastat %>% kbl() %>% kable_styling(bootstrap_options = c("striped","condensed","responsive")) 
-```
-
-```{r table for sampling depth in qiime, echo=FALSE, message=FALSE, warning=FALSE}
-library(tidyverse)
-library(kableExtra)
-depth = read.csv("sampling_depth.csv", sep=",")
-depth %>% kbl() %>% kable_styling(bootstrap_options = c("striped","condensed","responsive"))
 ```
