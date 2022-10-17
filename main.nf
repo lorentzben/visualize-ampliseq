@@ -70,8 +70,9 @@ process ORDERIOI{
         read_metadata = pd.read_table('${metadata}', index_col=0, sep='\t')
 
         iois = list(pd.Series.unique(read_metadata['${ioi}']))
-        ioisdf = pd.DataFrame(iois[1:])
-        ioisdf.columns = ['${ioi}'].sort_values()
+        ioisdf = pd.DataFrame(iois[0:])
+        ioisdf.columns = ['${ioi}']
+        ioisdf = ioisdf.sort_values('${ioi}')
         pd.DataFrame.to_csv(ioisdf, 'order_item_of_interest.csv', index=False)
     """
 }
