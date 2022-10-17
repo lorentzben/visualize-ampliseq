@@ -46,7 +46,7 @@ process ORDERIOI{
 
     input:
     val ioi
-    file 'metadata.tsv'
+    path metadata
     file ord_ioi
 
     output:
@@ -67,7 +67,7 @@ process ORDERIOI{
     except FileNotFoundError:
         # generate the ordered ioi by sorting it and saves it out
 
-        read_metadata = pd.read_table('metadata.tsv', index_col=0, sep='\t')
+        read_metadata = pd.read_table('${metadata}', index_col=0, sep='\t')
 
         iois = list(pd.Series.unique(read_metadata['${ioi}']))
         ioisdf = pd.DataFrame(iois[1:])
