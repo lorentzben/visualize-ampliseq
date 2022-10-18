@@ -146,23 +146,23 @@ mbSet <- mbSet<-PlotTaxaAbundanceBarSamGrp(mbSet, paste0(outdir,"/taxa_alpha_mer
 # subsets top 10/N taxa relative and merges item of interest
 mbSet <- mbSet<-PlotTaxaAbundanceBarSamGrp(mbSet, paste0(outdir,"/taxa_alpha_subset_relative_ioi_",taxa_level),taxa_level,ioi, "none", "barnorm",10,"set3","sum", select_top, "top", "F", "png",dpi=dpi2)
 
-knitr::include_graphics("barplots/taxa_alpha_merge_relative_Phylum.png")
-knitr::include_graphics("barplots/taxa_alpha_subset_relative_Phylum.png")
-knitr::include_graphics("barplots/taxa_alpha_merge_absolute_Phylum.png")
-knitr::include_graphics("barplots/taxa_alpha_subset_absolute_Phylum.png")
-knitr::include_graphics("barplots/taxa_alpha_merge_relative_ioi_Phylum.png")
-knitr::include_graphics("barplots/taxa_alpha_subset_relative_ioi_Phylum.png")
+knitr::include_graphics("figures/barplots/taxa_alpha_merge_relative_Phylum.png")
+knitr::include_graphics("figures/barplots/taxa_alpha_subset_relative_Phylum.png")
+knitr::include_graphics("figures/barplots/taxa_alpha_merge_absolute_Phylum.png")
+knitr::include_graphics("figures/barplots/taxa_alpha_subset_absolute_Phylum.png")
+knitr::include_graphics("figures/barplots/taxa_alpha_merge_relative_ioi_Phylum.png")
+knitr::include_graphics("figures/barplots/taxa_alpha_subset_relative_ioi_Phylum.png")
 ```
 
-![Stacked Bar Plot of Relative Abundance Subsetted Phyla Over 10 count](barplots/taxa_alpha_merge_relative_Phylum.png)
-![Stacked Bar Plot of Relative Abundance top 10 Phyla](barplots/taxa_alpha_subset_relative_Phylum.png)
-![Stacked Bar Plot of Relative Abundance Merged Phyla Over 10 count](barplots/taxa_alpha_merge_absolute_Phylum.png)
-![Stacked Bar Plot of Absolute Abundance top 10 Phyla](barplots/taxa_alpha_subset_absolute_Phylum.png)
+![Stacked Bar Plot of Relative Abundance Subsetted Phyla Over 10 count](figures/barplots/taxa_alpha_merge_relative_Phylum.png)
+![Stacked Bar Plot of Relative Abundance top 10 Phyla](figures/barplots/taxa_alpha_subset_relative_Phylum.png)
+![Stacked Bar Plot of Relative Abundance Merged Phyla Over 10 count](figures/barplots/taxa_alpha_merge_absolute_Phylum.png)
+![Stacked Bar Plot of Absolute Abundance top 10 Phyla](figures/barplots/taxa_alpha_subset_absolute_Phylum.png)
 
-![Stacked Bar Plot of Relative Abundance Merged Phyla over 10 Count Item of interest](barplots/taxa_alpha_merge_relative_ioi_Phylum.png)
+![Stacked Bar Plot of Relative Abundance Merged Phyla over 10 Count Item of interest](figures/barplots/taxa_alpha_merge_relative_ioi_Phylum.png)
 
 
-![Stacked Bar Plot of Relative Abundance top 10 Phyla Merged Item of interest](barplots/taxa_alpha_subset_relative_ioi_Phylum.png)
+![Stacked Bar Plot of Relative Abundance top 10 Phyla Merged Item of interest](figures/barplots/taxa_alpha_subset_relative_ioi_Phylum.png)
 
 ### 1.2 Relative Abundance of Top 10 Genera
 
@@ -198,22 +198,22 @@ mbSet <- mbSet<-PlotTaxaAbundanceBarSamGrp(mbSet, paste0(outdir,"/taxa_alpha_mer
 # subsets top 10/N taxa relative and merges item of interest
 mbSet <- mbSet<-PlotTaxaAbundanceBarSamGrp(mbSet, paste0(outdir,"/taxa_alpha_subset_relative_ioi_",taxa_level),taxa_level,ioi, "none", "barnorm",10,"set3","sum", select_top, "top", "F", "png",dpi=dpi2)
 
-knitr::include_graphics("barplots/taxa_alpha_merge_relative_Genus.png")
-knitr::include_graphics("barplots/taxa_alpha_subset_relative_Genus.png")
-knitr::include_graphics("barplots/taxa_alpha_merge_absolute_Genus.png")
-knitr::include_graphics("barplots/taxa_alpha_subset_absolute_Genus.png")
-knitr::include_graphics("barplots/taxa_alpha_merge_relative_ioi_Genus.png")
-knitr::include_graphics("barplots/taxa_alpha_subset_relative_ioi_Genus.png")
+knitr::include_graphics("figures/barplots/taxa_alpha_merge_relative_Genus.png")
+knitr::include_graphics("figures/barplots/taxa_alpha_subset_relative_Genus.png")
+knitr::include_graphics("figures/barplots/taxa_alpha_merge_absolute_Genus.png")
+knitr::include_graphics("figures/barplots/taxa_alpha_subset_absolute_Genus.png")
+knitr::include_graphics("figures/barplots/taxa_alpha_merge_relative_ioi_Genus.png")
+knitr::include_graphics("figures/barplots/taxa_alpha_subset_relative_ioi_Genus.png")
 ```
 
-![Stacked Bar Plot of Relative Abundance of Merged Genera Over 10 count](barplots/taxa_alpha_merge_relative_Genus.png)
-![Stacked Bar Plot of Relative Abundance top 10 Genera](barplots/taxa_alpha_subset_relative_Genus.png)
-![Stacked Bar Plot of Absolute Abundance of Merged Genera Over 10 count](barplots/taxa_alpha_merge_absolute_Genus.png)
-![Stacked Bar Plot of Absolute Abundance top 10 Genera](barplots/taxa_alpha_subset_absolute_Genus.png)
+![Stacked Bar Plot of Relative Abundance of Merged Genera Over 10 count](figures/barplots/taxa_alpha_merge_relative_Genus.png)
+![Stacked Bar Plot of Relative Abundance top 10 Genera](figures/barplots/taxa_alpha_subset_relative_Genus.png)
+![Stacked Bar Plot of Absolute Abundance of Merged Genera Over 10 count](figures/barplots/taxa_alpha_merge_absolute_Genus.png)
+![Stacked Bar Plot of Absolute Abundance top 10 Genera](figures/barplots/taxa_alpha_subset_absolute_Genus.png)
 
-![Stacked Bar Plot of Relative Abundance Merged Phyla over 10 Count Item of interest](barplots/taxa_alpha_merge_relative_ioi_Genus.png)
+![Stacked Bar Plot of Relative Abundance Merged Phyla over 10 Count Item of interest](figures/barplots/taxa_alpha_merge_relative_ioi_Genus.png)
 
-![Stacked Bar Plot of Relative Abundance top 10 Phyla Merged Item of interest](barplots/taxa_alpha_subset_relative_ioi_Genus.png)
+![Stacked Bar Plot of Relative Abundance top 10 Phyla Merged Item of interest](figures/barplots/taxa_alpha_subset_relative_ioi_Genus.png)
 
 ### 1.3 Relative Abundance of Top 10 Species
 
@@ -249,19 +249,19 @@ mbSet <- mbSet<-PlotTaxaAbundanceBarSamGrp(mbSet, paste0(outdir,"/taxa_alpha_mer
 # subsets top 10/N taxa relative and merges item of interest
 mbSet <- mbSet<-PlotTaxaAbundanceBarSamGrp(mbSet, paste0(outdir,"/taxa_alpha_subset_relative_ioi_",taxa_level),taxa_level,ioi, "none", "barnorm",10,"set3","sum", select_top, "top", "F", "png",dpi=dpi2)
 
-knitr::include_graphics("barplots/taxa_alpha_merge_relative_Species.png")
-knitr::include_graphics("barplots/taxa_alpha_subset_relative_Species.png")
-knitr::include_graphics("barplots/taxa_alpha_merge_absolute_Species.png")
-knitr::include_graphics("barplots/taxa_alpha_subset_absolute_Species.png")
-knitr::include_graphics("barplots/taxa_alpha_merge_relative_ioi_Species.png")
-knitr::include_graphics("barplots/taxa_alpha_subset_relative_ioi_Species.png")
+knitr::include_graphics("figures/barplots/taxa_alpha_merge_relative_Species.png")
+knitr::include_graphics("figures/barplots/taxa_alpha_subset_relative_Species.png")
+knitr::include_graphics("figures/barplots/taxa_alpha_merge_absolute_Species.png")
+knitr::include_graphics("figures/barplots/taxa_alpha_subset_absolute_Species.png")
+knitr::include_graphics("figures/barplots/taxa_alpha_merge_relative_ioi_Species.png")
+knitr::include_graphics("figures/barplots/taxa_alpha_subset_relative_ioi_Species.png")
 ```
 
-![Stacked Bar Plot of Relative Abundance Subsetted Species Over 10 count](barplots/taxa_alpha_merge_relative_Species.png)
-![Stacked Bar Plot of Relative Abundance top 10 Species](barplots/taxa_alpha_subset_relative_Species.png)
-![Stacked bar plot absolute of merged Species with count less than 10 ](barplots/taxa_alpha_merge_absolute_Species.png)
-![Stacked bar plot absolute of top 10 subsetted Species ](barplots/taxa_alpha_subset_absolute_Species.png)
+![Stacked Bar Plot of Relative Abundance Subsetted Species Over 10 count](figures/barplots/taxa_alpha_merge_relative_Species.png)
+![Stacked Bar Plot of Relative Abundance top 10 Species](figures/barplots/taxa_alpha_subset_relative_Species.png)
+![Stacked bar plot absolute of merged Species with count less than 10 ](figures/barplots/taxa_alpha_merge_absolute_Species.png)
+![Stacked bar plot absolute of top 10 subsetted Species ](figures/barplots/taxa_alpha_subset_absolute_Species.png)
 
-![Stacked Bar Plot of Relative Abundance Merged Phyla over 10 Count Item of interest](barplots/taxa_alpha_merge_relative_ioi_Species.png)
+![Stacked Bar Plot of Relative Abundance Merged Phyla over 10 Count Item of interest](figures/barplots/taxa_alpha_merge_relative_ioi_Species.png)
 
-![Stacked Bar Plot of Relative Abundance top 10 Phyla Merged Item of interest](barplots/taxa_alpha_subset_relative_ioi_Species.png)
+![Stacked Bar Plot of Relative Abundance top 10 Phyla Merged Item of interest](figures/barplots/taxa_alpha_subset_relative_ioi_Species.png)
