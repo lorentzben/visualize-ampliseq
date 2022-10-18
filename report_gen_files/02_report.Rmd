@@ -35,14 +35,15 @@ outdir <- outdir_name
   library(gtools)
   tree_filenames <- list.files("phy_trees",pattern="*_image_graph.png",full.names=T)
   tree_filenames <- mixedsort(tree_filenames)
+  tree_filenames <- paste0(getwd(),"/",tree_filenames)
 
   print("The Graphlan generated images are named:")
   print(tree_filenames)
   print("these files can be found in result/graphlan/phylo_trees/*.png")
   list.files()
-  knitr::include_graphics("phy_trees/*.png")
   
-  #include_graphics(tree_filenames)
+  
+  include_graphics(tree_filenames)
   
 #} 
 # 
