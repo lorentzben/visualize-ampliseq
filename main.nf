@@ -271,7 +271,8 @@ process GENERATEBIOMFORGRAPHLAN{
 }
 
 process RUNGRAPHLAN{
-    publishDir "${params.outdir}/graphlan", mode: 'copy'
+    publishDir "${params.outdir}/graphlan", pattern: "*/*.png", mode: 'copy'
+    publishDir "${params.outdir}/html", pattern: "*/*.png", mode: "copy"
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/py2_test:2.0' : 'lorentzb/py2_test:2.0' }"
     //container "docker://lorentzb/py2_test:2.0"
