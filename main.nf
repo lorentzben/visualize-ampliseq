@@ -82,6 +82,7 @@ process ORDERIOI{
 process REPORT01BARPLOT{
 
     publishDir "${params.outdir}/html", pattern: "*.html", mode: "copy"
+    publishDir "${params.outdir}/html", pattern: "*/*.png", mode: "copy"
     publishDir "${params.outdir}", pattern: "*/*.png", mode: "copy"
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/microbiome_analyst:1.1' : 'lorentzb/microbiome_analyst:1.1' }"
