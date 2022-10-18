@@ -37,7 +37,7 @@ shannon <- read.table("results/qiime2/diversity/alpha_diversity/shannon_vector/m
 faith_pd <- read.table("results/qiime2/diversity/alpha_diversity/faith_pd_vector/metadata.tsv", header=TRUE)
 
 obs <- data.frame(obs[c('id','observed_features')])
-evenness <- data.frame(ace[c("id","pielou_evenness")])
+evenness <- data.frame(evenness[c("id","pielou_evenness")])
 shannon <- data.frame(shannon[c('id','shannon_entropy')])
 faith_pd <- data.frame(faith_pd[c("id","faith_pd")])
 
