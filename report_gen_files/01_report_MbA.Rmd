@@ -114,6 +114,7 @@ mbSet<-PerformNormalization(mbSet, "none", "none", "none")
 
 ```{r stacked bar chart at Phylum level, echo=FALSE, fig.height=12, fig.width=18, message=FALSE, warning=FALSE}
 library(MicrobiomeAnalystR)
+library(knitr)
 
 select_top <- 10
 taxa_level <- "Phylum"
@@ -145,7 +146,12 @@ mbSet <- mbSet<-PlotTaxaAbundanceBarSamGrp(mbSet, paste0(outdir,"/taxa_alpha_mer
 # subsets top 10/N taxa relative and merges item of interest
 mbSet <- mbSet<-PlotTaxaAbundanceBarSamGrp(mbSet, paste0(outdir,"/taxa_alpha_subset_relative_ioi_",taxa_level),taxa_level,ioi, "none", "barnorm",10,"set3","sum", select_top, "top", "F", "png",dpi=dpi2)
 
-
+knitr::include_graphics("Figures/taxa_alpha_merge_relative_Phylum.png")
+knitr::include_graphics("Figures/taxa_alpha_subset_relative_Phylum.png")
+knitr::include_graphics("Figures/taxa_alpha_merge_absolute_Phylum.png")
+knitr::include_graphics("Figures/taxa_alpha_subset_absolute_Phylum.png")
+knitr::include_graphics("Figures/taxa_alpha_merge_relative_ioi_Phylum.png")
+knitr::include_graphics("Figures/taxa_alpha_subset_relative_ioi_Phylum.png")
 ```
 
 ![Stacked Bar Plot of Relative Abundance Subsetted Phyla Over 10 count](Figures/taxa_alpha_merge_relative_Phylum.png)
@@ -192,6 +198,12 @@ mbSet <- mbSet<-PlotTaxaAbundanceBarSamGrp(mbSet, paste0(outdir,"/taxa_alpha_mer
 # subsets top 10/N taxa relative and merges item of interest
 mbSet <- mbSet<-PlotTaxaAbundanceBarSamGrp(mbSet, paste0(outdir,"/taxa_alpha_subset_relative_ioi_",taxa_level),taxa_level,ioi, "none", "barnorm",10,"set3","sum", select_top, "top", "F", "png",dpi=dpi2)
 
+knitr::include_graphics("Figures/taxa_alpha_merge_relative_Genus.png")
+knitr::include_graphics("Figures/taxa_alpha_subset_relative_Genus.png")
+knitr::include_graphics("Figures/taxa_alpha_merge_absolute_Genus.png")
+knitr::include_graphics("Figures/taxa_alpha_subset_absolute_Genus.png")
+knitr::include_graphics("Figures/taxa_alpha_merge_relative_ioi_Genus.png")
+knitr::include_graphics("Figures/taxa_alpha_subset_relative_ioi_Genus.png")
 ```
 
 ![Stacked Bar Plot of Relative Abundance of Merged Genera Over 10 count](Figures/taxa_alpha_merge_relative_Genus.png)
@@ -237,6 +249,12 @@ mbSet <- mbSet<-PlotTaxaAbundanceBarSamGrp(mbSet, paste0(outdir,"/taxa_alpha_mer
 # subsets top 10/N taxa relative and merges item of interest
 mbSet <- mbSet<-PlotTaxaAbundanceBarSamGrp(mbSet, paste0(outdir,"/taxa_alpha_subset_relative_ioi_",taxa_level),taxa_level,ioi, "none", "barnorm",10,"set3","sum", select_top, "top", "F", "png",dpi=dpi2)
 
+knitr::include_graphics("Figures/taxa_alpha_merge_relative_Species.png")
+knitr::include_graphics("Figures/taxa_alpha_subset_relative_Species.png")
+knitr::include_graphics("Figures/taxa_alpha_merge_absolute_Species.png")
+knitr::include_graphics("Figures/taxa_alpha_subset_absolute_Species.png")
+knitr::include_graphics("Figures/taxa_alpha_merge_relative_ioi_Species.png")
+knitr::include_graphics("Figures/taxa_alpha_subset_relative_ioi_Species.png")
 ```
 
 ![Stacked Bar Plot of Relative Abundance Subsetted Species Over 10 count](Figures/taxa_alpha_merge_relative_Species.png)
