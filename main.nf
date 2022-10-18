@@ -361,7 +361,7 @@ process REPORT02GRAPHLANPHYLOGENETICTREE{
 
     mkdir phy_trees
 
-    cp -rf phylo_trees/*.png phy_trees
+    cp -Lrf phylo_trees/*.png phy_trees
 
     Rscript -e "rmarkdown::render('02_report.Rmd', output_file='$PWD/02_report_$dt.html', output_format='html_document', clean=TRUE, knit_root_dir='$PWD')"
 
