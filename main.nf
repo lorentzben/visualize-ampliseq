@@ -369,8 +369,8 @@ process REPORT02GRAPHLANPHYLOGENETICTREE{
 
 process REPORT03HEATMAP{
 
-    publishDir "${params.outdir}/html", pattern: "*.html", mSode: "copy"
-    publishDir "${params.outdir}/pdf", pattern: "*.pdf", mSode: "copy"
+    publishDir "${params.outdir}/html", pattern: "*.html", mode: "copy"
+    publishDir "${params.outdir}/pdf", pattern: "*.pdf", mode: "copy"
     publishDir "${params.outdir}/heatmap", pattern: "*/*.png", mode: "copy"
     
 
@@ -406,8 +406,8 @@ process REPORT03HEATMAP{
 
 process REPORT04ALPHATABLE{
 
-    publishDir "${params.outdir}/html", pattern: "*.html", mSode: "copy"
-    publishDir "${params.outdir}/pdf", pattern: "*.pdf", mSode: "copy"
+    publishDir "${params.outdir}/html", pattern: "*.html", mode: "copy"
+    publishDir "${params.outdir}/pdf", pattern: "*.pdf", mode: "copy"
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/r_04:2.0' : 'lorentzb/r_04:2.0' }"
 
