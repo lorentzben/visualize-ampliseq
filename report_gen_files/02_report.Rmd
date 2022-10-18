@@ -39,8 +39,8 @@ outdir <- outdir_name
   print("The Graphlan generated images are named:")
   print(tree_filenames)
   print("these files can be found in result/graphlan/phylo_trees/*.png")
-  
-  include_graphics(tree_filenames)
+  list.files()
+  #include_graphics(tree_filenames)
   
 #} 
 # 
