@@ -42,7 +42,7 @@ outdir <- outdir_name
   list.files()
   
   
-  include_graphics(tree_filenames)
+  #include_graphics(tree_filenames)
   
 #} 
 # 
