@@ -35,6 +35,7 @@ outdir <- outdir_name
   library(gtools)
   tree_filenames <- list.files("phy_trees",pattern="*_image_graph.png",full.names=T)
   tree_filenames <- mixedsort(tree_filenames)
+  setwd(rprojroot::find_rstudio_root_file())
   tree_filenames <- paste0(getwd(),"/",tree_filenames)
 
   print("The Graphlan generated images are named:")
