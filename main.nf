@@ -28,6 +28,7 @@ filter_samples_ch = Channel.fromPath("${projectDir}/python_scripts/filter_sample
 graph_sh_ch = Channel.fromPath("${projectDir}/bash_scripts/graph.sh")
 report_two_ch = Channel.fromPath("${projectDir}/report_gen_files/02_report.Rmd")
 report_three_ch = Channel.fromPath("${projectDir}/report_gen_files/03_report.Rmd")
+report_four_ch = Channel.fromPath("${projectDir}/report_gen_files/04_report.Rmd")
 
 
 workflow {
@@ -38,6 +39,7 @@ workflow {
     graphlan_dir = RUNGRAPHLAN(metadata_ch, ioi_ch, tax_qza, graph_sh_ch, graphlan_biom)
     REPORT02GRAPHLANPHYLOGENETICTREE(graphlan_dir, ioi_ch, report_two_ch)
     REPORT03HEATMAP(input_ch, table_qza, tax_qza, metadata_ch, report_three_ch, ioi_ch, ord_ioi)
+    REPORT04ALPHATABLE(input_ch,ioi_ch,report_four_ch)
 }
 
 process ORDERIOI{
@@ -400,6 +402,38 @@ process REPORT03HEATMAP{
 
     Rscript -e "rmarkdown::render('03_report.Rmd', output_file='$PWD/03_report_$dt.pdf', output_format='pdf_document', clean=TRUE, knit_root_dir='$PWD')"
     '''
+}
+
+process REPORT04ALPHATABLE{
+
+    publishDir "${params.outdir}/html", pattern: "*.html", mSode: "copy"
+    publishDir "${params.outdir}/pdf", pattern: "*.pdf", mSode: "copy"
+
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/r_04:2.0' : 'lorentzb/r_04:2.0' }"
+
+    input: 
+
+    path 'results'
+    file 'item_of_interest.csv'
+    file '04_report.Rmd'
+
+    output:
+
+    file "04_report_*.html"
+    file "04_report_*.pdf"
+     
+    script:
+
+    '''
+    #!/usr/bin/env bash
+   
+    dt=$(date '+%d-%m-%Y_%H.%M.%S');
+
+    Rscript -e "rmarkdown::render('04_report.Rmd', output_file='$PWD/04_report_$dt.html', output_format='html_document', clean=TRUE, knit_root_dir='$PWD')"
+
+    Rscript -e "rmarkdown::render('04_report.Rmd', output_file='$PWD/04_report_$dt.pdf', output_format='pdf_document', clean=TRUE, knit_root_dir='$PWD')"
+    '''
+
 }
 
 
