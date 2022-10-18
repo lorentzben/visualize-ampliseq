@@ -40,7 +40,7 @@ outdir <- outdir_name
   print(tree_filenames)
   print("these files can be found in result/graphlan/phylo_trees/*.png")
   list.files()
-  knitr::include_graphics("phy_trees")
+  knitr::include_graphics("phy_trees/*.png")
   
   #include_graphics(tree_filenames)
   
