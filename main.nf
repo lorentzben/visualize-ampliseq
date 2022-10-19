@@ -14,7 +14,7 @@ log.info """\
          input    : ${params.input }
          metadata : ${params.metadata}
          item of interest : ${params.ioi}
-         ordered item of interst : ${params.ordioi}
+         ordered item of interest : ${params.ordioi}
          outdir   : ${params.outdir}
          profile : ${workflow.profile}
          """
