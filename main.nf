@@ -358,10 +358,10 @@ process REPORT02GRAPHLANPHYLOGENETICTREE{
     file "02_report_*.html"
      
     script:
-    println "Profile: $workflow.profile"
-    if($workflow.profile == 'local')
         '''
         #!/usr/bin/env bash
+
+        echo !{workflow.profile}
    
         dt=$(date '+%d-%m-%Y_%H.%M.%S');
 
@@ -371,10 +371,7 @@ process REPORT02GRAPHLANPHYLOGENETICTREE{
         Rscript -e "rmarkdown::render('02_report_local.Rmd', output_file='$PWD/02_report_local_$dt.html', output_format='html_document',clean=TRUE,  knit_root_dir='$PWD')"
 
         #Rscript -e "rmarkdown::render('02_report_local.Rmd', output_file='$PWD/02_report_local_$dt.pdf', output_format='pdf_document', clean=TRUE, knit_root_dir='$PWD')"
-        '''
-    else if ($workflow.profile == 'slurm')
-        '''
-        #!/usr/bin/env bash
+    
    
         dt=$(date '+%d-%m-%Y_%H.%M.%S');
 
@@ -385,8 +382,7 @@ process REPORT02GRAPHLANPHYLOGENETICTREE{
 
         #Rscript -e "rmarkdown::render('02_report.Rmd', output_file='$PWD/02_report_$dt.pdf', output_format='pdf_document', clean=TRUE, knit_root_dir='$PWD')"
         '''
-    else
-        error "I'm not sure which to run, you must use local or slurm profiles"
+    
 }
 
 process REPORT03HEATMAP{
