@@ -358,7 +358,8 @@ process REPORT02GRAPHLANPHYLOGENETICTREE{
     file "02_report_*.html"
      
     script:
-    if(workflow.profile == 'local')
+    println "Profile: $workflow.profile"
+    if($workflow.profile == 'local')
         '''
         #!/usr/bin/env bash
    
@@ -371,7 +372,7 @@ process REPORT02GRAPHLANPHYLOGENETICTREE{
 
         #Rscript -e "rmarkdown::render('02_report_local.Rmd', output_file='$PWD/02_report_local_$dt.pdf', output_format='pdf_document', clean=TRUE, knit_root_dir='$PWD')"
         '''
-    else if (workflow.profile == 'slurm')
+    else if ($workflow.profile == 'slurm')
         '''
         #!/usr/bin/env bash
    
