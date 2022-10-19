@@ -364,10 +364,8 @@ process REPORT02GRAPHLANPHYLOGENETICTREE{
    
     dt=$(date '+%d-%m-%Y_%H.%M.%S');
 
-    mkdir phy_trees
-
-    cp -Lrf phylo_trees/*.png phy_trees
-
+    ls -lrt
+    
     Rscript -e "rmarkdown::render('02_report.Rmd', output_file='$PWD/02_report_$dt.html', output_format='html_document',clean=TRUE,  knit_root_dir='$PWD')"
 
     #Rscript -e "rmarkdown::render('02_report.Rmd', output_file='$PWD/02_report_$dt.pdf', output_format='pdf_document', clean=TRUE, knit_root_dir='$PWD')"
