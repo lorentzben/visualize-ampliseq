@@ -473,8 +473,8 @@ process REPORT05ALPHABOXPLOT{
 
     output:
 
-    file "04_report_*.html"
-    file "04_report_*.pdf"
+    file "05_report_*.html"
+    file "05_report_*.pdf"
     path "alpha_diversity_boxplot"
      
     script:
