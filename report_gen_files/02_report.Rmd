@@ -33,7 +33,8 @@ outdir <- outdir_name
 #if(getOutputFormat() == 'html_document') {
   library(knitr)
   library(gtools)
-  tree_filenames <- list.files(paste0(getwd(),"phylo_trees"),pattern="*_image_graph.png",full.names=T)
+  pwd <- getwd()
+  tree_filenames <- list.files(paste0(pwd,"/phylo_trees"),pattern="*_image_graph.png",full.names=T)
   tree_filenames <- mixedsort(tree_filenames)
   
   print("The Graphlan generated images are named:")
