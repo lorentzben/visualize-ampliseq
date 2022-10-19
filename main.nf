@@ -364,7 +364,7 @@ process REPORT02GRAPHLANPHYLOGENETICTREE{
    
     dt=$(date '+%d-%m-%Y_%H.%M.%S');
 
-    ls -lrt
+    ls -lRh
     echo $PWD
     
     Rscript -e "rmarkdown::render('02_report.Rmd', output_file='$PWD/02_report_$dt.html', output_format='html_document',clean=TRUE,  knit_root_dir='$PWD')"
