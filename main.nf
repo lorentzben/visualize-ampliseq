@@ -16,6 +16,7 @@ log.info """\
          item of interest : ${params.ioi}
          ordered item of interst : ${params.ordioi}
          outdir   : ${params.outdir}
+         profile : ${workflow.profile}
          """
          .stripIndent()
 
@@ -361,7 +362,7 @@ process REPORT02GRAPHLANPHYLOGENETICTREE{
         '''
         #!/usr/bin/env bash
 
-        echo !{workflow.profile}
+        echo "!{workflow.profile}"
    
         dt=$(date '+%d-%m-%Y_%H.%M.%S');
 
