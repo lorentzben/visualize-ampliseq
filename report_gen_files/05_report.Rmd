@@ -26,14 +26,12 @@ ioi_ord <- read.csv("order_item_of_interest.csv")
 colnames(ioi_ord) <- ioi
 ioi_ord <- as.list(ioi_ord)[[ioi]]
 
-outdir_name <- "Figures"
+outdir_name <- "alpha_diversity_boxplot"
 if(!dir.exists(outdir_name)) {dir.create(outdir_name)}
 outdir <- outdir_name
 ```
 
 ## 5 Alpha Diversity Plot 
-
-
 
 
 ### 5.1 Observed Features 
@@ -44,7 +42,9 @@ library(ggplot2)
 #subsets and plots observed features in a boxplot format
 ioi <- readLines("item_of_interest.csv")
 ioi<-as.character(ioi)
-obs_vals = read.csv("obs/metadata.tsv", sep='\t')
+obs_vals <- read.table("results/qiime2/diversity/alpha_diversity/observed_features_vector/metadata.tsv", header = TRUE)
+#TODO remove this line if not needed
+#obs_vals = read.csv("obs/metadata.tsv", sep='\t')
 dims = dim(obs_vals)
 obs_vals <- data.frame(obs_vals[2:dims[1],])
 obs_vals[[ioi]] <- factor(obs_vals[[ioi]], levels=ioi_ord)
@@ -72,7 +72,9 @@ library(tidyverse)
 library(rstatix)
 library(ggplot2)
 
-obs <- read.table("obs/metadata.tsv", header = TRUE)
+obs <- read.table("results/qiime2/diversity/alpha_diversity/observed_features_vector/metadata.tsv", header = TRUE)
+#TODO remove this line if not needed
+#obs <- read.table("obs/metadata.tsv", header = TRUE)
 obs_stat <- data.frame(obs[c('id',ioi,'observed_features')])
 
 obs_vals[[ioi]] <- factor(obs_vals[[ioi]], levels=ioi_ord)
@@ -112,7 +114,10 @@ ggsave("obs_boxplot_w_signif.png", plot=p, path=outdir)
 ```{r alpha diversity plot of shannon diversity, echo=FALSE, message=FALSE, warning=FALSE}
 library(ggplot2)
 
-shannon_vals <- read.table("shannon/metadata.tsv",sep = '\t', header = TRUE)
+
+shannon_vals <- read.table("results/qiime2/diversity/alpha_diversity/shannon_vector/metadata.tsv", header = TRUE)
+#TODO remove if not needed
+#shannon_vals <- read.table("shannon/metadata.tsv",sep = '\t', header = TRUE)
 dims = dim(shannon_vals)
 shannon_vals <- data.frame(shannon_vals[2:dims[1],])
 shannon_vals[[ioi]] <- factor(shannon_vals[[ioi]], levels=ioi_ord)
@@ -138,7 +143,10 @@ library(ggpubr)
 library(tidyverse)
 library(ggplot2)
 
-shannon <- read.table("shannon/metadata.tsv", header = TRUE, sep='\t')
+
+shannon <- read.table("results/qiime2/diversity/alpha_diversity/shannon_vector/metadata.tsv", header = TRUE)
+#TODO remove if not needed
+#shannon <- read.table("shannon/metadata.tsv", header = TRUE, sep='\t')
 shannon_stat <- data.frame(shannon[c('id',ioi,'shannon_entropy')])
 
 shannon_vals[[ioi]] <- factor(shannon_vals[[ioi]], levels=ioi_ord)
@@ -171,28 +179,30 @@ ggsave("shannon_boxplot_w_signif.png", plot=p, path=outdir)
 
 
 
-### 5.3 Simpson
+### 5.3 Evenness
 
-```{r alpha diversity plot of simpson diversity, echo=FALSE, message=FALSE, warning=FALSE}
+```{r alpha diversity plot of evenness diversity, echo=FALSE, message=FALSE, warning=FALSE}
 library(ggplot2) 
 
-simpson_vals <- read.table("simpson/metadata.tsv",sep = '\t', header = TRUE)
-dims = dim(simpson_vals)
-simpson_vals <- data.frame(simpson_vals[2:dims[1],])
-simpson_vals[[ioi]] <- factor(simpson_vals[[ioi]],levels=ioi_ord)
-simpson_vals$simpson <- as.numeric(as.character(simpson_vals$simpson))
-simpson_boxplot <- ggplot(simpson_vals, aes_string(x=simpson_vals[[ioi]], y=simpson_vals$simpson, fill=ioi)) + geom_boxplot() + ylab("Simpson") + theme_bw() + xlab(ioi)
-simpson_boxplot
 
-ggsave("simpson_boxplot.png", plot=simpson_boxplot, path=outdir)
+evenness_vals <- read.table("results/qiime2/diversity/alpha_diversity/evenness_vector/metadata.tsv", header=TRUE)
 
-p <- ggplot(simpson_vals, aes(x=simpson_vals[[ioi]], y=simpson)) + geom_violin()+ geom_boxplot(width=0.1)
+dims = dim(evenness_vals)
+evenness_vals <- data.frame(evenness_vals[2:dims[1],])
+evenness_vals[[ioi]] <- factor(evenness_vals[[ioi]],levels=ioi_ord)
+evenness_vals$simpson <- as.numeric(as.character(evenness_vals$pielou_evenness))
+evenness_boxplot <- ggplot(evenness_vals, aes_string(x=evenness_vals[[ioi]], y=evenness_vals$pielou_evenness, fill=ioi)) + geom_boxplot() + ylab("Evenness") + theme_bw() + xlab(ioi)
+evenness_boxplot
+
+ggsave("evenness_boxplot.png", plot=evenness_boxplot, path=outdir)
+
+p <- ggplot(evenness_vals, aes(x=evenness_vals[[ioi]], y=pielou_evenness)) + geom_violin()+ geom_boxplot(width=0.1)
 p<- p + stat_summary(fun.y=mean, geom="point", shape=23, size=2)
 p<-p + stat_summary(fun.y=median, geom="point", size=2, color="red")
-p <- p+geom_jitter(shape=16, position=position_jitter(0.2)) + xlab(ioi) + ylab("Simpson") + theme_bw()
+p <- p+geom_jitter(shape=16, position=position_jitter(0.2)) + xlab(ioi) + ylab("Evenness") + theme_bw()
 p
 
-ggsave("simpson_violin_plot.png", plot=p, path=outdir)
+ggsave("evenness_violin_plot.png", plot=p, path=outdir)
 ```
 
 ```{r Kuskal-Wallace test for significance simpson,results = "asis", echo=FALSE, message=FALSE, warning=FALSE}
@@ -202,173 +212,44 @@ library(ggpubr)
 library(tidyverse)
 library(ggplot2)
 
-simpson <- read.table("simpson/metadata.tsv", header = TRUE, sep='\t')
-simpson_stat <- data.frame(simpson[c('id',ioi,'simpson')])
+evenness <- read.table("results/qiime2/diversity/alpha_diversity/evenness_vector/metadata.tsv", header=TRUE)
+evenness_stat <- data.frame(evenness[c('id',ioi,'pielou_evenness')])
 
-simpson_vals[[ioi]] <- factor(simpson_vals[[ioi]], levels=ioi_ord)
+evenness_vals[[ioi]] <- factor(evenness_vals[[ioi]], levels=ioi_ord)
 
-form <- as.formula(paste0("simpson ~ ", ioi))
-kruskal_table <- rstatix::kruskal_test(data = simpson_stat, formula = form)
+form <- as.formula(paste0("pielou_evenness ~ ", ioi))
+kruskal_table <- rstatix::kruskal_test(data = evenness_stat, formula = form)
 kruskal_table <- add_significance(kruskal_table, p.col="p",output.col = "p.signif",symbols =c("****", "***", "**", "$*$", "ns"))
 kable(kruskal_table) %>% 
   kable_styling(bootstrap_options = c("hover", "condensed", "responsive"))
 
-form = as.formula(paste0("simpson ~", ioi))
+form = as.formula(paste0("pielou_evenness ~", ioi))
 
-dunn_table <- rstatix::dunn_test(data = simpson_stat, formula = form, p.adjust.method = "holm") 
+dunn_table <- rstatix::dunn_test(data = evenness_stat, formula = form, p.adjust.method = "holm") 
 dunn_table<- add_significance(dunn_table, p.col="p.adj",output.col = "p.adj.signif",symbols =c("****", "***", "**", "$*$", "ns"))
 kable(dunn_table) %>% 
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
 
 dunn_table <- dunn_table %>% add_xy_position()
 
-p <- ggplot(simpson_vals, aes(x=simpson_vals[[ioi]], y=simpson)) + geom_violin()+ geom_boxplot(width=0.1)
+p <- ggplot(evenness_vals, aes(x=evenness_vals[[ioi]], y=pielou_evenness)) + geom_violin()+ geom_boxplot(width=0.1)
 p<- p + stat_summary(fun.y=mean, geom="point", shape=23, size=2)
 p<-p + stat_summary(fun.y=median, geom="point", size=2, color="red")
-p <- p+geom_jitter(shape=16, position=position_jitter(0.2)) + xlab(ioi) + ylab("Simpson") + theme_bw()
+p <- p+geom_jitter(shape=16, position=position_jitter(0.2)) + xlab(ioi) + ylab("Evenness") + theme_bw()
 dunn_table<- add_significance(dunn_table, p.col="p.adj",output.col = "p.adj.signif")
 p <- p+ stat_pvalue_manual(dunn_table, label = "p.adj.signif", hide.ns = TRUE)
 p
-ggsave("simpson_boxplot_w_signif.png", plot=p, path=outdir)
+ggsave("evenness_boxplot_w_signif.png", plot=p, path=outdir)
 ```
 
-
-
-
-### 5.4 Chao 1
-
-```{r alpha diversity plot of Chao 1 diversity, echo=FALSE, message=FALSE, warning=FALSE}
-library(ggplot2)
-
-chao1_vals <- read.table("chao1/metadata.tsv",sep = '\t', header = TRUE)
-dims = dim(chao1_vals)
-chao1_vals <- data.frame(chao1_vals[2:dims[1],])
-chao1_vals[[ioi]] <- factor(chao1_vals[[ioi]], levels=ioi_ord)
-chao1_vals$chao1 <- as.numeric(as.character(chao1_vals$chao1))
-chao1_boxplot <- ggplot(chao1_vals, aes_string(x=chao1_vals[[ioi]], y=chao1_vals$chao1, fill=ioi)) + geom_boxplot() + ylab("Chao 1") + theme_bw() + xlab(ioi)
-chao1_boxplot
-
-ggsave("chao1_boxplot.png", plot=chao1_boxplot, path=outdir)
-
-p <- ggplot(chao1_vals, aes(x=chao1_vals[[ioi]], y=chao1)) + geom_violin()+ geom_boxplot(width=0.1)
-p<- p + stat_summary(fun.y=mean, geom="point", shape=23, size=2)
-p<-p + stat_summary(fun.y=median, geom="point", size=2, color="red")
-p <- p+geom_jitter(shape=16, position=position_jitter(0.2)) + xlab(ioi) + ylab("Chao 1") + theme_bw()
-p
-
-ggsave("chao1_violin_plot.png", plot=p, path=outdir)
-```
-
-```{r Kuskal-Wallace test for significance chao1,results = "asis", echo=FALSE, message=FALSE, warning=FALSE}
-library(rstatix)
-library(kableExtra)
-library(ggpubr)
-library(tidyverse)
-library(ggplot2)
-
-chao1 <- read.table("chao1/metadata.tsv", header = TRUE, sep='\t')
-chao1_stat <- data.frame(chao1[c('id',ioi,'chao1')])
-
-chao1_vals[[ioi]] <- factor(chao1_vals[[ioi]], levels=ioi_ord)
-
-form <- as.formula(paste0("chao1 ~ ", ioi))
-kruskal_table <- rstatix::kruskal_test(data = chao1_stat , formula = form)
-kruskal_table <- add_significance(kruskal_table, p.col="p",output.col = "p.signif",symbols =c("****", "***", "**", "$*$", "ns"))
-kable(kruskal_table) %>% 
-  kable_styling(bootstrap_options = c("hover", "condensed", "responsive"))
-
-form = as.formula(paste0("chao1 ~", ioi))
-
-dunn_table <- rstatix::dunn_test(data = chao1_stat, formula = form, p.adjust.method = "holm") 
-dunn_table<- add_significance(dunn_table, p.col="p.adj",output.col = "p.adj.signif",symbols =c("****", "***", "**", "$*$", "ns"))
-kable(dunn_table) %>% 
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
-
-dunn_table <- dunn_table %>% add_xy_position()
-
-p <- ggplot(chao1_vals, aes(x=chao1_vals[[ioi]], y=chao1)) + geom_violin()+ geom_boxplot(width=0.1)
-p<- p + stat_summary(fun.y=mean, geom="point", shape=23, size=2)
-p<-p + stat_summary(fun.y=median, geom="point", size=2, color="red")
-p <- p+geom_jitter(shape=16, position=position_jitter(0.2)) + xlab(ioi) + ylab("Chao 1") + theme_bw()
-dunn_table<- add_significance(dunn_table, p.col="p.adj",output.col = "p.adj.signif")
-p <- p+stat_pvalue_manual(dunn_table, label="p.adj.signif", hide.ns = TRUE)
-p
-ggsave("chao1_boxplot_w_signif.png", plot=p, path=outdir)
-```
-
-
-
-
-### 5.5 ACE
-
-```{r alpha diversity plot of ACE diversity, echo=FALSE, message=FALSE, warning=FALSE}
-library(ggplot2)
-
-ace_vals <- read.table("ace/metadata.tsv",sep = '\t', header = TRUE)
-dims = dim(ace_vals)
-ace_vals <- data.frame(ace_vals[2:dims[1],])
-ace_vals[[ioi]] <- factor(ace_vals[[ioi]], levels=ioi_ord)
-ace_vals$ace <- as.numeric(as.character(ace_vals$ace))
-ace_boxplot <- ggplot(ace_vals, aes_string(x=ace_vals[[ioi]], y=ace_vals$ace, fill=ioi)) + geom_boxplot() + ylab("ACE") + theme_bw() + xlab(ioi)
-ace_boxplot
-
-ggsave("ace_boxplot.png", plot=ace_boxplot, path=outdir)
-
-p <- ggplot(ace_vals, aes(x=ace_vals[[ioi]], y=ace)) + geom_violin()+ geom_boxplot(width=0.1)
-p<- p + stat_summary(fun.y=mean, geom="point", shape=23, size=2)
-p<-p + stat_summary(fun.y=median, geom="point", size=2, color="red")
-p <- p+geom_jitter(shape=16, position=position_jitter(0.2)) + xlab(ioi) + ylab("ACE") + theme_bw()
-p
-
-ggsave("ace_violin_plot.png", plot=p, path=outdir)
-```
-
-```{r Kuskal-Wallace test for significance ace,results = "asis", echo=FALSE, message=FALSE, warning=FALSE}
-library(rstatix)
-library(kableExtra)
-library(ggpubr)
-library(tidyverse)
-library(ggplot2)
-
-ace <- read.table("ace/metadata.tsv", header = TRUE, sep='\t')
-ace_stat <- data.frame(ace[c('id',ioi,'ace')])
-
-ace_vals[[ioi]] <- factor(ace_vals[[ioi]], levels=ioi_ord)
-
-form <- as.formula(paste0("ace ~ ", ioi))
-kruskal_table <- rstatix::kruskal_test(data = ace_stat, formula = form)
-kruskal_table <- add_significance(kruskal_table, p.col="p",output.col = "p.signif",symbols =c("****", "***", "**", "$*$", "ns"))
-kable(kruskal_table) %>% 
-  kable_styling(bootstrap_options = c("hover", "condensed", "responsive"))
-
-form = as.formula(paste0("ace ~", ioi))
-
-dunn_table <- rstatix::dunn_test(data = ace_stat, formula = form, p.adjust.method = "holm") 
-dunn_table<- add_significance(dunn_table, p.col="p.adj",output.col = "p.adj.signif",symbols =c("****", "***", "**", "$*$", "ns"))
-kable(dunn_table) %>% 
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
-
-dunn_table <- dunn_table %>% add_xy_position()
-
-p <- ggplot(ace_vals, aes(x=ace_vals[[ioi]], y=ace)) + geom_violin()+ geom_boxplot(width=0.1)
-p<- p + stat_summary(fun.y=mean, geom="point", shape=23, size=2)
-p<-p + stat_summary(fun.y=median, geom="point", size=2, color="red")
-p <- p+geom_jitter(shape=16, position=position_jitter(0.2)) + xlab(ioi) + ylab("ACE") + theme_bw()
-dunn_table<- add_significance(dunn_table, p.col="p.adj",output.col = "p.adj.signif")
-p <- p+ stat_pvalue_manual(dunn_table, label = "p.adj.signif", hide.ns = TRUE)
-p
-ggsave("ace_boxplot_w_signif.png", plot=p, path=outdir)
-```
-
-
-
-
-### 5.6 Phylogenetic Distance Over The whole Tree
+### 5.4 Phylogenetic Distance Over The whole Tree
 
 ```{r alpha diversity plot of PD_whole_tree, echo=FALSE, message=FALSE, warning=FALSE}
 library(ggplot2)
 
-faith_pd_vals <- read.table("faith_pd/metadata.tsv",sep = '\t', header = TRUE)
+faith_pd_vals <- read.table("results/qiime2/diversity/alpha_diversity/faith_pd_vector/metadata.tsv", header=TRUE)
+#TODO remove if not needed
+#faith_pd_vals <- read.table("faith_pd/metadata.tsv",sep = '\t', header = TRUE)
 dims = dim(faith_pd_vals)
 faith_pd_vals <- data.frame(faith_pd_vals[2:dims[1],])
 faith_pd_vals[[ioi]] <- factor(faith_pd_vals[[ioi]], levels=ioi_ord)
@@ -394,7 +275,9 @@ library(ggpubr)
 library(tidyverse)
 library(ggplot2)
 
-faith_pd <- read.table("faith_pd/metadata.tsv", header = TRUE, sep='\t')
+faith_pd <- read.table("results/qiime2/diversity/alpha_diversity/faith_pd_vector/metadata.tsv", header=TRUE)
+#TODO remove if not needed
+#faith_pd <- read.table("faith_pd/metadata.tsv", header = TRUE, sep='\t')
 faith_pd_stat <- data.frame(faith_pd[c('id',ioi,'faith_pd')])
 
 faith_pd_vals[[ioi]] <- factor(faith_pd_vals[[ioi]], levels=ioi_ord)

@@ -31,6 +31,7 @@ report_two_ch = Channel.fromPath("${projectDir}/report_gen_files/02_report.Rmd")
 report_two_local_ch = Channel.fromPath("${projectDir}/report_gen_files/02_report_local.Rmd")
 report_three_ch = Channel.fromPath("${projectDir}/report_gen_files/03_report.Rmd")
 report_four_ch = Channel.fromPath("${projectDir}/report_gen_files/04_report.Rmd")
+report_five_ch = Channel.fromPath("${projectDir}/report_gen_files/05_report.Rmd")
 
 
 workflow {
@@ -42,6 +43,7 @@ workflow {
     REPORT02GRAPHLANPHYLOGENETICTREE(graphlan_dir, ioi_ch, report_two_ch,report_two_local_ch)
     REPORT03HEATMAP(input_ch, table_qza, tax_qza, metadata_ch, report_three_ch, ioi_ch, ord_ioi)
     REPORT04ALPHATABLE(input_ch,ioi_ch,report_four_ch)
+    REPORT05ALPHABOXPLOT(input_ch, ioi_ch, ord_ioi_ch, report_five_ch)
 }
 
 process ORDERIOI{
@@ -453,6 +455,39 @@ process REPORT04ALPHATABLE{
     Rscript -e "rmarkdown::render('04_report.Rmd', output_file='$PWD/04_report_$dt.pdf', output_format='pdf_document', clean=TRUE, knit_root_dir='$PWD')"
     '''
 
+}
+
+process REPORT05ALPHABOXPLOT{
+    publishDir "${params.outdir}/html", pattern: "*.html", mode: "copy"
+    publishDir "${params.outdir}/pdf", pattern: "*.pdf", mode: "copy"
+    publishDir "${params.outdir}", pattern: "*/*.png", mode: "copy"
+
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/r_05:2.0' : 'lorentzb/r_05:2.0' }"
+
+    input: 
+
+    path 'results'
+    file 'item_of_interest.csv'
+    file 'order_item_of_interest.csv'
+    file '05_report.Rmd'
+
+    output:
+
+    file "04_report_*.html"
+    file "04_report_*.pdf"
+    path "alpha_diversity_boxplot"
+     
+    script:
+
+    '''
+    #!/usr/bin/env bash
+   
+    dt=$(date '+%d-%m-%Y_%H.%M.%S');
+
+    Rscript -e "rmarkdown::render('05_report.Rmd', output_file='$PWD/05_report_$dt.html', output_format='html_document', clean=TRUE, knit_root_dir='$PWD')"
+
+    Rscript -e "rmarkdown::render('05_report.Rmd', output_file='$PWD/05_report_$dt.pdf', output_format='pdf_document', clean=TRUE, knit_root_dir='$PWD')"
+    '''
 }
 
 
