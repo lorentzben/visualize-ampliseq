@@ -27,6 +27,7 @@ report_one_ch = Channel.fromPath("${projectDir}/report_gen_files/01_report_MbA.R
 filter_samples_ch = Channel.fromPath("${projectDir}/python_scripts/filter_samples.py")
 graph_sh_ch = Channel.fromPath("${projectDir}/bash_scripts/graph.sh")
 report_two_ch = Channel.fromPath("${projectDir}/report_gen_files/02_report.Rmd")
+report_two_local_ch = Channel.fromPath("${projectDir}/report_gen_files/02_report_local.Rmd")
 report_three_ch = Channel.fromPath("${projectDir}/report_gen_files/03_report.Rmd")
 report_four_ch = Channel.fromPath("${projectDir}/report_gen_files/04_report.Rmd")
 
@@ -37,7 +38,7 @@ workflow {
     tax_qza = REFORMATANDQZATAX(input_ch)
     (graphlan_biom, table_qza) = GENERATEBIOMFORGRAPHLAN(metadata_ch, ioi_ch, input_ch, filter_samples_ch, tax_qza)
     graphlan_dir = RUNGRAPHLAN(metadata_ch, ioi_ch, tax_qza, graph_sh_ch, graphlan_biom)
-    REPORT02GRAPHLANPHYLOGENETICTREE(graphlan_dir, ioi_ch, report_two_ch)
+    REPORT02GRAPHLANPHYLOGENETICTREE(graphlan_dir, ioi_ch, report_two_ch,report_two_local_ch)
     REPORT03HEATMAP(input_ch, table_qza, tax_qza, metadata_ch, report_three_ch, ioi_ch, ord_ioi)
     REPORT04ALPHATABLE(input_ch,ioi_ch,report_four_ch)
 }
@@ -350,25 +351,39 @@ process REPORT02GRAPHLANPHYLOGENETICTREE{
     path "phylo_trees/*" 
     file 'item_of_interest.csv'
     file "02_report.Rmd"
+    file "02_report_local.Rmd"
 
     output:
 
     file "02_report_*.html"
      
     script:
-
-    '''
-    #!/usr/bin/env bash
+    if(workflow.profile == 'local')
+        '''
+        #!/usr/bin/env bash
    
-    dt=$(date '+%d-%m-%Y_%H.%M.%S');
+        dt=$(date '+%d-%m-%Y_%H.%M.%S');
 
-    ls -lRh
-    echo $PWD
+        ls -lRh
+        echo $PWD
     
-    Rscript -e "rmarkdown::render('02_report.Rmd', output_file='$PWD/02_report_$dt.html', output_format='html_document',clean=TRUE,  knit_root_dir='$PWD')"
+        Rscript -e "rmarkdown::render('02_report_local.Rmd', output_file='$PWD/02_report_local_$dt.html', output_format='html_document',clean=TRUE,  knit_root_dir='$PWD')"
 
-    #Rscript -e "rmarkdown::render('02_report.Rmd', output_file='$PWD/02_report_$dt.pdf', output_format='pdf_document', clean=TRUE, knit_root_dir='$PWD')"
-    '''
+        #Rscript -e "rmarkdown::render('02_report_local.Rmd', output_file='$PWD/02_report_local_$dt.pdf', output_format='pdf_document', clean=TRUE, knit_root_dir='$PWD')"
+        '''
+    else if (workflow.profile == 'slurm')
+        '''
+        #!/usr/bin/env bash
+   
+        dt=$(date '+%d-%m-%Y_%H.%M.%S');
+
+        ls -lRh
+        echo $PWD
+    
+        Rscript -e "rmarkdown::render('02_report.Rmd', output_file='$PWD/02_report_$dt.html', output_format='html_document',clean=TRUE,  knit_root_dir='$PWD')"
+
+        #Rscript -e "rmarkdown::render('02_report.Rmd', output_file='$PWD/02_report_$dt.pdf', output_format='pdf_document', clean=TRUE, knit_root_dir='$PWD')"
+        '''
 }
 
 process REPORT03HEATMAP{
