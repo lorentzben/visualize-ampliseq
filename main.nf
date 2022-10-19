@@ -384,6 +384,8 @@ process REPORT02GRAPHLANPHYLOGENETICTREE{
 
         #Rscript -e "rmarkdown::render('02_report.Rmd', output_file='$PWD/02_report_$dt.pdf', output_format='pdf_document', clean=TRUE, knit_root_dir='$PWD')"
         '''
+    else
+        error "I'm not sure which to run, you must use local or slurm profiles"
 }
 
 process REPORT03HEATMAP{
