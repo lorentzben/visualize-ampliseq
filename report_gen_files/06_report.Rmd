@@ -126,14 +126,14 @@ library(dplyr)
 library(ggplot2)
 library(ggConvexHull)
 
-table_dada2 <- "core-metric-results/rarefied_table.qza"
-rooted_tree <- "rooted-tree.qza"
+table_dada2 <- "feature-table.qza"
+rooted_tree <- "results/qiime2/phylogenetic_tree/rooted-tree.qza"
 taxonomy_file <- "taxonomy.qza"
 metadata_file <- "metadata.tsv"
 
 metadata<-read_q2metadata(metadata_file)
 metadata[[ioi]] <- factor(metadata[[ioi]], levels=ioi_ord)
-bray_pcoa <- qiime2R::read_qza("core-metric-results/bray_curtis_pcoa_results.qza")
+bray_pcoa <- qiime2R::read_qza("results/qiime2/diversity/beta_diversity/bray_curtis_pcoa_results.qza")
 shannon<-qiime2R::read_qza("core-metric-results/shannon_vector.qza")
 shannon <- shannon$data %>% rownames_to_column("SampleID")
 

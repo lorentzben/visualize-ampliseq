@@ -48,7 +48,7 @@ workflow {
     REPORT05ALPHABOXPLOT(input_ch, ioi_ch, ord_ioi, report_five_ch)
     COREMETRIC(metadata_ch, table_qza, input_ch, count_minmax_ch)
     COREMETRIC.out.pcoa.view()
-    //REPORT06ORDINATION(table_qza, input_ch, ioi_ch, ord_ioi, report_six_ch, tax_qza, metadata_ch)
+    REPORT06ORDINATION(table_qza, input_ch, ioi_ch, ord_ioi, report_six_ch, tax_qza, metadata_ch, COREMETRIC.out.pcoa, COREMETRIC.out.vector)
 }
 
 process ORDERIOI{
@@ -555,6 +555,8 @@ process REPORT06ORDINATION{
     file '06_report.Rmd'
     file 'taxonomy.qza'
     file 'metadata.tsv'
+    path pcoas
+    path vectors
 
     output:
 
