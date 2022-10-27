@@ -33,6 +33,8 @@ report_three_ch = Channel.fromPath("${projectDir}/report_gen_files/03_report.Rmd
 report_four_ch = Channel.fromPath("${projectDir}/report_gen_files/04_report.Rmd")
 report_five_ch = Channel.fromPath("${projectDir}/report_gen_files/05_report.Rmd")
 
+report_six_ch = Channel.fromPath("${projectDir}/report_gen_files/06_report.Rmd")
+
 
 workflow {
     ord_ioi = ORDERIOI(ioi_ch, metadata_ch, ord_ioi_ch)
@@ -40,10 +42,13 @@ workflow {
     tax_qza = REFORMATANDQZATAX(input_ch)
     (graphlan_biom, table_qza) = GENERATEBIOMFORGRAPHLAN(metadata_ch, ioi_ch, input_ch, filter_samples_ch, tax_qza)
     graphlan_dir = RUNGRAPHLAN(metadata_ch, ioi_ch, tax_qza, graph_sh_ch, graphlan_biom)
-    REPORT02GRAPHLANPHYLOGENETICTREE(graphlan_dir, ioi_ch, report_two_ch,report_two_local_ch)
+    REPORT02GRAPHLANPHYLOGENETICTREE(graphlan_dir, ioi_ch, report_two_ch, report_two_local_ch)
     REPORT03HEATMAP(input_ch, table_qza, tax_qza, metadata_ch, report_three_ch, ioi_ch, ord_ioi)
     REPORT04ALPHATABLE(input_ch,ioi_ch,report_four_ch)
     REPORT05ALPHABOXPLOT(input_ch, ioi_ch, ord_ioi, report_five_ch)
+    COREMETRIC(metadata_ch, table_qza, input_ch)
+    COREMETRIC.poca.view()
+    //REPORT06ORDINATION(table_qza, input_ch, ioi_ch, ord_ioi, report_six_ch, tax_qza, metadata_ch)
 }
 
 process ORDERIOI{
@@ -487,6 +492,85 @@ process REPORT05ALPHABOXPLOT{
     Rscript -e "rmarkdown::render('05_report.Rmd', output_file='$PWD/05_report_$dt.html', output_format='html_document', clean=TRUE, knit_root_dir='$PWD')"
 
     Rscript -e "rmarkdown::render('05_report.Rmd', output_file='$PWD/05_report_$dt.pdf', output_format='pdf_document', clean=TRUE, knit_root_dir='$PWD')"
+    '''
+}
+
+process COREMETRIC{
+
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/automate_16_nf:2.0' : 'lorentzb/automate_16_nf:2.0' }"
+
+    input:
+
+    path(metadata)
+    path(table)
+    path 'results'
+    
+
+    output:
+
+    path("diversity_core/*_pcoa_results.qza")   , emit: pcoa
+    path("diversity_core/*_vector.qza")         , emit: vector
+    path("diversity_core/*_distance_matrix.qza"), emit: distance
+    path("*rarefaction.txt") , emit: depth
+
+    script:
+
+    """
+    #!/usr/bin/env bash
+
+    uncompress_table='results/qiime2/abundance_tables/feature-table.tsv'
+
+    mindepth=\$(count_table_minmax_reads.py $uncompress_table minimum 2>&1)
+    if [ \"\$mindepth\" -gt \"10000\" ]; then echo \$mindepth >\"Use the sampling depth of \$mindepth for rarefaction.txt\" ; fi
+    if [ \"\$mindepth\" -lt \"10000\" -a \"\$mindepth\" -gt \"5000\" ]; then echo \$mindepth >\"WARNING The sampling depth of \$mindepth is quite small for rarefaction.txt\" ; fi
+    if [ \"\$mindepth\" -lt \"5000\" -a \"\$mindepth\" -gt \"1000\" ]; then echo \$mindepth >\"WARNING The sampling depth of \$mindepth is very small for rarefaction.txt\" ; fi
+    if [ \"\$mindepth\" -lt \"1000\" ]; then echo \$mindepth >\"WARNING The sampling depth of \$mindepth seems too small for rarefaction.txt\" ; fi
+
+    qiime diversity core-metrics-phylogenetic \
+        --m-metadata-file ${metadata} \
+        --i-phylogeny results/qiime2/phylogenetic_tree/rooted-tree.qza \
+        --i-table ${table} \
+        --p-sampling-depth \$mindepth \
+        --output-dir diversity_core \
+        --p-n-jobs-or-threads ${task.cpus} \
+        --verbose
+    """
+}
+
+process REPORT06ORDINATION{
+
+    publishDir "${params.outdir}/html", pattern: "*.html", mode: "copy"
+    publishDir "${params.outdir}/pdf", pattern: "*.pdf", mode: "copy"
+    publishDir "${params.outdir}", pattern: "*/*.png", mode: "copy"
+
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/r_06:2.0' : 'lorentzb/r_06:2.0' }"
+
+    input: 
+
+    file 'feature-table.qza'
+    path 'results'
+    file 'item_of_interest.csv'
+    file 'order_item_of_interest.csv'
+    file '06_report.Rmd'
+    file 'taxonomy.qza'
+    file 'metadata.tsv'
+
+    output:
+
+    file "06_report_*.html"
+    file "06_report_*.pdf"
+    path "beta_diversity_ordination"
+     
+    script:
+
+    '''
+    #!/usr/bin/env bash
+   
+    dt=$(date '+%d-%m-%Y_%H.%M.%S');
+
+    Rscript -e "rmarkdown::render('06_report.Rmd', output_file='$PWD/06_report_$dt.html', output_format='html_document', clean=TRUE, knit_root_dir='$PWD')"
+
+    Rscript -e "rmarkdown::render('06_report.Rmd', output_file='$PWD/06_report_$dt.pdf', output_format='pdf_document', clean=TRUE, knit_root_dir='$PWD')"
     '''
 }
 
