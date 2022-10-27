@@ -84,8 +84,10 @@ new_tree_file <- paste0(prepend,"qiime2/phylogenetic_tree/tree.nwk")
 mbSet <- ReadTreeFile(mbSet,new_tree_file)
 
 #import metadata file 
+#TODO , dont hard code this
+#TODO read csv skip row 1
 new_metadata_file <- paste0(prepend,"all_days_sbm_cec_nf_treatment_metadata.tsv")
-new_metadata <- read.csv(new_metadata_file,sep = '\t')
+new_metadata <- read.csv(new_metadata_file,sep = '\t',skiprows=1) 
 new_metadata_df <- data.frame(new_metadata)
 colnames(new_metadata_df)[1]<-"#NAME"
 write.table(new_metadata_df,file = paste0(mbadir,"/metadata.txt"),sep='\t',row.names = F,quote = F)
