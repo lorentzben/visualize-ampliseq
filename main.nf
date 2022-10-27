@@ -32,7 +32,7 @@ report_two_local_ch = Channel.fromPath("${projectDir}/report_gen_files/02_report
 report_three_ch = Channel.fromPath("${projectDir}/report_gen_files/03_report.Rmd")
 report_four_ch = Channel.fromPath("${projectDir}/report_gen_files/04_report.Rmd")
 report_five_ch = Channel.fromPath("${projectDir}/report_gen_files/05_report.Rmd")
-
+count_minmax_ch = Channel.fromPath("${projectDir}/bin/count_table_minmax_reads.py")
 report_six_ch = Channel.fromPath("${projectDir}/report_gen_files/06_report.Rmd")
 
 
@@ -46,7 +46,7 @@ workflow {
     REPORT03HEATMAP(input_ch, table_qza, tax_qza, metadata_ch, report_three_ch, ioi_ch, ord_ioi)
     REPORT04ALPHATABLE(input_ch,ioi_ch,report_four_ch)
     REPORT05ALPHABOXPLOT(input_ch, ioi_ch, ord_ioi, report_five_ch)
-    COREMETRIC(metadata_ch, table_qza, input_ch)
+    COREMETRIC(metadata_ch, table_qza, input_ch, count_minmax_ch)
     COREMETRIC.out.pcoa.view()
     //REPORT06ORDINATION(table_qza, input_ch, ioi_ch, ord_ioi, report_six_ch, tax_qza, metadata_ch)
 }
@@ -504,6 +504,7 @@ process COREMETRIC{
     path(metadata)
     path(table)
     path 'results'
+    path 'count_table_minmax_reads.py'
     
 
     output:
