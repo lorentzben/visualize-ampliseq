@@ -32,7 +32,7 @@ report_two_local_ch = Channel.fromPath("${projectDir}/report_gen_files/02_report
 report_three_ch = Channel.fromPath("${projectDir}/report_gen_files/03_report.Rmd")
 report_four_ch = Channel.fromPath("${projectDir}/report_gen_files/04_report.Rmd")
 report_five_ch = Channel.fromPath("${projectDir}/report_gen_files/05_report.Rmd")
-count_minmax_ch = Channel.fromPath("${projectDir}/bin/count_table_minmax_reads.py")
+count_minmax_ch = Channel.fromPath("${projectDir}/python_scripts/count_table_minmax_reads.py")
 report_six_ch = Channel.fromPath("${projectDir}/report_gen_files/06_report.Rmd")
 
 
