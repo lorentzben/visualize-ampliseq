@@ -47,7 +47,7 @@ workflow {
     REPORT04ALPHATABLE(input_ch,ioi_ch,report_four_ch)
     REPORT05ALPHABOXPLOT(input_ch, ioi_ch, ord_ioi, report_five_ch)
     COREMETRIC(metadata_ch, table_qza, input_ch)
-    COREMETRIC.poca.view()
+    COREMETRIC.pcoa.view()
     //REPORT06ORDINATION(table_qza, input_ch, ioi_ch, ord_ioi, report_six_ch, tax_qza, metadata_ch)
 }
 
