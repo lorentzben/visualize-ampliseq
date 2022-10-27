@@ -520,7 +520,7 @@ process COREMETRIC{
 
     uncompress_table='results/qiime2/abundance_tables/feature-table.tsv'
 
-    mindepth=\$(count_table_minmax_reads.py $uncompress_table minimum 2>&1)
+    mindepth=\$(count_table_minmax_reads.py !{uncompress_table} minimum 2>&1)
     if [ \"\$mindepth\" -gt \"10000\" ]; then echo \$mindepth >\"Use the sampling depth of \$mindepth for rarefaction.txt\" ; fi
     if [ \"\$mindepth\" -lt \"10000\" -a \"\$mindepth\" -gt \"5000\" ]; then echo \$mindepth >\"WARNING The sampling depth of \$mindepth is quite small for rarefaction.txt\" ; fi
     if [ \"\$mindepth\" -lt \"5000\" -a \"\$mindepth\" -gt \"1000\" ]; then echo \$mindepth >\"WARNING The sampling depth of \$mindepth is very small for rarefaction.txt\" ; fi
