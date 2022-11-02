@@ -479,7 +479,7 @@ process REPORT05ALPHABOXPLOT{
 
     file "05_report_*.html"
     file "05_report_*.pdf"
-    path "alpha_diversity_boxplot"
+    path "alpha_diversity_boxplot/*"
      
     script:
 
