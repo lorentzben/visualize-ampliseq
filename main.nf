@@ -561,7 +561,7 @@ process REPORT06ORDINATION{
 
     file "06_report_*.html"
     file "06_report_*.pdf"
-    path "beta_diversity_ordination"
+    path "beta_diversity_ordination/*"
      
     script:
 
