@@ -51,7 +51,7 @@ workflow {
     COREMETRIC(metadata_ch, table_qza, input_ch, count_minmax_ch)
     REPORT06ORDINATION(table_qza, input_ch, ioi_ch, ord_ioi, report_six_ch, tax_qza, metadata_ch, COREMETRIC.out.pcoa, COREMETRIC.out.vector)
     REPORT07RAREFACTION(ioi_ch,ord_ioi,input_ch, report_seven_ch)
-    REPORT08RANKEDABUNDANCE(table_qza,input_ch, ioi_ch, ord_ioi_ch, report_eight_ch, tax_qza, metadata_ch)
+    REPORT08RANKEDABUNDANCE(table_qza,input_ch, ioi_ch, ord_ioi, report_eight_ch, tax_qza, metadata_ch)
 }
 
 process ORDERIOI{
