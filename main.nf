@@ -459,6 +459,8 @@ process REPORT04ALPHATABLE{
     Rscript -e "rmarkdown::render('04_report.Rmd', output_file='04_report_$dt.html', output_format='html_document', output_dir='$PWD', clean=TRUE, knit_root_dir='$PWD')"
 
     Rscript -e "rmarkdown::render('04_report.Rmd', output_file='04_report_$dt.pdf', output_format='pdf_document', output_dir='$PWD', clean=TRUE, knit_root_dir='$PWD')"
+
+    rm -rf !{projectDir}/report_gen_files/04_report_*.log
     '''
 
 }
