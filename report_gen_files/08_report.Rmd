@@ -26,7 +26,7 @@ ioi_ord <- read.csv("order_item_of_interest.csv")
 colnames(ioi_ord) <- ioi
 ioi_ord <- as.list(ioi_ord)[[ioi]]
 
-outdir_name <- "Figures"
+outdir_name <- "ranked_abundance_curves"
 if(!dir.exists(outdir_name)) {dir.create(outdir_name)}
 outdir <- outdir_name
 
@@ -35,6 +35,7 @@ outdir <- outdir_name
 # library(dplyr)
 # library(ggplot2)
 ```
+
 ```{r ampvis code from github so we dont need to query, echo=FALSE, message=FALSE, warning=FALSE}
 phyloseq_to_ampvis2 <- function(physeq) {
   #check object for class
@@ -121,7 +122,7 @@ phyloseq_to_ampvis2 <- function(physeq) {
 
 ## 8 Ranked Abundance Curves
 
-```{r, echo=FALSE, fig.height=10, fig.width=16, message=FALSE, warning=FALSE}
+```{r echo=FALSE, fig.height=10, fig.width=16, message=FALSE, warning=FALSE}
 #library(devtools)
 #llibrary(remotes)
 #install.packages("BiocManager")
@@ -136,7 +137,7 @@ library(tidyverse)
 #@1.3.1
 
 #table_dada2 <- "table-dada2.qza"
-table_dada2 <- "core-metric-results/rarefied_table.qza"
+table_dada2 <- "feature-table.qza"
 rooted_tree <- "rooted-tree.qza"
 taxonomy_file <- "taxonomy.qza"
 metadata_file <- "metadata.tsv"

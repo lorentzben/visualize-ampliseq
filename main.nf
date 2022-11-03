@@ -35,6 +35,7 @@ report_five_ch = Channel.fromPath("${projectDir}/report_gen_files/05_report.Rmd"
 count_minmax_ch = Channel.fromPath("${projectDir}/python_scripts/count_table_minmax_reads.py")
 report_six_ch = Channel.fromPath("${projectDir}/report_gen_files/06_report.Rmd")
 report_seven_ch = Channel.fromPath("${projectDir}/report_gen_files/07_report.Rmd")
+report_eight_ch = Channel.fromPath("${projectDir}/report_gen_files/08_report.Rmd")
 
 
 workflow {
@@ -50,6 +51,7 @@ workflow {
     COREMETRIC(metadata_ch, table_qza, input_ch, count_minmax_ch)
     REPORT06ORDINATION(table_qza, input_ch, ioi_ch, ord_ioi, report_six_ch, tax_qza, metadata_ch, COREMETRIC.out.pcoa, COREMETRIC.out.vector)
     REPORT07RAREFACTION(ioi_ch,ord_ioi,input_ch, report_seven_ch)
+    REPORT08RANKEDABUNDANCE(table_qza,input_ch, ioi_ch, ord_ioi_ch, report_eight_ch, tax_qza, metadata)
 }
 
 process ORDERIOI{
@@ -459,8 +461,6 @@ process REPORT04ALPHATABLE{
     Rscript -e "rmarkdown::render('04_report.Rmd', output_file='04_report_$dt.html', output_format='html_document', output_dir='$PWD', clean=TRUE, knit_root_dir='$PWD')"
 
     Rscript -e "rmarkdown::render('04_report.Rmd', output_file='04_report_$dt.pdf', output_format='pdf_document', output_dir='$PWD', clean=TRUE, knit_root_dir='$PWD')"
-
-    rm -rf !{projectDir}/report_gen_files/"04_report_*.log"
     '''
 
 }
@@ -611,6 +611,43 @@ process REPORT07RAREFACTION{
     Rscript -e "rmarkdown::render('07_report.Rmd', output_file='$PWD/07_report_$dt.html', output_format='html_document', clean=TRUE, knit_root_dir='$PWD')"
 
     Rscript -e "rmarkdown::render('07_report.Rmd', output_file='$PWD/07_report_$dt.pdf', output_format='pdf_document', clean=TRUE, knit_root_dir='$PWD')"
+    '''
+}
+
+process REPORT08RANKEDABUNDANCE {
+    
+    publishDir "${params.outdir}/html", pattern: "*.html", mode: "copy"
+    publishDir "${params.outdir}/pdf", pattern: "*.pdf", mode: "copy"
+    publishDir "${params.outdir}", pattern: "*/*.png", mode: "copy"
+
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/r_08:2.0' : 'lorentzb/r_08:2.0' }"
+
+    input: 
+
+    file 'feature-table.qza'
+    path 'results'
+    file 'item_of_interest.csv'
+    file 'order_item_of_interest.csv'
+    file '08_report.Rmd'
+    file 'taxonomy.qza'
+    file 'metadata.tsv'
+    
+    output:
+
+    file "08_report_*.html"
+    file "08_report_*.pdf"
+    path "ranked_abundance_curves/*"
+     
+    script:
+
+    '''
+    #!/usr/bin/env bash
+   
+    dt=$(date '+%d-%m-%Y_%H.%M.%S');
+
+    Rscript -e "rmarkdown::render('08_report.Rmd', output_file='$PWD/08_report_$dt.html', output_format='html_document', clean=TRUE, knit_root_dir='$PWD')"
+
+    Rscript -e "rmarkdown::render('08_report.Rmd', output_file='$PWD/08_report_$dt.pdf', output_format='pdf_document', clean=TRUE, knit_root_dir='$PWD')"
     '''
 }
 
