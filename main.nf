@@ -591,6 +591,7 @@ process REPORT07RAREFACTION{
     file 'item_of_interest.csv'
     file 'order_item_of_interest.csv'
     path 'results'
+    file '07_report.Rmd'
 
     output:
 
