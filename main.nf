@@ -34,6 +34,7 @@ report_four_ch = Channel.fromPath("${projectDir}/report_gen_files/04_report.Rmd"
 report_five_ch = Channel.fromPath("${projectDir}/report_gen_files/05_report.Rmd")
 count_minmax_ch = Channel.fromPath("${projectDir}/python_scripts/count_table_minmax_reads.py")
 report_six_ch = Channel.fromPath("${projectDir}/report_gen_files/06_report.Rmd")
+report_seven_ch = Channel.fromPath("${projectDir}/report_gen_files/07_report.Rmd")
 
 
 workflow {
@@ -48,7 +49,7 @@ workflow {
     REPORT05ALPHABOXPLOT(input_ch, ioi_ch, ord_ioi, report_five_ch)
     COREMETRIC(metadata_ch, table_qza, input_ch, count_minmax_ch)
     REPORT06ORDINATION(table_qza, input_ch, ioi_ch, ord_ioi, report_six_ch, tax_qza, metadata_ch, COREMETRIC.out.pcoa, COREMETRIC.out.vector)
-    REPORT07RAREFACTION(ioi_ch,ord_ioi,input_ch)
+    REPORT07RAREFACTION(ioi_ch,ord_ioi,input_ch, report_seven_ch)
 }
 
 process ORDERIOI{
