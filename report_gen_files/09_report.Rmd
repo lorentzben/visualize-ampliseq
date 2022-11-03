@@ -26,7 +26,7 @@ ioi_ord <- read.csv("order_item_of_interest.csv")
 colnames(ioi_ord) <- ioi
 ioi_ord <- as.list(ioi_ord)[[ioi]]
 
-outdir_name <- "Figures"
+outdir_name <- "unifrac_heatmaps"
 if(!dir.exists(outdir_name)) {dir.create(outdir_name)}
 outdir <- outdir_name
 ```
@@ -45,8 +45,8 @@ metadata_file <- "metadata.tsv"
 
 metadata<-read_q2metadata(metadata_file)
 #metadata[[ioi]] <- fct_reorder(metadata[[ioi]])
-w_unifrac_dist <- qiime2R::read_qza("core-metric-results/weighted_unifrac_distance_matrix.qza")
-u_unifrac_dist <- qiime2R::read_qza("core-metric-results/unweighted_unifrac_distance_matrix.qza")
+w_unifrac_dist <- qiime2R::read_qza("weighted_unifrac_distance_matrix.qza")
+u_unifrac_dist <- qiime2R::read_qza("unweighted_unifrac_distance_matrix.qza")
 
 un_weight_matrix <- as.matrix(u_unifrac_dist$data)
 un_weight_matrix[lower.tri(un_weight_matrix)] <- NA

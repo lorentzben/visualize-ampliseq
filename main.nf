@@ -36,6 +36,7 @@ count_minmax_ch = Channel.fromPath("${projectDir}/python_scripts/count_table_min
 report_six_ch = Channel.fromPath("${projectDir}/report_gen_files/06_report.Rmd")
 report_seven_ch = Channel.fromPath("${projectDir}/report_gen_files/07_report.Rmd")
 report_eight_ch = Channel.fromPath("${projectDir}/report_gen_files/08_report.Rmd")
+report_nine_ch = Channel.fromPath("${projectDir}/report_gen_files/09_report.Rmd")
 
 
 workflow {
@@ -52,6 +53,7 @@ workflow {
     REPORT06ORDINATION(table_qza, input_ch, ioi_ch, ord_ioi, report_six_ch, tax_qza, metadata_ch, COREMETRIC.out.pcoa, COREMETRIC.out.vector)
     REPORT07RAREFACTION(ioi_ch,ord_ioi,input_ch, report_seven_ch)
     REPORT08RANKEDABUNDANCE(table_qza,input_ch, ioi_ch, ord_ioi, report_eight_ch, tax_qza, metadata_ch)
+    REPORT09UNIFRACHEATMAP(ioi_ch, ord_ioi, metadata_ch, COREMETRIC.distance, report_nine_ch)
 }
 
 process ORDERIOI{
@@ -650,6 +652,42 @@ process REPORT08RANKEDABUNDANCE {
     Rscript -e "rmarkdown::render('08_report.Rmd', output_file='$PWD/08_report_$dt.pdf', output_format='pdf_document', clean=TRUE, knit_root_dir='$PWD')"
     '''
 }
+
+process REPORT09UNIFRACHEATMAP{
+
+    publishDir "${params.outdir}/html", pattern: "*.html", mode: "copy"
+    publishDir "${params.outdir}/pdf", pattern: "*.pdf", mode: "copy"
+    publishDir "${params.outdir}", pattern: "*/*.png", mode: "copy"
+
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/r_09:2.0' : 'lorentzb/r_09:2.0' }"
+
+    input:
+
+    file 'item_of_interest.csv'
+    file 'order_item_of_interest.csv'
+    file "metadata.tsv"
+    path distances
+    file "report_09.Rmd"
+
+    output:
+
+    file "09_report_*.html"
+    file "09_report_*.pdf"
+    path "unifrac_heatmaps/*"
+     
+    script:
+
+    '''
+    #!/usr/bin/env bash
+   
+    dt=$(date '+%d-%m-%Y_%H.%M.%S');
+
+    Rscript -e "rmarkdown::render('09_report.Rmd', output_file='$PWD/09_report_$dt.html', output_format='html_document', clean=TRUE, knit_root_dir='$PWD')"
+
+    Rscript -e "rmarkdown::render('09_report.Rmd', output_file='$PWD/09_report_$dt.pdf', output_format='pdf_document', clean=TRUE, knit_root_dir='$PWD')"
+    '''
+}
+
 
 process LefseFormat {
     publishDir "${params.outdir}/lefse", mode: 'copy'
