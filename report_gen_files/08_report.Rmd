@@ -138,7 +138,7 @@ library(tidyverse)
 
 #table_dada2 <- "table-dada2.qza"
 table_dada2 <- "feature-table.qza"
-rooted_tree <- "rooted-tree.qza"
+rooted_tree <- "results/qiime2/phylogenetic_tree/rooted-tree.qza"
 taxonomy_file <- "taxonomy.qza"
 metadata_file <- "metadata.tsv"
 
