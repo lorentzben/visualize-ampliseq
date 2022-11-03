@@ -456,9 +456,9 @@ process REPORT04ALPHATABLE{
    
     dt=$(date '+%d-%m-%Y_%H.%M.%S');
 
-    Rscript -e "rmarkdown::render('04_report.Rmd', output_file='$PWD/04_report_$dt.html', output_format='html_document', clean=TRUE, knit_root_dir='$PWD')"
+    Rscript -e "rmarkdown::render('04_report.Rmd', output_file='04_report_$dt.html', output_format='html_document', output_dir='$PWD' clean=TRUE, knit_root_dir='$PWD')"
 
-    Rscript -e "rmarkdown::render('04_report.Rmd', output_file='$PWD/04_report_$dt.pdf', output_format='pdf_document', clean=TRUE, knit_root_dir='$PWD')"
+    Rscript -e "rmarkdown::render('04_report.Rmd', output_file='04_report_$dt.pdf', output_format='pdf_document', output_dir='$PWD', clean=TRUE, knit_root_dir='$PWD')"
     '''
 
 }
