@@ -622,6 +622,8 @@ process REPORT08RANKEDABUNDANCE {
     publishDir "${params.outdir}/pdf", pattern: "*.pdf", mode: "copy"
     publishDir "${params.outdir}", pattern: "*/*.png", mode: "copy"
 
+    label 'process_medium'
+
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/r_08:2.0' : 'lorentzb/r_08:2.0' }"
 
     input: 
@@ -662,7 +664,7 @@ process REPORT09UNIFRACHEATMAP{
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/r_09:2.0' : 'lorentzb/r_09:2.0' }"
 
     label 'process_medium'
-    
+
     input:
 
     file 'item_of_interest.csv'
