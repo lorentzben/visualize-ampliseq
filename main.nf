@@ -667,7 +667,7 @@ process REPORT09UNIFRACHEATMAP{
     file 'order_item_of_interest.csv'
     file "metadata.tsv"
     path distances
-    file "report_09.Rmd"
+    file "09_report.Rmd"
 
     output:
 
