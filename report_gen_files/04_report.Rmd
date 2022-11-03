@@ -3,6 +3,7 @@ title: "04 16s Analysis Report"
 output:
   pdf_document:
     df_print: kable
+    keep_tex: false
   html_document:
     df_print: kable
     smart: false
