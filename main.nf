@@ -48,6 +48,7 @@ workflow {
     REPORT05ALPHABOXPLOT(input_ch, ioi_ch, ord_ioi, report_five_ch)
     COREMETRIC(metadata_ch, table_qza, input_ch, count_minmax_ch)
     REPORT06ORDINATION(table_qza, input_ch, ioi_ch, ord_ioi, report_six_ch, tax_qza, metadata_ch, COREMETRIC.out.pcoa, COREMETRIC.out.vector)
+    REPORT07RAREFACTION(ioi_ch,ord_ioi,input_ch)
 }
 
 process ORDERIOI{
@@ -576,6 +577,38 @@ process REPORT06ORDINATION{
     '''
 }
 
+process REPORT07RAREFACTION{
+    
+    publishDir "${params.outdir}/html", pattern: "*.html", mode: "copy"
+    publishDir "${params.outdir}/pdf", pattern: "*.pdf", mode: "copy"
+    publishDir "${params.outdir}", pattern: "*/*.png", mode: "copy"
+
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/r_07:2.0' : 'lorentzb/r_07:2.0' }"
+
+    input: 
+
+    file 'item_of_interest.csv'
+    file 'order_item_of_interest.csv'
+    path 'results'
+
+    output:
+
+    file "07_report_*.html"
+    file "07_report_*.pdf"
+    path "rarefaction_plots/*"
+     
+    script:
+
+    '''
+    #!/usr/bin/env bash
+   
+    dt=$(date '+%d-%m-%Y_%H.%M.%S');
+
+    Rscript -e "rmarkdown::render('07_report.Rmd', output_file='$PWD/07_report_$dt.html', output_format='html_document', clean=TRUE, knit_root_dir='$PWD')"
+
+    Rscript -e "rmarkdown::render('07_report.Rmd', output_file='$PWD/07_report_$dt.pdf', output_format='pdf_document', clean=TRUE, knit_root_dir='$PWD')"
+    '''
+}
 
 process LefseFormat {
     publishDir "${params.outdir}/lefse", mode: 'copy'

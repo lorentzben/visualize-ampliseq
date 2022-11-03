@@ -26,7 +26,7 @@ ioi_ord <- read.csv("order_item_of_interest.csv")
 colnames(ioi_ord) <- ioi
 ioi_ord <- as.list(ioi_ord)[[ioi]]
 
-outdir_name <- "Figures"
+outdir_name <- "rarefaction_plots"
 if(!dir.exists(outdir_name)) {dir.create(outdir_name)}
 outdir <- outdir_name
 ```
@@ -43,7 +43,7 @@ numextract <- function(string){
   str_extract(string, "\\-*\\d+\\.*\\d*")
 }
 
-obs_rarefy <- read.csv("alpha-rareplot/observed_features.csv")
+obs_rarefy <- read.csv("results/alpha-rarefaction/observed_features.csv")
 samples <- obs_rarefy[1]
 one <- obs_rarefy[2:11]
 two <- obs_rarefy[12:21]
