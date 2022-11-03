@@ -661,6 +661,8 @@ process REPORT09UNIFRACHEATMAP{
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/r_09:2.0' : 'lorentzb/r_09:2.0' }"
 
+    label 'process_medium'
+    
     input:
 
     file 'item_of_interest.csv'
