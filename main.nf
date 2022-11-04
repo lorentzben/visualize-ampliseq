@@ -789,6 +789,7 @@ process REPORT12PERMANOVA{
     file 'order_item_of_interest.csv'
     file 'taxonomy.qza'
     file 'metadata.tsv'
+    path distances
     file '12_report.Rmd'
 
     output:
