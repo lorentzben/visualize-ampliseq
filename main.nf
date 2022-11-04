@@ -65,8 +65,8 @@ workflow {
     REPORT11UPGMA( table_qza, input_ch, ioi_ch, ord_ioi, tax_qza, metadata_ch, report_eleven_ch)
     REPORT12PERMANOVA(table_qza, input_ch, ioi_ch, ord_ioi, tax_qza, metadata_ch, COREMETRIC.out.distance, report_twelve_ch)
     LEFSEFORMAT(ioi_ch, table_qza, input_ch, tax_qza, metadata_ch, qiime_to_lefse_ch)
-    LEFSEANALYSIS(LEFSEFORMAT.out.combos,lefse_analysis_ch, plot_clado_file_ch, plot_res_file_ch)
-    REPORT13LEFSE(LEFSEANALYSIS.out.images, report_thirteen_ch, ioi_ch, ord_ioi)
+    lefse_dir = LEFSEANALYSIS(LEFSEFORMAT.out.combos,lefse_analysis_ch, plot_clado_file_ch, plot_res_file_ch)
+    REPORT13LEFSE(lefse_dir, report_thirteen_ch, ioi_ch, ord_ioi)
 }
 
 process ORDERIOI{
@@ -857,7 +857,7 @@ process LEFSEANALYSIS{
     file plot_res 
 
     output:
-    path "lefse_images/*", emit : images
+    path "lefse_images/*"
 
     script:
     """
@@ -877,7 +877,7 @@ process REPORT13LEFSE{
 
     input:
 
-    path images
+    path "lefse_images/*"
     file '13_report.Rmd'
     file 'item_of_interest.csv'
     file 'order_item_of_interest.csv'
