@@ -41,6 +41,10 @@ report_ten_ch = Channel.fromPath("${projectDir}/report_gen_files/10_report.Rmd")
 report_eleven_ch = Channel.fromPath("${projectDir}/report_gen_files/11_report.Rmd")
 report_twelve_ch = Channel.fromPath("${projectDir}/report_gen_files/12_report.Rmd")
 qiime_to_lefse_ch = Channel.fromPath("${projectDir}/r_scripts/qiime_to_lefse.R")
+lefse_analysis_ch = Channel.fromPath("${projectDir}/bin/lefse_analysis.sh")
+plot_clado_file_ch = Channel.fromPath("${projectDir}/python_scripts/plot_cladogram.py")
+plot_res_file_ch = Channel.fromPath("${projectDir}/python_scripts/plot_res.py")
+
 
 workflow {
     ord_ioi = ORDERIOI(ioi_ch, metadata_ch, ord_ioi_ch)
@@ -61,7 +65,7 @@ workflow {
     REPORT11UPGMA( table_qza, input_ch, ioi_ch, ord_ioi, tax_qza, metadata_ch, report_eleven_ch)
     REPORT12PERMANOVA(table_qza, input_ch, ioi_ch, ord_ioi, tax_qza, metadata_ch, COREMETRIC.out.distance, report_twelve_ch)
     LEFSEFORMAT(ioi_ch, table_qza, input_ch, tax_qza, metadata_ch, qiime_to_lefse_ch)
-    
+    LEFSEANALYSIS(LEFSEFORMAT.out.combos,lefse_analysis_ch, plot_clado_file_ch, plot_res_file_ch)
 }
 
 process ORDERIOI{
@@ -827,7 +831,7 @@ process LEFSEFORMAT {
     file "qiime_to_lefse.R" 
       
     output:
-    path "combos/*" 
+    path "combos/*", emit : combos
 
     script:
     """
@@ -839,21 +843,20 @@ process LEFSEFORMAT {
 }
 
 
-process LefseAnalysis{
+process LEFSEANALYSIS{
     publishDir "${params.outdir}/lefse", mode: 'copy'
 
-    container "docker://lorentzb/py2_env:1.0"
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/py2_env:1.0' : 'lorentzb/py2_env:1.0' }"
 
     input:
-    path "combos/*" from ch_paired_lefse_format
-    file "lefse_analysis.sh" from ch_lefse_analysis_script
-    file plot_clado from ch_clado_file
-    file plot_res from ch_plot_res
+
+    path "combos/*" 
+    file "lefse_analysis.sh"
+    file plot_clado 
+    file plot_res 
 
     output:
-    path "result/*" into ( ch_lefse_results, ch_lefse_r13 ) 
-
-    label 'process_medium'
+    path "result/*" 
 
     script:
     """
