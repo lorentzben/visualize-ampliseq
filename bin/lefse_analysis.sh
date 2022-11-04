@@ -19,8 +19,8 @@ do
     plot_cladogram.py lefse_result.res "${eachfile::-4}"_cladogram.png --format png --dpi 200
     plot_cladogram.py lefse_result.res "${eachfile::-4}"_pdf_qual_clad.png --format png --dpi 72
     cp lefse_result.res "${eachfile::-4}"_result.res
-    cp "${eachfile::-4}"_res.png ../result
-    cp "${eachfile::-4}"_pdf_r.png ../result
-    cp "${eachfile::-4}"_cladogram.png ../result
-    cp "${eachfile::-4}"_pdf_qual_clad.png ../result
+    cp "${eachfile::-4}"_res.png ../lefse_images
+    cp "${eachfile::-4}"_pdf_r.png ../lefse_images
+    cp "${eachfile::-4}"_cladogram.png ../lefse_images
+    cp "${eachfile::-4}"_pdf_qual_clad.png ../lefse_images
 done

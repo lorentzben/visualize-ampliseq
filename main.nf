@@ -44,7 +44,7 @@ qiime_to_lefse_ch = Channel.fromPath("${projectDir}/r_scripts/qiime_to_lefse.R")
 lefse_analysis_ch = Channel.fromPath("${projectDir}/bin/lefse_analysis.sh")
 plot_clado_file_ch = Channel.fromPath("${projectDir}/python_scripts/plot_cladogram.py")
 plot_res_file_ch = Channel.fromPath("${projectDir}/python_scripts/plot_res.py")
-
+report_thirteen_ch = Channel.fromPath("${projectDir}/report_gen_files/13_report.Rmd")
 
 workflow {
     ord_ioi = ORDERIOI(ioi_ch, metadata_ch, ord_ioi_ch)
@@ -66,6 +66,7 @@ workflow {
     REPORT12PERMANOVA(table_qza, input_ch, ioi_ch, ord_ioi, tax_qza, metadata_ch, COREMETRIC.out.distance, report_twelve_ch)
     LEFSEFORMAT(ioi_ch, table_qza, input_ch, tax_qza, metadata_ch, qiime_to_lefse_ch)
     LEFSEANALYSIS(LEFSEFORMAT.out.combos,lefse_analysis_ch, plot_clado_file_ch, plot_res_file_ch)
+    REPORT13LEFSE(LEFSEANALYSIS.out.images, report_thirteen_ch)
 }
 
 process ORDERIOI{
@@ -856,14 +857,45 @@ process LEFSEANALYSIS{
     file plot_res 
 
     output:
-    path "result/*" 
+    path "lefse_images/*", emit : images
 
     script:
     """
     #!/usr/bin/env bash
-    mkdir result
+    mkdir lefse_images
     bash lefse_analysis.sh
     """
+}
+
+process REPORT13LEFSE{
+
+    publishDir "${params.outdir}/html", pattern: "*.html", mode: "copy"
+    publishDir "${params.outdir}/pdf", pattern: "*.pdf", mode: "copy"
+    publishDir "${params.outdir}", pattern: "*/*.png", mode: "copy"
+
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/r_13:2.0' : 'lorentzb/r_13:2.0' }"
+
+    input:
+
+    path images
+    file '13_report.Rmd'
+
+    output:
+
+    file "13_report_*.html"
+    file "13_report_*.pdf"
+         
+    script:
+
+    '''
+    #!/usr/bin/env bash
+   
+    dt=$(date '+%d-%m-%Y_%H.%M.%S');
+
+    Rscript -e "rmarkdown::render('13_report.Rmd', output_file='$PWD/13_report_$dt.html', output_format='html_document', clean=TRUE, knit_root_dir='$PWD')"
+
+    Rscript -e "rmarkdown::render('13_report.Rmd', output_file='$PWD/13_report_$dt.pdf', output_format='pdf_document', clean=TRUE, knit_root_dir='$PWD')"
+    '''
 }
 
 
