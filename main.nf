@@ -58,7 +58,7 @@ workflow {
     REPORT09UNIFRACHEATMAP(ioi_ch, ord_ioi, metadata_ch, COREMETRIC.out.distance, report_nine_ch)
     REPORT10BETABOXPLOT(ioi_ch,ord_ioi,metadata_ch,input_ch, report_ten_ch)
     REPORT11UPGMA( table_qza, input_ch, ioi_ch, ord_ioi, tax_qza, metadata_ch, report_eleven_ch)
-    REPORT12PERMANOVA(table_qza, input_ch, ioi_ch, ord_ioi, tax_qza, metadata_ch, report_twelve_ch)
+    REPORT12PERMANOVA(table_qza, input_ch, ioi_ch, ord_ioi, tax_qza, metadata_ch, COREMETRIC.out.distance, report_twelve_ch)
     
 }
 
