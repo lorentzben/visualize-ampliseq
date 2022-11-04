@@ -37,7 +37,7 @@ outdir <- outdir_name
 library(knitr)
 library(gtools)
 
-lefse_res_filenames <- list.files("lefse_images",pattern="*_res.png",full.names = T)
+lefse_res_filenames <- list.files(pattern="*_res.png",full.names = T)
 
 lefse_filenames <- mixedsort(lefse_res_filenames)
 
@@ -50,7 +50,7 @@ include_graphics(lefse_filenames)
 library(gtools)
 library(knitr)
 
-lefse_res_filenames <- list.files("lefse_images",pattern="*_pdf_r.png",full.names=T)
+lefse_res_filenames <- list.files(pattern="*_pdf_r.png",full.names=T)
 
 lefse_filenames <- mixedsort(lefse_res_filenames)
   
@@ -63,7 +63,7 @@ include_graphics(lefse_filenames)
 library(gtools)
 library(knitr)
 
-lefse_clado_filenames <- list.files("lefse_images",pattern="*_cladogram.png",full.names=T)
+lefse_clado_filenames <- list.files(pattern="*_cladogram.png",full.names=T)
   
 lefse_filenames <- mixedsort(lefse_clado_filenames)
 
