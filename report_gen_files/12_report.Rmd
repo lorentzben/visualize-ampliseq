@@ -28,7 +28,7 @@ ioi_ord <- read.csv("order_item_of_interest.csv")
 colnames(ioi_ord) <- ioi
 ioi_ord <- as.list(ioi_ord)[[ioi]]
 
-outdir_name <- "Figures"
+outdir_name <- "permanova"
 if(!dir.exists(outdir_name)) {dir.create(outdir_name)}
 outdir <- outdir_name
 
@@ -143,8 +143,8 @@ library(PERMANOVA)
 library(tidyverse)
 library(kableExtra)
 
-table_dada2 <- "core-metric-results/rarefied_table.qza"
-rooted_tree <- "rooted-tree.qza"
+table_dada2 <- "feature-table.qza"
+rooted_tree <- "results/qiime2/phylogenetic_tree/rooted-tree.qza"
 taxonomy_file <- "taxonomy.qza"
 metadata_file <- "metadata.tsv"
 
