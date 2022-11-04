@@ -888,7 +888,7 @@ process REPORT13LEFSE{
 
     file "13_report_*.html"
     //file "13_report_*.pdf"
-    path images
+    
          
 
     script:
