@@ -740,7 +740,7 @@ process REPORT11UPGMA{
     publishDir "${params.outdir}/pdf", pattern: "*.pdf", mode: "copy"
     publishDir "${params.outdir}", pattern: "*/*.png", mode: "copy"
 
-    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/r_10:2.0' : 'lorentzb/r_10:2.0' }"
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/r_11:2.0' : 'lorentzb/r_11:2.0' }"
 
     input:
 
