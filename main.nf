@@ -46,6 +46,7 @@ plot_clado_file_ch = Channel.fromPath("${projectDir}/python_scripts/plot_cladogr
 plot_res_file_ch = Channel.fromPath("${projectDir}/python_scripts/plot_res.py")
 report_thirteen_ch = Channel.fromPath("${projectDir}/report_gen_files/13_report.Rmd")
 report_thirteen_local_ch = Channel.fromPath("${projectDir}/report_gen_files/13_report_local.Rmd")
+report_fourteen_ch = Channel.fromPath("${projectDir}/report_gen_files/14_report.Rmd")
 
 workflow {
     ord_ioi = ORDERIOI(ioi_ch, metadata_ch, ord_ioi_ch)
@@ -68,6 +69,7 @@ workflow {
     LEFSEFORMAT(ioi_ch, table_qza, input_ch, tax_qza, metadata_ch, qiime_to_lefse_ch)
     lefse_dir = LEFSEANALYSIS(LEFSEFORMAT.out.combos,lefse_analysis_ch, plot_clado_file_ch, plot_res_file_ch)
     REPORT13LEFSE(lefse_dir, report_thirteen_ch, report_thirteen_local_ch, ioi_ch, ord_ioi)
+    REPORT14CITATIONS(report_fourteen_ch)
 }
 
 process ORDERIOI{
@@ -714,8 +716,6 @@ process REPORT10BETABOXPLOT{
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/r_10:2.0' : 'lorentzb/r_10:2.0' }"
 
-    
-
     input:
 
     file 'item_of_interest.csv'
@@ -919,5 +919,36 @@ process REPORT13LEFSE{
     
 }
 
+process REPORT14CITATIONS{
+
+    publishDir "${params.outdir}/html", pattern: "*.html", mode: "copy"
+    publishDir "${params.outdir}/pdf", pattern: "*.pdf", mode: "copy"
+    publishDir "${params.outdir}", pattern: "*/*.png", mode: "copy"
+
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/r_14:2.0' : 'lorentzb/r_14:2.0' }"
+
+    input:
+
+    file "14_report.Rmd"
+
+    output:
+
+    file "14_report_*.html"
+    file "14_report_*.pdf"
+     
+    script:
+
+    '''
+    #!/usr/bin/env bash
+   
+    dt=$(date '+%d-%m-%Y_%H.%M.%S');
+
+    Rscript -e "rmarkdown::render('14_report.Rmd', output_file='$PWD/14_report_$dt.html', output_format='html_document', clean=TRUE, knit_root_dir='$PWD')"
+
+    Rscript -e "rmarkdown::render('14_report.Rmd', output_file='$PWD/14_report_$dt.pdf', output_format='pdf_document', clean=TRUE, knit_root_dir='$PWD')"
+    '''
+
+
+}
 
 
