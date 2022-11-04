@@ -897,7 +897,7 @@ process REPORT13LEFSE{
 
     Rscript -e "rmarkdown::render('13_report.Rmd', output_file='$PWD/13_report_$dt.html', output_format='html_document', clean=TRUE, knit_root_dir='$PWD')"
 
-    Rscript -e "rmarkdown::render('13_report.Rmd', output_file='$PWD/13_report_$dt.pdf', output_format='pdf_document', clean=TRUE, knit_root_dir='$PWD')"
+    #Rscript -e "rmarkdown::render('13_report.Rmd', output_file='$PWD/13_report_$dt.pdf', output_format='pdf_document', clean=TRUE, knit_root_dir='$PWD')"
     '''
 }
 
