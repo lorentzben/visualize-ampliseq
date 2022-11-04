@@ -45,6 +45,7 @@ lefse_analysis_ch = Channel.fromPath("${projectDir}/bin/lefse_analysis.sh")
 plot_clado_file_ch = Channel.fromPath("${projectDir}/python_scripts/plot_cladogram.py")
 plot_res_file_ch = Channel.fromPath("${projectDir}/python_scripts/plot_res.py")
 report_thirteen_ch = Channel.fromPath("${projectDir}/report_gen_files/13_report.Rmd")
+report_thirteen_local_ch = Channel.fromPath("${projectDir}/report_gen_files/13_report_local.Rmd")
 
 workflow {
     ord_ioi = ORDERIOI(ioi_ch, metadata_ch, ord_ioi_ch)
@@ -66,7 +67,7 @@ workflow {
     REPORT12PERMANOVA(table_qza, input_ch, ioi_ch, ord_ioi, tax_qza, metadata_ch, COREMETRIC.out.distance, report_twelve_ch)
     LEFSEFORMAT(ioi_ch, table_qza, input_ch, tax_qza, metadata_ch, qiime_to_lefse_ch)
     lefse_dir = LEFSEANALYSIS(LEFSEFORMAT.out.combos,lefse_analysis_ch, plot_clado_file_ch, plot_res_file_ch)
-    REPORT13LEFSE(lefse_dir, report_thirteen_ch, ioi_ch, ord_ioi)
+    REPORT13LEFSE(lefse_dir, report_thirteen_ch, report_thirteen_local_ch, ioi_ch, ord_ioi)
 }
 
 process ORDERIOI{
@@ -879,26 +880,43 @@ process REPORT13LEFSE{
 
     path "lefse_images/*"
     file '13_report.Rmd'
+    file '13_report_local.Rmd'
     file 'item_of_interest.csv'
     file 'order_item_of_interest.csv'
 
     output:
 
     file "13_report_*.html"
-    file "13_report_*.pdf"
+    //file "13_report_*.pdf"
     path images
          
+
     script:
-
-    '''
-    #!/usr/bin/env bash
+    if(workflow.profile.contains('local'))
+        '''
+        #!/usr/bin/env bash
    
-    dt=$(date '+%d-%m-%Y_%H.%M.%S');
-
-    Rscript -e "rmarkdown::render('13_report.Rmd', output_file='$PWD/13_report_$dt.html', output_format='html_document', clean=TRUE, knit_root_dir='$PWD')"
-
-    #Rscript -e "rmarkdown::render('13_report.Rmd', output_file='$PWD/13_report_$dt.pdf', output_format='pdf_document', clean=TRUE, knit_root_dir='$PWD')"
-    '''
+        dt=$(date '+%d-%m-%Y_%H.%M.%S');
+        ls -lRh
+        echo $PWD
+    
+        Rscript -e "rmarkdown::render('13_report.Rmd', output_file='$PWD/13_report_$dt.html', output_format='html_document', clean=TRUE, knit_root_dir='$PWD')"
+        #Rscript -e "rmarkdown::render('13_report.Rmd', output_file='$PWD/13_report_$dt.pdf', output_format='pdf_document', clean=TRUE, knit_root_dir='$PWD')"
+        '''
+    else if (workflow.profile.contains('slurm'))
+        '''
+        #!/usr/bin/env bash
+   
+        dt=$(date '+%d-%m-%Y_%H.%M.%S');
+        ls -lRh
+        echo $PWD
+    
+        Rscript -e "rmarkdown::render('13_report.Rmd', output_file='$PWD/13_report_$dt.html', output_format='html_document', clean=TRUE, knit_root_dir='$PWD')"
+        #Rscript -e "rmarkdown::render('13_report.Rmd', output_file='$PWD/13_report_$dt.pdf', output_format='pdf_document', clean=TRUE, knit_root_dir='$PWD')"
+        '''
+    else
+        error "I'm not sure which to run, you must use local or slurm profiles"
+    
 }
 
 
