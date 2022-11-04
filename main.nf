@@ -40,6 +40,7 @@ report_nine_ch = Channel.fromPath("${projectDir}/report_gen_files/09_report.Rmd"
 report_ten_ch = Channel.fromPath("${projectDir}/report_gen_files/10_report.Rmd")
 report_eleven_ch = Channel.fromPath("${projectDir}/report_gen_files/11_report.Rmd")
 report_twelve_ch = Channel.fromPath("${projectDir}/report_gen_files/12_report.Rmd")
+qiime_to_lefse_ch = Channel.fromPath("${projectDir}/r_scripts/qiime_to_lefse.R")
 
 workflow {
     ord_ioi = ORDERIOI(ioi_ch, metadata_ch, ord_ioi_ch)
@@ -59,6 +60,7 @@ workflow {
     REPORT10BETABOXPLOT(ioi_ch,ord_ioi,metadata_ch,input_ch, report_ten_ch)
     REPORT11UPGMA( table_qza, input_ch, ioi_ch, ord_ioi, tax_qza, metadata_ch, report_eleven_ch)
     REPORT12PERMANOVA(table_qza, input_ch, ioi_ch, ord_ioi, tax_qza, metadata_ch, COREMETRIC.out.distance, report_twelve_ch)
+    LEFSEFORMAT(ioi_ch, table_qza, input_ch, tax_qza, metadata_ch, qiime_to_lefse_ch)
     
 }
 
@@ -811,36 +813,26 @@ process REPORT12PERMANOVA{
     '''
 }
 
-process LefseFormat {
+process LEFSEFORMAT {
     publishDir "${params.outdir}/lefse", mode: 'copy'
 
-    container "docker://lorentzb/qiime2lefse:1.0"
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/qiime2lefse:1.0' : 'lorentzb/qiime2lefse:1.0' }"
 
     input:
-    val ioi from ch_ioi_lefse
-    file "table-dada2.qza" from ch_table_lefse_graphlan
-    file "rarefied_table.qza" from ch_table_lefse
-    file "rooted-tree.qza" from ch_tree_lefse
-    file "taxonomy.qza" from ch_tax_lefse
-    file metadata from ch_metadata_lefse
-    file "qiime_to_lefse.R" from ch_lefse_format_script
+    val ioi
+    file "feature-table.qza" 
+    path "results"
+    file "taxonomy.qza"
+    file "metadata.tsv"
+    file "qiime_to_lefse.R" 
       
-
     output:
-    path "combos/*" into ch_paired_lefse_format
-    file "table-dada2.qza" into ch_table_report_raw
-    file "taxonomy.qza" into ch_tax_report
-    file "metadata.tsv" into ( ch_metadata_report, ch_metadata_r01, ch_metadata_r02, ch_metadata_r03, 
-    ch_metadata_r04, ch_metadata_r05, ch_metadata_r06, ch_metadata_r07, ch_metadata_r08, ch_metadata_r09, 
-    ch_metadata_r10, ch_metadata_r11, ch_metadata_r12, ch_metadata_r13 )
-
-    label 'process_medium'
+    path "combos/*" 
 
     script:
     """
     #!/usr/bin/env bash
     mkdir combos
-    cp ${metadata} "metadata.tsv"
     Rscript qiime_to_lefse.R ${ioi}
     mv lefse_formatted.txt combos/
     """
@@ -869,5 +861,9 @@ process LefseAnalysis{
     mkdir result
     bash lefse_analysis.sh
     """
+}
+
+process REPORT13LEFSE{
+
 }
 
