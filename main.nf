@@ -39,6 +39,7 @@ report_eight_ch = Channel.fromPath("${projectDir}/report_gen_files/08_report.Rmd
 report_nine_ch = Channel.fromPath("${projectDir}/report_gen_files/09_report.Rmd")
 report_ten_ch = Channel.fromPath("${projectDir}/report_gen_files/10_report.Rmd")
 report_eleven_ch = Channel.fromPath("${projectDir}/report_gen_files/11_report.Rmd")
+report_twelve_ch = Channel.fromPath("${projectDir}/report_gen_files/12_report.Rmd")
 
 workflow {
     ord_ioi = ORDERIOI(ioi_ch, metadata_ch, ord_ioi_ch)
@@ -56,7 +57,8 @@ workflow {
     REPORT08RANKEDABUNDANCE(table_qza,input_ch, ioi_ch, ord_ioi, report_eight_ch, tax_qza, metadata_ch)
     REPORT09UNIFRACHEATMAP(ioi_ch, ord_ioi, metadata_ch, COREMETRIC.out.distance, report_nine_ch)
     REPORT10BETABOXPLOT(ioi_ch,ord_ioi,metadata_ch,input_ch, report_ten_ch)
-    REPORT11UPGMA( table_qza, input_ch, ioi_ch, ord_ioi, tax_qza, metadata_ch ,report_eleven_ch)
+    REPORT11UPGMA( table_qza, input_ch, ioi_ch, ord_ioi, tax_qza, metadata_ch, report_eleven_ch)
+    REPORT12PERMANOVA(table_qza, input_ch, ioi_ch, ord_ioi, tax_qza, metadata_ch, report_twelve_ch)
     
 }
 
@@ -768,6 +770,43 @@ process REPORT11UPGMA{
     Rscript -e "rmarkdown::render('11_report.Rmd', output_file='$PWD/11_report_$dt.html', output_format='html_document', clean=TRUE, knit_root_dir='$PWD')"
 
     Rscript -e "rmarkdown::render('11_report.Rmd', output_file='$PWD/11_report_$dt.pdf', output_format='pdf_document', clean=TRUE, knit_root_dir='$PWD')"
+    '''
+}
+
+process REPORT12PERMANOVA{
+
+    publishDir "${params.outdir}/html", pattern: "*.html", mode: "copy"
+    publishDir "${params.outdir}/pdf", pattern: "*.pdf", mode: "copy"
+    publishDir "${params.outdir}", pattern: "*/*.png", mode: "copy"
+
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/r_12:2.0' : 'lorentzb/r_12:2.0' }"
+
+    input:
+
+    file 'feature-table.qza'
+    path 'results'
+    file 'item_of_interest.csv'
+    file 'order_item_of_interest.csv'
+    file 'taxonomy.qza'
+    file 'metadata.tsv'
+    file '12_report.Rmd'
+
+    output:
+
+    file "12_report_*.html"
+    file "12_report_*.pdf"
+    path "permanova/*"
+     
+    script:
+
+    '''
+    #!/usr/bin/env bash
+   
+    dt=$(date '+%d-%m-%Y_%H.%M.%S');
+
+    Rscript -e "rmarkdown::render('12_report.Rmd', output_file='$PWD/12_report_$dt.html', output_format='html_document', clean=TRUE, knit_root_dir='$PWD')"
+
+    Rscript -e "rmarkdown::render('12_report.Rmd', output_file='$PWD/12_report_$dt.pdf', output_format='pdf_document', clean=TRUE, knit_root_dir='$PWD')"
     '''
 }
 
