@@ -796,7 +796,7 @@ process REPORT12PERMANOVA{
 
     file "12_report_*.html"
     file "12_report_*.pdf"
-    path "permanova/*"
+    path "anosim/*"
      
     script:
 
