@@ -66,7 +66,7 @@ workflow {
     REPORT12PERMANOVA(table_qza, input_ch, ioi_ch, ord_ioi, tax_qza, metadata_ch, COREMETRIC.out.distance, report_twelve_ch)
     LEFSEFORMAT(ioi_ch, table_qza, input_ch, tax_qza, metadata_ch, qiime_to_lefse_ch)
     LEFSEANALYSIS(LEFSEFORMAT.out.combos,lefse_analysis_ch, plot_clado_file_ch, plot_res_file_ch)
-    REPORT13LEFSE(LEFSEANALYSIS.out.images, report_thirteen_ch)
+    REPORT13LEFSE(LEFSEANALYSIS.out.images, report_thirteen_ch, ioi_ch, ord_ioi)
 }
 
 process ORDERIOI{
@@ -879,6 +879,8 @@ process REPORT13LEFSE{
 
     path images
     file '13_report.Rmd'
+    file 'item_of_interest.csv'
+    file 'order_item_of_interest.csv'
 
     output:
 
