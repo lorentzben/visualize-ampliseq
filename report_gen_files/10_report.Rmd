@@ -38,7 +38,8 @@ outdir <- outdir_name
 ```{r generated Weighted boxplots, echo=FALSE, message=FALSE, warning=FALSE}
 library(ggplot2)
 
-weighted_measurements <- read.csv(paste0("results/qiime2/diversity/beta_diversity/weighted_unifrac_distance_matrix-",ioi,"/raw_data.tsv"), sep="\t")
+#TODO check if we need to unzip this qza object
+weighted_measurements <- read.csv(paste0("weighted_unifrac_distance_matrix-",ioi,"/raw_data.tsv"), sep="\t")
 
 split_weighted_measure <- split(weighted_measurements, weighted_measurements$Group1)
 
@@ -61,7 +62,7 @@ for(frame in split_weighted_measure){
 
 ```{r generated Unweighted boxplots, echo=FALSE, message=FALSE, warning=FALSE}
 library(ggplot2)
-unweighted_measurements <- read.csv(paste0("results/qiime2/diversity/beta_diversity/unweighted_unifrac_distance_matrix-",ioi,"/raw_data.tsv"), sep="\t")
+unweighted_measurements <- read.csv(paste0("unweighted_unifrac_distance_matrix-",ioi,"/raw_data.tsv"), sep="\t")
 
 split_data_frames <- split(unweighted_measurements, unweighted_measurements$Group1)
 
