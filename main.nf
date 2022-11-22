@@ -47,6 +47,7 @@ plot_res_file_ch = Channel.fromPath("${projectDir}/python_scripts/plot_res.py")
 report_thirteen_ch = Channel.fromPath("${projectDir}/report_gen_files/13_report.Rmd")
 report_thirteen_local_ch = Channel.fromPath("${projectDir}/report_gen_files/13_report_local.Rmd")
 report_fourteen_ch = Channel.fromPath("${projectDir}/report_gen_files/14_report.Rmd")
+uncompress_script_ch = Channel.fromPath("${projectDir}/r_scripts/uncompress_diversity.r")
 
 workflow {
     ord_ioi = ORDERIOI(ioi_ch, metadata_ch, ord_ioi_ch)
@@ -63,7 +64,8 @@ workflow {
     REPORT07RAREFACTION(ioi_ch,ord_ioi,input_ch, report_seven_ch)
     REPORT08RANKEDABUNDANCE(table_qza,input_ch, ioi_ch, ord_ioi, report_eight_ch, tax_qza, metadata_ch)
     REPORT09UNIFRACHEATMAP(ioi_ch, ord_ioi, metadata_ch, COREMETRIC.out.distance, report_nine_ch)
-    REPORT10BETABOXPLOT(ioi_ch,ord_ioi,metadata_ch,input_ch, report_ten_ch, COREMETRIC.out.distance)
+    UNCOMPRESSDIVMATS(COREMETRIC.out.distance, uncompress_script_ch)
+    REPORT10BETABOXPLOT(ioi_ch,ord_ioi,metadata_ch,input_ch, report_ten_ch, UNCOMPRESSDIVMATS.out.distance)
     REPORT11UPGMA( table_qza, input_ch, ioi_ch, ord_ioi, tax_qza, metadata_ch, report_eleven_ch)
     REPORT12PERMANOVA(table_qza, input_ch, ioi_ch, ord_ioi, tax_qza, metadata_ch, COREMETRIC.out.distance, report_twelve_ch)
     LEFSEFORMAT(ioi_ch, table_qza, input_ch, tax_qza, metadata_ch, qiime_to_lefse_ch)
@@ -705,6 +707,30 @@ process REPORT09UNIFRACHEATMAP{
     Rscript -e "rmarkdown::render('09_report.Rmd', output_file='$PWD/09_report_$dt.html', output_format='html_document', clean=TRUE, knit_root_dir='$PWD')"
 
     Rscript -e "rmarkdown::render('09_report.Rmd', output_file='$PWD/09_report_$dt.pdf', output_format='pdf_document', clean=TRUE, knit_root_dir='$PWD')"
+    '''
+}
+
+process UNCOMPRESSDIVMATS{
+
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/qiime2r:1.0' : 'lorentzb/qiime2r:2.0' }"
+
+    input:
+
+    path distances
+    file "uncompress_diversity.r"
+
+    output:
+
+    path("*_distance.tsv"), emit: distance
+     
+    script:
+
+    '''
+    #!/usr/bin/env bash
+   
+    dt=$(date '+%d-%m-%Y_%H.%M.%S');
+
+    R --no-save < uncompress_diversity.r
     '''
 }
 
