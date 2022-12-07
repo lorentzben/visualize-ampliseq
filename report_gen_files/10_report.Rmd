@@ -35,6 +35,8 @@ outdir <- outdir_name
 
 ### 10.1 Weighted boxplots
 
+#TODO we need to find the boxplots from diversity, or modify the uncompress diversity or add a new process
+
 ```{r generated Weighted boxplots, echo=FALSE, message=FALSE, warning=FALSE}
 library(ggplot2)
 
