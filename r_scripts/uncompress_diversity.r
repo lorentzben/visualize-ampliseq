@@ -9,7 +9,7 @@ bray <-  qiime2R::read_qza("bray_curtis_distance_matrix.qza")
 write.table(as.matrix(bray$data),sep='\t', file='bray_distance.tsv', col.names=NA)
 
 # make jaccard div matrix
-jaccard <- qiime2R::read_qza("jaccard2.qza")
+jaccard <- qiime2R::read_qza("jaccard_distance_matrix.qza")
 write.table(as.matrix(jaccard$data),sep='\t', file='jaccard_distance.tsv', col.names=NA)
 
 # make unweighted div matrix
