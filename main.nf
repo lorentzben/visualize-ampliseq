@@ -762,7 +762,7 @@ process UNCOMPRESSDIVMATS{
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/qiime2r:1.0' : 'lorentzb/qiime2r:2.0' }"
 
     input:
-    path 
+    path distances
     file "generate_unifrac_boxplots.r"
 
     output:
