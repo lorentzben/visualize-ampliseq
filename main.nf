@@ -753,7 +753,7 @@ process UNCOMPRESSDIVMATS{
     --input-path unweighted-unifrac.qzv \
     --output-path unweighted-unifrac
 
-    cp  weighted-unifrac/*/*/metadata.tsv ./weighted-unifrac-pairwise.tsv
+    cp  unweighted-unifrac/*/*/metadata.tsv ./unweighted-unifrac-pairwise.tsv
     '''
 }
 
