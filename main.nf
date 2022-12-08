@@ -65,7 +65,7 @@ workflow {
     REPORT08RANKEDABUNDANCE(table_qza,input_ch, ioi_ch, ord_ioi, report_eight_ch, tax_qza, metadata_ch)
     REPORT09UNIFRACHEATMAP(ioi_ch, ord_ioi, metadata_ch, COREMETRIC.out.distance, report_nine_ch)
     UNCOMPRESSDIVMATS(COREMETRIC.out.distance, uncompress_script_ch)
-    GENERATEUNIFRAC(COREMETRIC.out.distance)
+    GENERATEUNIFRAC(COREMETRIC.out.distance, metadata_ch, ioi_ch)
     REPORT10BETABOXPLOT(ioi_ch,ord_ioi,metadata_ch,input_ch, report_ten_ch, GENERATEUNIFRAC.out.pairwise)
     REPORT11UPGMA( table_qza, input_ch, ioi_ch, ord_ioi, tax_qza, metadata_ch, report_eleven_ch)
     REPORT12PERMANOVA(table_qza, input_ch, ioi_ch, ord_ioi, tax_qza, metadata_ch, COREMETRIC.out.distance, report_twelve_ch)
@@ -711,9 +711,9 @@ process REPORT09UNIFRACHEATMAP{
     '''
 }
 
-process UNCOMPRESSDIVMATS{
+process GENERATEUNIFRAC{
 
-    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/qiime2r:1.0' : 'lorentzb/qiime2r:2.0' }"
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/automate_16_nf:2.0' : 'lorentzb/automate_16_nf:2.0' }"
 
     input:
 
@@ -757,8 +757,9 @@ process UNCOMPRESSDIVMATS{
     '''
 }
 
-process GENERATEUNIFRAC{
-    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/automate_16_nf:2.0' : 'lorentzb/automate_16_nf:2.0' }"
+process UNCOMPRESSDIVMATS{
+    
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/qiime2r:1.0' : 'lorentzb/qiime2r:2.0' }"
 
     input:
     path 
