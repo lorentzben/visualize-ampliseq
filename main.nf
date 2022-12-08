@@ -65,7 +65,8 @@ workflow {
     REPORT08RANKEDABUNDANCE(table_qza,input_ch, ioi_ch, ord_ioi, report_eight_ch, tax_qza, metadata_ch)
     REPORT09UNIFRACHEATMAP(ioi_ch, ord_ioi, metadata_ch, COREMETRIC.out.distance, report_nine_ch)
     UNCOMPRESSDIVMATS(COREMETRIC.out.distance, uncompress_script_ch)
-    REPORT10BETABOXPLOT(ioi_ch,ord_ioi,metadata_ch,input_ch, report_ten_ch, UNCOMPRESSDIVMATS.out.distance)
+    GENERATEUNIFRAC(COREMETRIC.out.distance)
+    REPORT10BETABOXPLOT(ioi_ch,ord_ioi,metadata_ch,input_ch, report_ten_ch, GENERATEUNIFRAC.out.pairwise)
     REPORT11UPGMA( table_qza, input_ch, ioi_ch, ord_ioi, tax_qza, metadata_ch, report_eleven_ch)
     REPORT12PERMANOVA(table_qza, input_ch, ioi_ch, ord_ioi, tax_qza, metadata_ch, COREMETRIC.out.distance, report_twelve_ch)
     LEFSEFORMAT(ioi_ch, table_qza, input_ch, tax_qza, metadata_ch, qiime_to_lefse_ch)
@@ -717,12 +718,56 @@ process UNCOMPRESSDIVMATS{
     input:
 
     path distances
-    file "uncompress_diversity.r"
+    file "metadata.tsv"
+    file 'item_of_interest.csv'
+
+    output:
+
+    path("*-pairwise.tsv"), emit: pairwise
+     
+    script:
+
+    '''
+    #!/usr/bin/env bash
+    IOI=$(cat item_of_interest.csv)
+
+    dt=$(date '+%d-%m-%Y_%H.%M.%S');
+
+    qiime diversity beta-group-significance --i-distance-matrix weighted_unifrac_distance.tsv \
+    --metadata-column $IOI \
+    --p-pairwise \
+    --o-visualization weighted-unifrac.qzv
+
+    qiime tools export \
+    --input-path weighted-unifrac.qzv \
+    --output-path weighted-unifrac
+
+    cp weighted-unifrac/*/*/metadata.tsv ./weighted-unifrac-pairwise.tsv
+
+    qiime diversity beta-group-significance --i-distance-matrix unweighted_unifrac_distance.tsv \
+    --metadata-column $IOI \
+    --p-pairwise \
+    --o-visualization unweighted-unifrac.qzv
+
+    qiime tools export \
+    --input-path unweighted-unifrac.qzv \
+    --output-path unweighted-unifrac
+
+    cp  weighted-unifrac/*/*/metadata.tsv ./weighted-unifrac-pairwise.tsv
+    '''
+}
+
+process GENERATEUNIFRAC{
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/automate_16_nf:2.0' : 'lorentzb/automate_16_nf:2.0' }"
+
+    input:
+    path 
+    file "generate_unifrac_boxplots.r"
 
     output:
 
     path("*_distance.tsv"), emit: distance
-     
+
     script:
 
     '''
@@ -732,6 +777,7 @@ process UNCOMPRESSDIVMATS{
 
     R --no-save < uncompress_diversity.r
     '''
+
 }
 
 process REPORT10BETABOXPLOT{
