@@ -733,8 +733,8 @@ process GENERATEUNIFRAC{
 
     dt=$(date '+%d-%m-%Y_%H.%M.%S');
 
-    qiime diversity beta-group-significance --i-distance-matrix weighted_unifrac_distance.tsv \
-    --m-metadata-file metadata.csv \
+    qiime diversity beta-group-significance --i-distance-matrix weighted_unifrac_distance_matrix.qza \
+    --m-metadata-file metadata.tsv \
     --m-metadata-column $IOI \
     --p-pairwise \
     --o-visualization weighted-unifrac.qzv
@@ -745,8 +745,8 @@ process GENERATEUNIFRAC{
 
     cp weighted-unifrac/*/*/metadata.tsv ./weighted-unifrac-pairwise.tsv
 
-    qiime diversity beta-group-significance --i-distance-matrix unweighted_unifrac_distance.tsv \
-    --m-metadata-file metadata.csv \
+    qiime diversity beta-group-significance --i-distance-matrix unweighted_unifrac_distance_matrix.qza \
+    --m-metadata-file metadata.tsv \
     --m-metadata-column $IOI \
     --p-pairwise \
     --o-visualization unweighted-unifrac.qzv
