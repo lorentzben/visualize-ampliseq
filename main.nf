@@ -765,7 +765,7 @@ process UNCOMPRESSDIVMATS{
 
     input:
     path distances
-    file "generate_unifrac_boxplots.r"
+    file "uncompress_diversity.r"
 
     output:
 
