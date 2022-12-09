@@ -461,7 +461,7 @@ process REPORT04ALPHATABLE{
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/r_04:2.0' : 'lorentzb/r_04:2.0' }"
 
-    stageInMode = 'link'
+
 
     input: 
 
@@ -480,6 +480,8 @@ process REPORT04ALPHATABLE{
     #!/usr/bin/env bash
    
     dt=$(date '+%d-%m-%Y_%H.%M.%S');
+
+    cp -L 04_report.Rmd .
 
     Rscript -e "rmarkdown::render('04_report.Rmd', output_file='04_report_$dt.html', output_format='html_document', output_dir='$PWD', clean=TRUE, knit_root_dir='$PWD')"
 
