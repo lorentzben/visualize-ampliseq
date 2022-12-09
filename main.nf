@@ -448,9 +448,11 @@ process REPORT03HEATMAP{
    
     dt=$(date '+%d-%m-%Y_%H.%M.%S');
 
-    Rscript -e "rmarkdown::render('03_report.Rmd', output_file='$PWD/03_report_$dt.html', output_format='html_document', clean=TRUE, knit_root_dir='$PWD')"
+    cp -L 03_report.Rmd $PWD/03_report_test.Rmd
 
-    Rscript -e "rmarkdown::render('03_report.Rmd', output_file='$PWD/03_report_$dt.pdf', output_format='pdf_document', clean=TRUE, knit_root_dir='$PWD')"
+    Rscript -e "rmarkdown::render('03_report_test.Rmd', output_file='$PWD/03_report_$dt.html', output_format='html_document', clean=TRUE, knit_root_dir='$PWD')"
+
+    Rscript -e "rmarkdown::render('03_report_test.Rmd', output_file='$PWD/03_report_$dt.pdf', output_format='pdf_document', clean=TRUE, knit_root_dir='$PWD')"
     '''
 }
 
