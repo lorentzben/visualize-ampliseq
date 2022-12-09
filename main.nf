@@ -448,9 +448,9 @@ process REPORT03HEATMAP{
    
     dt=$(date '+%d-%m-%Y_%H.%M.%S');
 
-    Rscript -e "rmarkdown::render('03_report.Rmd', output_file='$PWD/03_report_$dt.html', output_format='html_document', clean=TRUE, knit_root_dir='$PWD')" > 03_html.txt > 2>&1
+    Rscript -e "rmarkdown::render('03_report.Rmd', output_file='$PWD/03_report_$dt.html', output_format='html_document', clean=TRUE, knit_root_dir='$PWD')"
 
-    Rscript -e "rmarkdown::render('03_report.Rmd', output_file='$PWD/03_report_$dt.pdf', output_format='pdf_document', clean=TRUE, knit_root_dir='$PWD')" > 03_pdf.txt > 2>&1
+    Rscript -e "rmarkdown::render('03_report.Rmd', output_file='$PWD/03_report_$dt.pdf', output_format='pdf_document', clean=TRUE, knit_root_dir='$PWD')"
     '''
 }
 
@@ -481,7 +481,7 @@ process REPORT04ALPHATABLE{
    
     dt=$(date '+%d-%m-%Y_%H.%M.%S');
 
-    cp -L 04_report.Rmd .
+    cp -L 04_report.Rmd ./04_report.Rmd
 
     Rscript -e "rmarkdown::render('04_report.Rmd', output_file='04_report_$dt.html', output_format='html_document', output_dir='$PWD', clean=TRUE, knit_root_dir='$PWD')"
 
