@@ -461,7 +461,7 @@ process REPORT04ALPHATABLE{
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/r_04:2.0' : 'lorentzb/r_04:2.0' }"
 
-    stageInMode = 'copy'
+    stageInMode = 'link'
 
     input: 
 
