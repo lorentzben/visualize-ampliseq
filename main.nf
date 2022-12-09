@@ -749,7 +749,7 @@ process GENERATEUNIFRAC{
     --input-path weighted-unifrac.qzv \
     --output-path weighted-unifrac
 
-    cp weighted-unifrac/*/*/metadata.tsv ./weighted-unifrac-pairwise.tsv
+    cp weighted-unifrac/raw_data.tsv ./weighted-unifrac-pairwise.tsv
 
     qiime diversity beta-group-significance --i-distance-matrix unweighted_unifrac_distance_matrix.qza \
     --m-metadata-file metadata.tsv \
@@ -761,7 +761,7 @@ process GENERATEUNIFRAC{
     --input-path unweighted-unifrac.qzv \
     --output-path unweighted-unifrac
 
-    cp  unweighted-unifrac/*/*/metadata.tsv ./unweighted-unifrac-pairwise.tsv
+    cp  unweighted-unifrac/raw_data.tsv ./unweighted-unifrac-pairwise.tsv
     '''
 }
 
