@@ -5,3 +5,4 @@ RUN echo "options(renv.config.pak.enabled = TRUE, repos = c(CRAN = 'https://cran
 RUN R -e 'install.packages(c("renv","remotes"))'
 COPY renv.lock renv.lock
 RUN R -e 'renv::restore()'
+# CMD [ 'bash' ]
