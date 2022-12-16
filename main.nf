@@ -7,6 +7,7 @@ params.metadata = "${projectDir}/metadata.tsv"
 params.ioi = "treatment"
 params.ordioi = "ordered_item_of_interest.csv"
 params.outdir = "results"
+params.rare = 0
 
 log.info """\
          V I S U A L I Z E   P I P E L I N E    
@@ -16,6 +17,7 @@ log.info """\
          item of interest : ${params.ioi}
          ordered item of interest : ${params.ordioi}
          outdir   : ${params.outdir}
+         rarefaction depth : ${params.rare}
          profile : ${workflow.profile}
          """
          .stripIndent()
@@ -24,6 +26,7 @@ input_ch = Channel.fromPath(params.input, checkIfExists: true)
 metadata_ch = Channel.fromPath(params.metadata, checkIfExists: true)
 ioi_ch = Channel.of(params.ioi)
 ord_ioi_ch = Channel.fromPath(params.ordioi)
+rare_report_ch = Channel.fromPath("${projectDir}/r_scripts/rarefaction_report.Rmd")
 report_one_ch = Channel.fromPath("${projectDir}/report_gen_files/01_report_MbA.Rmd")
 filter_samples_ch = Channel.fromPath("${projectDir}/python_scripts/filter_samples.py")
 graph_sh_ch = Channel.fromPath("${projectDir}/bash_scripts/graph.sh")
@@ -51,6 +54,7 @@ uncompress_script_ch = Channel.fromPath("${projectDir}/r_scripts/uncompress_dive
 
 workflow {
     ord_ioi = ORDERIOI(ioi_ch, metadata_ch, ord_ioi_ch)
+    RAREFACTIONPLOT(input_ch, rare_report_ch)
     REPORT01BARPLOT(input_ch, metadata_ch, report_one_ch, ioi_ch)
     tax_qza = REFORMATANDQZATAX(input_ch)
     (graphlan_biom, table_qza) = GENERATEBIOMFORGRAPHLAN(metadata_ch, ioi_ch, input_ch, filter_samples_ch, tax_qza)
@@ -73,6 +77,34 @@ workflow {
     lefse_dir = LEFSEANALYSIS(LEFSEFORMAT.out.combos,lefse_analysis_ch, plot_clado_file_ch, plot_res_file_ch)
     REPORT13LEFSE(lefse_dir, report_thirteen_ch, report_thirteen_local_ch, ioi_ch, ord_ioi)
     REPORT14CITATIONS(report_fourteen_ch)
+}
+
+process RAREFACTIONPLOT{
+    publishDir "${params.outdir}/rarefaction", pattern: "*.png", mode: "copy"
+    publishDir "${params.outdir}/rarefaction", pattern: "*.csv", mode: "copy"
+    publishDir "${params.outdir}", pattern: "*.html", mode: "copy"
+
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/tidyverse:4.2.0' : 'lorentzb/tidyverse:4.2.0' }"
+
+    input:
+    path 'results'
+    path report 
+
+    output:
+    path("*.png"), emit: rare_images
+    path("*.csv"), emit: rare_tabs
+    path("*.html"), emit: rare_report
+
+    script:
+
+    '''
+    #!/usr/bin/env bash
+
+    Rscript -e "rmarkdown::render('rarefaction_report.Rmd', output_file='$PWD/rarefaction_report_$dt.html', output_format='html_document', clean=TRUE, knit_root_dir='$PWD')"
+
+    '''
+
+    
 }
 
 process ORDERIOI{
