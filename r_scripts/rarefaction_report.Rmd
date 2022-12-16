@@ -1,0 +1,116 @@
+---
+title: "Schloss Analysis for Alpha Coverage"
+output:
+  pdf_document:
+    df_print: kable
+  html_document:
+    df_print: kable
+    smart: false
+---
+
+### Load data
+
+```{r load data and make table of sample asv and count of seqs}
+library(tidyverse)
+
+set.seed("34716")
+
+prefix <- "./results/"
+
+shared <- read_tsv(paste0(prefix,"dada2/ASV_table.tsv"))
+
+shared <- as_tibble(cbind(group = names(shared), t(shared)))
+
+colnames(shared) <- shared[1,]
+shared <- shared[2:length(shared$ASV_ID),]
+
+# find total number of taxa per sample and total count of taxa across all samples. 
+shared_sub <- shared %>%
+  pivot_longer(-ASV_ID) %>%
+  group_by(ASV_ID) %>%
+  mutate(total = sum(as.numeric(value))) %>%
+  # filter(total > 1800) %>%
+  group_by(name) %>%
+  mutate(total=sum(as.numeric(value))) %>%
+  filter(total != 0) %>%
+  ungroup() %>%
+  select(-total)
+```
+
+
+```{r plot samples and goods coverage }
+# samplename ASV and number of times we saw that ASV in sample
+
+rand <- shared_sub %>%
+  uncount(as.numeric(value)) %>%
+  mutate(name = sample(name)) %>%
+  count(ASV_ID, name, name="value")
+
+# number of sequences for each samples
+sampling_coverage <- shared_sub %>% 
+  group_by(ASV_ID) %>%
+  summarize(n_seqs = sum(as.numeric(value))) %>%
+  arrange(n_seqs)
+
+most_rich <- max(sampling_coverage$n_seqs)
+least_rich <- min(sampling_coverage$n_seqs)
+
+write.csv(sampling_coverage, "sampling-coverage.csv",row.names = F)
+
+# histogram of count of samples vs number of seqs per sample
+seq_hist <- sampling_coverage %>%
+  ggplot(aes(x=n_seqs)) +
+  geom_histogram(binwidth=(most_rich/30)) +
+  coord_cartesian(xlim=c(0, most_rich))
+
+ggsave("samples_seqs_histo.png", plot = seq_hist)
+
+# each point is a sample, xaxis is random y is num sequences
+seq_jitter <- sampling_coverage %>%
+  ggplot(aes(x=1, y=n_seqs)) +
+  geom_jitter() +
+  scale_y_log10()
+
+ggsave("seq_jitter.png", plot=seq_jitter)
+
+n_samples <- length(unique(shared_sub$ASV_ID))
+
+# plot in order of abundance
+ord_abund <- sampling_coverage %>%
+  arrange(n_seqs) %>%
+  ggplot(aes(x=1:nrow(.), y=n_seqs))+
+  geom_line() +
+  coord_cartesian(xlim=c(0, n_samples), ylim=c(0, most_rich))
+
+ggsave("ordered_by_abundance.png", ord_abund)
+
+
+# print bottom 20 least abundant
+sampling_coverage %>%
+  arrange(n_seqs) %>%
+  print(n=20)
+
+
+
+# calculate goods coverage based on chosen cutoff
+coverage_stats <- shared_sub %>%
+  group_by(ASV_ID) %>%
+  summarize(n_seqs = sum(as.numeric(value)),
+            n_sings = sum(as.numeric(value) == 1),
+            goods = 100*(1 - n_sings / n_seqs)) %>%
+  filter(n_seqs > least_rich )
+
+write.csv("goods_coverage_based_on_min.csv", row.names = F)
+
+# plot goods coverage against number of sequences
+goods_plot <- coverage_stats %>%
+  ggplot(aes(x=n_seqs, y=goods)) +
+  geom_point()
+
+ggsave("goods_curve_plot.png", goods_plot)
+
+# print bottom 10 goods coverage
+coverage_stats %>% 
+  arrange(goods)
+
+```
