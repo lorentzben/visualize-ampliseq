@@ -26,6 +26,7 @@ input_ch = Channel.fromPath(params.input, checkIfExists: true)
 metadata_ch = Channel.fromPath(params.metadata, checkIfExists: true)
 ioi_ch = Channel.of(params.ioi)
 ord_ioi_ch = Channel.fromPath(params.ordioi)
+rare_val_ch = Channel.of(parmas.rare)
 rare_report_ch = Channel.fromPath("${projectDir}/r_scripts/rarefaction_report.Rmd")
 report_one_ch = Channel.fromPath("${projectDir}/report_gen_files/01_report_MbA.Rmd")
 filter_samples_ch = Channel.fromPath("${projectDir}/python_scripts/filter_samples.py")
@@ -54,7 +55,7 @@ uncompress_script_ch = Channel.fromPath("${projectDir}/r_scripts/uncompress_dive
 
 workflow {
     ord_ioi = ORDERIOI(ioi_ch, metadata_ch, ord_ioi_ch)
-    RAREFACTIONPLOT(input_ch, rare_report_ch)
+    RAREFACTIONPLOT(input_ch, rare_report_ch, rare_val_ch)
     REPORT01BARPLOT(input_ch, metadata_ch, report_one_ch, ioi_ch)
     tax_qza = REFORMATANDQZATAX(input_ch)
     (graphlan_biom, table_qza) = GENERATEBIOMFORGRAPHLAN(metadata_ch, ioi_ch, input_ch, filter_samples_ch, tax_qza)
@@ -63,7 +64,7 @@ workflow {
     REPORT03HEATMAP(input_ch, table_qza, tax_qza, metadata_ch, report_three_ch, ioi_ch, ord_ioi)
     REPORT04ALPHATABLE(input_ch,ioi_ch,report_four_ch)
     REPORT05ALPHABOXPLOT(input_ch, ioi_ch, ord_ioi, report_five_ch)
-    COREMETRIC(metadata_ch, table_qza, input_ch, count_minmax_ch)
+    COREMETRIC(metadata_ch, table_qza, input_ch, count_minmax_ch, rare_val_ch)
     REPORT06ORDINATION(table_qza, input_ch, ioi_ch, ord_ioi, report_six_ch, tax_qza, metadata_ch, COREMETRIC.out.pcoa, COREMETRIC.out.vector)
     REPORT07RAREFACTION(ioi_ch,ord_ioi,input_ch, report_seven_ch)
     REPORT08RANKEDABUNDANCE(table_qza,input_ch, ioi_ch, ord_ioi, report_eight_ch, tax_qza, metadata_ch)
@@ -88,7 +89,8 @@ process RAREFACTIONPLOT{
 
     input:
     path 'results'
-    path report 
+    path report
+ 
 
     output:
     path("*.png"), emit: rare_images
@@ -104,8 +106,65 @@ process RAREFACTIONPLOT{
 
     '''
 
-    
 }
+
+process COREMETRIC{
+
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/automate_16_nf:2.0' : 'lorentzb/automate_16_nf:2.0' }"
+
+    input:
+
+    path(metadata)
+    path(table)
+    path 'results'
+    path 'count_table_minmax_reads.py'
+    val rare_val
+    
+
+    output:
+
+    path("diversity_core/*_pcoa_results.qza")   , emit: pcoa
+    path("diversity_core/*_vector.qza")         , emit: vector
+    path("diversity_core/*_distance_matrix.qza"), emit: distance
+    path("*rarefaction.txt") , emit: depth
+
+    script:
+
+    """
+    #!/usr/bin/env bash
+
+    if (( \$rare_val == 0 )); then 
+    
+        uncompress_table='results/qiime2/abundance_tables/feature-table.tsv'
+
+        mindepth=\$(python3 count_table_minmax_reads.py \"\$uncompress_table\" minimum 2>&1)
+        if [ \"\$mindepth\" -gt \"10000\" ]; then echo \$mindepth >\"Use the sampling depth of \$mindepth for rarefaction.txt\" ; fi
+        if [ \"\$mindepth\" -lt \"10000\" -a \"\$mindepth\" -gt \"5000\" ]; then echo \$mindepth >\"WARNING The sampling depth of \$mindepth is quite small for rarefaction.txt\" ; fi
+        if [ \"\$mindepth\" -lt \"5000\" -a \"\$mindepth\" -gt \"1000\" ]; then echo \$mindepth >\"WARNING The sampling depth of \$mindepth is very small for rarefaction.txt\" ; fi
+        if [ \"\$mindepth\" -lt \"1000\" ]; then echo \$mindepth >\"WARNING The sampling depth of \$mindepth seems too small for rarefaction.txt\" ; fi
+
+        qiime diversity core-metrics-phylogenetic \
+            --m-metadata-file ${metadata} \
+            --i-phylogeny results/qiime2/phylogenetic_tree/rooted-tree.qza \
+            --i-table ${table} \
+            --p-sampling-depth \$mindepth \
+            --output-dir diversity_core \
+            --p-n-jobs-or-threads ${task.cpus} \
+            --verbose
+    else
+        qiime diversity core-metrics-phylogenetic \
+            --m-metadata-file ${metadata} \
+            --i-phylogeny results/qiime2/phylogenetic_tree/rooted-tree.qza \
+            --i-table ${table} \
+            --p-sampling-depth \$rare_val \
+            --output-dir diversity_core \
+            --p-n-jobs-or-threads ${task.cpus} \
+            --verbose
+    fi
+    """
+}
+
+
 
 process ORDERIOI{
 
@@ -557,48 +616,6 @@ process REPORT05ALPHABOXPLOT{
     '''
 }
 
-process COREMETRIC{
-
-    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/automate_16_nf:2.0' : 'lorentzb/automate_16_nf:2.0' }"
-
-    input:
-
-    path(metadata)
-    path(table)
-    path 'results'
-    path 'count_table_minmax_reads.py'
-    
-
-    output:
-
-    path("diversity_core/*_pcoa_results.qza")   , emit: pcoa
-    path("diversity_core/*_vector.qza")         , emit: vector
-    path("diversity_core/*_distance_matrix.qza"), emit: distance
-    path("*rarefaction.txt") , emit: depth
-
-    script:
-
-    """
-    #!/usr/bin/env bash
-
-    uncompress_table='results/qiime2/abundance_tables/feature-table.tsv'
-
-    mindepth=\$(python3 count_table_minmax_reads.py \"\$uncompress_table\" minimum 2>&1)
-    if [ \"\$mindepth\" -gt \"10000\" ]; then echo \$mindepth >\"Use the sampling depth of \$mindepth for rarefaction.txt\" ; fi
-    if [ \"\$mindepth\" -lt \"10000\" -a \"\$mindepth\" -gt \"5000\" ]; then echo \$mindepth >\"WARNING The sampling depth of \$mindepth is quite small for rarefaction.txt\" ; fi
-    if [ \"\$mindepth\" -lt \"5000\" -a \"\$mindepth\" -gt \"1000\" ]; then echo \$mindepth >\"WARNING The sampling depth of \$mindepth is very small for rarefaction.txt\" ; fi
-    if [ \"\$mindepth\" -lt \"1000\" ]; then echo \$mindepth >\"WARNING The sampling depth of \$mindepth seems too small for rarefaction.txt\" ; fi
-
-    qiime diversity core-metrics-phylogenetic \
-        --m-metadata-file ${metadata} \
-        --i-phylogeny results/qiime2/phylogenetic_tree/rooted-tree.qza \
-        --i-table ${table} \
-        --p-sampling-depth \$mindepth \
-        --output-dir diversity_core \
-        --p-n-jobs-or-threads ${task.cpus} \
-        --verbose
-    """
-}
 
 process REPORT06ORDINATION{
 
