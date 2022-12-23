@@ -133,7 +133,7 @@ process COREMETRIC{
     """
     #!/usr/bin/env bash
 
-    if (( \$rare_val == 0 )); then 
+    if (( $rare_val == 0 )); then 
 
         uncompress_table='results/qiime2/abundance_tables/feature-table.tsv'
 
@@ -156,7 +156,7 @@ process COREMETRIC{
             --m-metadata-file ${metadata} \
             --i-phylogeny results/qiime2/phylogenetic_tree/rooted-tree.qza \
             --i-table ${table} \
-            --p-sampling-depth \$rare_val \
+            --p-sampling-depth $rare_val \
             --output-dir diversity_core \
             --p-n-jobs-or-threads ${task.cpus} \
             --verbose
