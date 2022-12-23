@@ -189,34 +189,6 @@ process COREMETRIC{
     """
     #!/usr/bin/env bash
 
-    // if (( $rare_val == 0 )); then 
-
-    //     uncompress_table='results/qiime2/abundance_tables/feature-table.tsv'
-
-    //     mindepth=\$(python3 count_table_minmax_reads.py \"\$uncompress_table\" minimum 2>&1)
-    //     if [ \"\$mindepth\" -gt \"10000\" ]; then echo \$mindepth >\"Use the sampling depth of \$mindepth for rarefaction.txt\" ; fi
-    //     if [ \"\$mindepth\" -lt \"10000\" -a \"\$mindepth\" -gt \"5000\" ]; then echo \$mindepth >\"WARNING The sampling depth of \$mindepth is quite small for rarefaction.txt\" ; fi
-    //     if [ \"\$mindepth\" -lt \"5000\" -a \"\$mindepth\" -gt \"1000\" ]; then echo \$mindepth >\"WARNING The sampling depth of \$mindepth is very small for rarefaction.txt\" ; fi
-    //     if [ \"\$mindepth\" -lt \"1000\" ]; then echo \$mindepth >\"WARNING The sampling depth of \$mindepth seems too small for rarefaction.txt\" ; fi
-
-    //     qiime diversity core-metrics-phylogenetic \
-    //         --m-metadata-file ${metadata} \
-    //         --i-phylogeny results/qiime2/phylogenetic_tree/rooted-tree.qza \
-    //         --i-table ${table} \
-    //         --p-sampling-depth \$mindepth \
-    //         --output-dir diversity_core \
-    //         --p-n-jobs-or-threads ${task.cpus} \
-    //         --verbose
-    // else
-    //     qiime diversity core-metrics-phylogenetic \
-    //         --m-metadata-file ${metadata} \
-    //         --i-phylogeny results/qiime2/phylogenetic_tree/rooted-tree.qza \
-    //         --i-table ${table} \
-    //         --p-sampling-depth $rare_val \
-    //         --output-dir diversity_core \
-    //         --p-n-jobs-or-threads ${task.cpus} \
-    //         --verbose
-    // fi
     """
 }
 
