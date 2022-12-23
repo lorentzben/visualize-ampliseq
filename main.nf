@@ -174,7 +174,7 @@ process COREMETRIC{
     path(table)
     path 'results'
     path 'count_table_minmax_reads.py'
-    file rare_val.txt
+    path "rare_val.txt"
     
 
     output:
