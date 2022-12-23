@@ -136,6 +136,13 @@ process COREMETRICPYTHON{
     """
     #!/usr/bin/env python3
 
+    from qiime2.plugins import diversity
+    from qiime2 import Metadata
+    from qiime2.plugins import feature_table
+    from qiime2 import Artifact
+    
+    metadata = Metadata.load('sample-metadata.tsv')
+
     print($rare_val)
 
     if (( $rare_val == 0 )); then 
