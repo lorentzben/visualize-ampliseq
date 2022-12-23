@@ -110,6 +110,8 @@ process RAREFACTIONPLOT{
 }
 
 process COREMETRICPYTHON{
+    
+    //TODO update this block with python code https://docs.qiime2.org/2022.11/interfaces/artifact-api/
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/automate_16_nf:2.0' : 'lorentzb/automate_16_nf:2.0' }"
 
@@ -136,34 +138,34 @@ process COREMETRICPYTHON{
 
     print($rare_val)
 
-    # if (( $rare_val == 0 )); then 
+    if (( $rare_val == 0 )); then 
 
-    #     uncompress_table='results/qiime2/abundance_tables/feature-table.tsv'
+        uncompress_table='results/qiime2/abundance_tables/feature-table.tsv'
 
-    #     mindepth=\$(python3 count_table_minmax_reads.py \"\$uncompress_table\" minimum 2>&1)
-    #     if [ \"\$mindepth\" -gt \"10000\" ]; then echo \$mindepth >\"Use the sampling depth of \$mindepth for rarefaction.txt\" ; fi
-    #     if [ \"\$mindepth\" -lt \"10000\" -a \"\$mindepth\" -gt \"5000\" ]; then echo \$mindepth >\"WARNING The sampling depth of \$mindepth is quite small for rarefaction.txt\" ; fi
-    #     if [ \"\$mindepth\" -lt \"5000\" -a \"\$mindepth\" -gt \"1000\" ]; then echo \$mindepth >\"WARNING The sampling depth of \$mindepth is very small for rarefaction.txt\" ; fi
-    #     if [ \"\$mindepth\" -lt \"1000\" ]; then echo \$mindepth >\"WARNING The sampling depth of \$mindepth seems too small for rarefaction.txt\" ; fi
+    mindepth=\$(python3 count_table_minmax_reads.py \"\$uncompress_table\" minimum 2>&1)
+    if [ \"\$mindepth\" -gt \"10000\" ]; then echo \$mindepth >\"Use the sampling depth of \$mindepth for rarefaction.txt\" ; fi
+    if [ \"\$mindepth\" -lt \"10000\" -a \"\$mindepth\" -gt \"5000\" ]; then echo \$mindepth >\"WARNING The sampling depth of \$mindepth is quite small for rarefaction.txt\" ; fi
+    if [ \"\$mindepth\" -lt \"5000\" -a \"\$mindepth\" -gt \"1000\" ]; then echo \$mindepth >\"WARNING The sampling depth of \$mindepth is very small for rarefaction.txt\" ; fi
+    if [ \"\$mindepth\" -lt \"1000\" ]; then echo \$mindepth >\"WARNING The sampling depth of \$mindepth seems too small for rarefaction.txt\" ; fi
 
-    #     qiime diversity core-metrics-phylogenetic \
-    #         --m-metadata-file ${metadata} \
-    #         --i-phylogeny results/qiime2/phylogenetic_tree/rooted-tree.qza \
-    #         --i-table ${table} \
-    #         --p-sampling-depth \$mindepth \
-    #         --output-dir diversity_core \
-    #         --p-n-jobs-or-threads ${task.cpus} \
-    #         --verbose
-    # else
-    #     qiime diversity core-metrics-phylogenetic \
-    #         --m-metadata-file ${metadata} \
-    #         --i-phylogeny results/qiime2/phylogenetic_tree/rooted-tree.qza \
-    #         --i-table ${table} \
-    #         --p-sampling-depth $rare_val \
-    #         --output-dir diversity_core \
-    #         --p-n-jobs-or-threads ${task.cpus} \
-    #         --verbose
-    # fi
+    qiime diversity core-metrics-phylogenetic \
+        --m-metadata-file ${metadata} \
+        --i-phylogeny results/qiime2/phylogenetic_tree/rooted-tree.qza \
+        --i-table ${table} \
+        --p-sampling-depth \$mindepth \
+        --output-dir diversity_core \
+        --p-n-jobs-or-threads ${task.cpus} \
+        --verbose
+    else
+        qiime diversity core-metrics-phylogenetic \
+        --m-metadata-file ${metadata} \
+        --i-phylogeny results/qiime2/phylogenetic_tree/rooted-tree.qza \
+        --i-table ${table} \
+        --p-sampling-depth $rare_val \
+        --output-dir diversity_core \
+        --p-n-jobs-or-threads ${task.cpus} \
+        --verbose
+    fi
     """
 }
 
