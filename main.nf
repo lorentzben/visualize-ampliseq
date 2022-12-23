@@ -26,7 +26,7 @@ input_ch = Channel.fromPath(params.input, checkIfExists: true)
 metadata_ch = Channel.fromPath(params.metadata, checkIfExists: true)
 ioi_ch = Channel.of(params.ioi)
 ord_ioi_ch = Channel.fromPath(params.ordioi)
-rare_val_ch = Channel.of(parmas.rare)
+rare_val_ch = Channel.of(params.rare)
 rare_report_ch = Channel.fromPath("${projectDir}/r_scripts/rarefaction_report.Rmd")
 report_one_ch = Channel.fromPath("${projectDir}/report_gen_files/01_report_MbA.Rmd")
 filter_samples_ch = Channel.fromPath("${projectDir}/python_scripts/filter_samples.py")
@@ -134,7 +134,7 @@ process COREMETRIC{
     #!/usr/bin/env bash
 
     if (( \$rare_val == 0 )); then 
-    
+
         uncompress_table='results/qiime2/abundance_tables/feature-table.tsv'
 
         mindepth=\$(python3 count_table_minmax_reads.py \"\$uncompress_table\" minimum 2>&1)
