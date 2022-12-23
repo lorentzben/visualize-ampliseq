@@ -108,6 +108,62 @@ process RAREFACTIONPLOT{
 
 }
 
+process COREMETRICPYTHON{
+
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/automate_16_nf:2.0' : 'lorentzb/automate_16_nf:2.0' }"
+
+    input:
+
+    path(metadata)
+    path(table)
+    path 'results'
+    path 'count_table_minmax_reads.py'
+    path rare_val.txt
+    
+
+    output:
+
+    path("diversity_core/*_pcoa_results.qza")   , emit: pcoa
+    path("diversity_core/*_vector.qza")         , emit: vector
+    path("diversity_core/*_distance_matrix.qza"), emit: distance
+    path("*rarefaction.txt") , emit: depth
+
+    script:
+
+    """
+    #!/usr/bin/env python3
+
+    if (( $rare_val == 0 )); then 
+
+        uncompress_table='results/qiime2/abundance_tables/feature-table.tsv'
+
+        mindepth=\$(python3 count_table_minmax_reads.py \"\$uncompress_table\" minimum 2>&1)
+        if [ \"\$mindepth\" -gt \"10000\" ]; then echo \$mindepth >\"Use the sampling depth of \$mindepth for rarefaction.txt\" ; fi
+        if [ \"\$mindepth\" -lt \"10000\" -a \"\$mindepth\" -gt \"5000\" ]; then echo \$mindepth >\"WARNING The sampling depth of \$mindepth is quite small for rarefaction.txt\" ; fi
+        if [ \"\$mindepth\" -lt \"5000\" -a \"\$mindepth\" -gt \"1000\" ]; then echo \$mindepth >\"WARNING The sampling depth of \$mindepth is very small for rarefaction.txt\" ; fi
+        if [ \"\$mindepth\" -lt \"1000\" ]; then echo \$mindepth >\"WARNING The sampling depth of \$mindepth seems too small for rarefaction.txt\" ; fi
+
+        qiime diversity core-metrics-phylogenetic \
+            --m-metadata-file ${metadata} \
+            --i-phylogeny results/qiime2/phylogenetic_tree/rooted-tree.qza \
+            --i-table ${table} \
+            --p-sampling-depth \$mindepth \
+            --output-dir diversity_core \
+            --p-n-jobs-or-threads ${task.cpus} \
+            --verbose
+    else
+        qiime diversity core-metrics-phylogenetic \
+            --m-metadata-file ${metadata} \
+            --i-phylogeny results/qiime2/phylogenetic_tree/rooted-tree.qza \
+            --i-table ${table} \
+            --p-sampling-depth $rare_val \
+            --output-dir diversity_core \
+            --p-n-jobs-or-threads ${task.cpus} \
+            --verbose
+    fi
+    """
+}
+
 process COREMETRIC{
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/automate_16_nf:2.0' : 'lorentzb/automate_16_nf:2.0' }"
@@ -118,7 +174,7 @@ process COREMETRIC{
     path(table)
     path 'results'
     path 'count_table_minmax_reads.py'
-    val rare_val
+    file rare_val.txt
     
 
     output:
@@ -554,7 +610,7 @@ process REPORT04ALPHATABLE{
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/r_04:2.0' : 'lorentzb/r_04:2.0' }"
 
-
+    //TODO update so that it pulls from the COREMETRIC Process
 
     input: 
 
