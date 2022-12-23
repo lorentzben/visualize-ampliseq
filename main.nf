@@ -118,7 +118,7 @@ process COREMETRICPYTHON{
     path(table)
     path 'results'
     path 'count_table_minmax_reads.py'
-    path rare_val.txt
+    val rare_val > rare_val.txt
     
 
     output:
