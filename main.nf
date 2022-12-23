@@ -55,7 +55,7 @@ uncompress_script_ch = Channel.fromPath("${projectDir}/r_scripts/uncompress_dive
 
 workflow {
     ord_ioi = ORDERIOI(ioi_ch, metadata_ch, ord_ioi_ch)
-    RAREFACTIONPLOT(input_ch, rare_report_ch, rare_val_ch)
+    RAREFACTIONPLOT(input_ch, rare_report_ch)
     REPORT01BARPLOT(input_ch, metadata_ch, report_one_ch, ioi_ch)
     tax_qza = REFORMATANDQZATAX(input_ch)
     (graphlan_biom, table_qza) = GENERATEBIOMFORGRAPHLAN(metadata_ch, ioi_ch, input_ch, filter_samples_ch, tax_qza)
