@@ -169,7 +169,7 @@ process COREMETRICPYTHON{
 
 process COREMETRIC{
 
-    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker:#lorentzb/automate_16_nf:2.0' : 'lorentzb/automate_16_nf:2.0' }"
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/automate_16_nf:2.0' : 'lorentzb/automate_16_nf:2.0' }"
 
     input:
 
@@ -199,7 +199,7 @@ process COREMETRIC{
 
 process ORDERIOI{
 
-    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker:#lorentzb/automate_16_nf:2.0' : 'lorentzb/automate_16_nf:2.0' }"
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/automate_16_nf:2.0' : 'lorentzb/automate_16_nf:2.0' }"
 
     input:
     val ioi
