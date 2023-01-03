@@ -117,8 +117,8 @@ process COREMETRICPYTHON{
 
     input:
 
-    path(metadata)
-    path(table)
+    file 'metadata.tsv'
+    file 'table.qza'
     path 'results'
     path 'count_table_minmax_reads.py'
     val rare_val
@@ -140,30 +140,54 @@ process COREMETRICPYTHON{
     from qiime2 import Metadata
     from qiime2.plugins import feature_table
     from qiime2 import Artifact
-    
-    metadata = Metadata.load('sample-metadata.tsv')
+    import pandas as pd
+    import sys
+
+    metadata = Metadata.load('metadata.tsv')
+
+    diversity.pipelines.core_metrics_phylogenetic()
 
     print($rare_val)
 
-    if (( $rare_val == 0 )); then 
+    # if the default value aka use count_table_minmax_reads
+    if $rare_val == 0:
 
         uncompress_table='results/qiime2/abundance_tables/feature-table.tsv'
 
-    mindepth=\$(python3 count_table_minmax_reads.py \"\$uncompress_table\" minimum 2>&1)
-    if [ \"\$mindepth\" -gt \"10000\" ]; then echo \$mindepth >\"Use the sampling depth of \$mindepth for rarefaction.txt\" ; fi
-    if [ \"\$mindepth\" -lt \"10000\" -a \"\$mindepth\" -gt \"5000\" ]; then echo \$mindepth >\"WARNING The sampling depth of \$mindepth is quite small for rarefaction.txt\" ; fi
-    if [ \"\$mindepth\" -lt \"5000\" -a \"\$mindepth\" -gt \"1000\" ]; then echo \$mindepth >\"WARNING The sampling depth of \$mindepth is very small for rarefaction.txt\" ; fi
-    if [ \"\$mindepth\" -lt \"1000\" ]; then echo \$mindepth >\"WARNING The sampling depth of \$mindepth seems too small for rarefaction.txt\" ; fi
+        # adapted from count_table_minmax_reads.py @author Daniel Straub
+        # collected from nf-core/ampliseq
+        # read tsv and skip first two rows
+        data = pd.read_csv('results/qiime2/abundance_tables/feature-table.tsv', sep="\t", skiprows=[0, 1], header=None)  # count table
 
-    qiime diversity core-metrics-phylogenetic \
-        --m-metadata-file ${metadata} \
-        --i-phylogeny results/qiime2/phylogenetic_tree/rooted-tree.qza \
-        --i-table ${table} \
-        --p-sampling-depth \$mindepth \
-        --output-dir diversity_core \
-        --p-n-jobs-or-threads ${task.cpus} \
-        --verbose
-    else
+        # drop feature ids
+        df = data.drop(data.columns[0], axis=1)
+
+        # make sums
+        sums = df.sum()
+
+        # we want minimum values
+        mindepth = int(sums.min())
+
+        if mindepth > 10000:
+            print("Use the sampling depth of " +mindepth+" for rarefaction")
+        elif mindepth < 10000 and mindepth > 5000: 
+            print("WARNING The sampling depth of "+mindepth+" is quite small for rarefaction")
+        elif mindepth < 5000 and mindepth > 1000: 
+            print("WARNING The sampling depth of "+mindepth+" is very small for rarefaction")
+        elif mindepth < 1000: 
+            print("WARNING The sampling depth of "+mindepth+" seems too small for rarefaction")
+        
+
+        qiime diversity core-metrics-phylogenetic \
+            --m-metadata-file ${metadata} \
+            --i-phylogeny results/qiime2/phylogenetic_tree/rooted-tree.qza \
+            --i-table ${table} \
+            --p-sampling-depth \$mindepth \
+            --output-dir diversity_core \
+            --p-n-jobs-or-threads ${task.cpus} \
+            --verbose
+    # else if user submits the rarefaction depth they want to use based on rarefaction plot
+    else: 
         qiime diversity core-metrics-phylogenetic \
         --m-metadata-file ${metadata} \
         --i-phylogeny results/qiime2/phylogenetic_tree/rooted-tree.qza \
@@ -172,7 +196,7 @@ process COREMETRICPYTHON{
         --output-dir diversity_core \
         --p-n-jobs-or-threads ${task.cpus} \
         --verbose
-    fi
+    
     """
 }
 
