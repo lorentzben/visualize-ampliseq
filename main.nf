@@ -142,12 +142,18 @@ process COREMETRICPYTHON{
     from qiime2 import Artifact
     import pandas as pd
     import sys
+    import warnings
+    import os
+
+    os.mkdir("diversity_core")
+
+    warnings.filterwarnings('ignore')
 
     metadata = Metadata.load('metadata.tsv')
 
-    diversity.pipelines.core_metrics_phylogenetic()
+    unrarefied_table = Artifact.load('table.qza')
 
-    print($rare_val)
+    rooted_tree = Artifact.load('results/qiime2/phylogenetic_tree/rooted-tree.qza')
 
     # if the default value aka use count_table_minmax_reads
     if $rare_val == 0:
@@ -169,34 +175,37 @@ process COREMETRICPYTHON{
         mindepth = int(sums.min())
 
         if mindepth > 10000:
-            print("Use the sampling depth of " +mindepth+" for rarefaction")
+            print("Use the sampling depth of " +str(mindepth)+" for rarefaction")
         elif mindepth < 10000 and mindepth > 5000: 
-            print("WARNING The sampling depth of "+mindepth+" is quite small for rarefaction")
+            print("WARNING The sampling depth of "+str(mindepth)+" is quite small for rarefaction")
         elif mindepth < 5000 and mindepth > 1000: 
-            print("WARNING The sampling depth of "+mindepth+" is very small for rarefaction")
+            print("WARNING The sampling depth of "+str(mindepth)+" is very small for rarefaction")
         elif mindepth < 1000: 
-            print("WARNING The sampling depth of "+mindepth+" seems too small for rarefaction")
-        
+            print("WARNING The sampling depth of "+str(mindepth)+" seems too small for rarefaction")
 
-        qiime diversity core-metrics-phylogenetic \
-            --m-metadata-file ${metadata} \
-            --i-phylogeny results/qiime2/phylogenetic_tree/rooted-tree.qza \
-            --i-table ${table} \
-            --p-sampling-depth \$mindepth \
-            --output-dir diversity_core \
-            --p-n-jobs-or-threads ${task.cpus} \
-            --verbose
+       core = diversity.pipelines.core_metrics_phylogenetic(unrarefied_table, rooted_tree, mindepth, metadata)
+    
     # else if user submits the rarefaction depth they want to use based on rarefaction plot
     else: 
-        qiime diversity core-metrics-phylogenetic \
-        --m-metadata-file ${metadata} \
-        --i-phylogeny results/qiime2/phylogenetic_tree/rooted-tree.qza \
-        --i-table ${table} \
-        --p-sampling-depth $rare_val \
-        --output-dir diversity_core \
-        --p-n-jobs-or-threads ${task.cpus} \
-        --verbose
-    
+        core = diversity.pipelines.core_metrics_phylogenetic(unrarefied_table, rooted_tree, $rare_val, metadata)
+
+    Artifact.save(core[0], "diversity_core/rarefied_table")
+    Artifact.save(core[1], "diversity_core/faith_pd_vector")
+    Artifact.save(core[2], "diversity_core/observed_features_vector")
+    Artifact.save(core[3], "diversity_core/shannon_vector")
+    Artifact.save(core[4], "diversity_core/evenness_vector")
+    Artifact.save(core[5], "diversity_core/unweighted_unifrac_distance_matrix")
+    Artifact.save(core[6], "diversity_core/weighted_unifrac_distance_matrix")
+    Artifact.save(core[7], "diversity_core/jaccard_distance_matrix")
+    Artifact.save(core[8], "diversity_core/bray_curtis_distance_matrix")
+    Artifact.save(core[9], "diversity_core/unweighted_unifrac_pcoa_results")
+    Artifact.save(core[10], "diversity_core/weighted_unifrac_pcoa_results")
+    Artifact.save(core[11], "diversity_core/jaccard_pcoa_results")
+    Artifact.save(core[12], "diversity_core/bray_curtis_pcoa_results")
+    Artifact.save(core[13], "diversity_core/unweighted_unifrac_emperor ")
+    Artifact.save(core[14], "diversity_core/weighted_unifrac_emperor")
+    Artifact.save(core[15], "diversity_core/jaccard_emperor")
+    Artifact.save(core[16], "diversity_core/bray_curtis_emperor ")    
     """
 }
 
