@@ -184,10 +184,16 @@ process COREMETRICPYTHON{
             print("WARNING The sampling depth of "+str(mindepth)+" seems too small for rarefaction")
 
        core = diversity.pipelines.core_metrics_phylogenetic(unrarefied_table, rooted_tree, mindepth, metadata)
+       file = open("rarefaction.txt", "w")
+       file.write(str(mindepth))
+       file.close 
     
     # else if user submits the rarefaction depth they want to use based on rarefaction plot
     else: 
         core = diversity.pipelines.core_metrics_phylogenetic(unrarefied_table, rooted_tree, $rare_val, metadata)
+        file = open("rarefaction.txt", "w")
+        file.write(str($rare_val))
+        file.close 
 
     Artifact.save(core[0], "diversity_core/rarefied_table")
     Artifact.save(core[1], "diversity_core/faith_pd_vector")
@@ -202,10 +208,12 @@ process COREMETRICPYTHON{
     Artifact.save(core[10], "diversity_core/weighted_unifrac_pcoa_results")
     Artifact.save(core[11], "diversity_core/jaccard_pcoa_results")
     Artifact.save(core[12], "diversity_core/bray_curtis_pcoa_results")
-    Artifact.save(core[13], "diversity_core/unweighted_unifrac_emperor ")
+    Artifact.save(core[13], "diversity_core/unweighted_unifrac_emperor")
     Artifact.save(core[14], "diversity_core/weighted_unifrac_emperor")
     Artifact.save(core[15], "diversity_core/jaccard_emperor")
-    Artifact.save(core[16], "diversity_core/bray_curtis_emperor ")    
+    Artifact.save(core[16], "diversity_core/bray_curtis_emperor")  
+
+     
     """
 }
 
