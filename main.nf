@@ -228,7 +228,7 @@ process QZATOTSV{
 
     input:
 
-    path diversity
+    each path diversity
     
     output:
 
