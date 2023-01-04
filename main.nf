@@ -56,16 +56,18 @@ uncompress_script_ch = Channel.fromPath("${projectDir}/r_scripts/uncompress_dive
 workflow {
     ord_ioi = ORDERIOI(ioi_ch, metadata_ch, ord_ioi_ch)
     RAREFACTIONPLOT(input_ch, rare_report_ch)
+    COREMETRICPYTHON(metadata_ch, table_qza, input_ch, count_minmax_ch, rare_val_ch)
+    QZATOTSV(COREMETRICPYTHON.out.distance).collect()
     REPORT01BARPLOT(input_ch, metadata_ch, report_one_ch, ioi_ch)
     tax_qza = REFORMATANDQZATAX(input_ch)
     (graphlan_biom, table_qza) = GENERATEBIOMFORGRAPHLAN(metadata_ch, ioi_ch, input_ch, filter_samples_ch, tax_qza)
     graphlan_dir = RUNGRAPHLAN(metadata_ch, ioi_ch, tax_qza, graph_sh_ch, graphlan_biom)
     REPORT02GRAPHLANPHYLOGENETICTREE(graphlan_dir, ioi_ch, report_two_ch, report_two_local_ch)
     REPORT03HEATMAP(input_ch, table_qza, tax_qza, metadata_ch, report_three_ch, ioi_ch, ord_ioi)
+    //TODO update to COREMETRICPYTHON.out
     REPORT04ALPHATABLE(input_ch,ioi_ch,report_four_ch)
+    //REPORT04ALPHATABLE(COREMETRICPYTHON.out.vector, ioi_ch, report_four_ch)
     REPORT05ALPHABOXPLOT(input_ch, ioi_ch, ord_ioi, report_five_ch)
-    //COREMETRIC(metadata_ch, table_qza, input_ch, count_minmax_ch, rare_val_ch)
-    COREMETRICPYTHON(metadata_ch, table_qza, input_ch, count_minmax_ch, rare_val_ch)
     REPORT06ORDINATION(table_qza, input_ch, ioi_ch, ord_ioi, report_six_ch, tax_qza, metadata_ch, COREMETRICPYTHON.out.pcoa, COREMETRICPYTHON.out.vector)
     REPORT07RAREFACTION(ioi_ch,ord_ioi,input_ch, report_seven_ch)
     REPORT08RANKEDABUNDANCE(table_qza,input_ch, ioi_ch, ord_ioi, report_eight_ch, tax_qza, metadata_ch)
@@ -219,35 +221,41 @@ process COREMETRICPYTHON{
     """
 }
 
-process COREMETRIC{
+process QZATOTSV{
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/automate_16_nf:2.0' : 'lorentzb/automate_16_nf:2.0' }"
 
     input:
 
-    path(metadata)
-    path(table)
-    path 'results'
-    path 'count_table_minmax_reads.py'
-    path "rare_val.txt"
+    path diversity
     
-
     output:
 
-    path("diversity_core/*_pcoa_results.qza")   , emit: pcoa
-    path("diversity_core/*_vector.qza")         , emit: vector
-    path("diversity_core/*_distance_matrix.qza"), emit: distance
-    path("*rarefaction.txt") , emit: depth
+    path("*_distance_matrix.tsv"), emit: distance
 
     script:
 
     """
-    #!/usr/bin/env bash
+    #!/usr/bin/env python3
 
+    from qiime2.plugins import diversity
+    from qiime2 import Metadata
+    from qiime2.plugins import feature_table
+    from qiime2 import Artifact
+    import pandas as pd
+    import sys
+    import warnings
+    import os
+
+    diversity_obj = Artifact.load('$diversity')
+
+    Artifact.export_data(diversity_obj,'.')
+
+    filename = str($diversity.split('.')[0]+'.tsv')
+
+    os.rename('alpha-diversity.tsv', filename)
     """
 }
-
-
 
 process ORDERIOI{
 
