@@ -182,6 +182,9 @@ process COREMETRICPYTHON{
             print("WARNING The sampling depth of "+str(mindepth)+" is very small for rarefaction")
         elif mindepth < 1000: 
             print("WARNING The sampling depth of "+str(mindepth)+" seems too small for rarefaction")
+        else:
+            print("ERROR this shouldn't happen")
+            exit(1)
 
        core = diversity.pipelines.core_metrics_phylogenetic(unrarefied_table, rooted_tree, mindepth, metadata)
        file = open("rarefaction.txt", "w")
