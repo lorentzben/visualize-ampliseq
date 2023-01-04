@@ -251,8 +251,8 @@ process QZATOTSV{
     diversity_obj = Artifact.load('$diversity')
 
     Artifact.export_data(diversity_obj,'.')
-
-    filename = str($diversity\.split('.')[0]+'.tsv')
+    artifact_name = $diversity
+    filename = str(artifact_name.split('.')[0]+'.tsv')
 
     os.rename('alpha-diversity.tsv', filename)
     """
