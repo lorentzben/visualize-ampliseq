@@ -186,10 +186,10 @@ process COREMETRICPYTHON{
             print("ERROR this shouldn't happen")
             exit(1)
 
-       core = diversity.pipelines.core_metrics_phylogenetic(unrarefied_table, rooted_tree, mindepth, metadata)
-       file = open("rarefaction.txt", "w")
-       file.write(str(mindepth))
-       file.close 
+        core = diversity.pipelines.core_metrics_phylogenetic(unrarefied_table, rooted_tree, mindepth, metadata)
+        file = open("rarefaction.txt", "w")
+        file.write(str(mindepth))
+        file.close 
     
     # else if user submits the rarefaction depth they want to use based on rarefaction plot
     else: 
@@ -216,7 +216,6 @@ process COREMETRICPYTHON{
     Artifact.save(core[15], "diversity_core/jaccard_emperor")
     Artifact.save(core[16], "diversity_core/bray_curtis_emperor")  
 
-     
     """
 }
 
