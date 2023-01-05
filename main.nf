@@ -252,7 +252,7 @@ process QZATOTSV{
 
     for item in diversity_names:
 
-        diversity_obj = Artifact.load('item')
+        diversity_obj = Artifact.load(item)
 
         Artifact.export_data(diversity_obj,'.')
         artifact_name = item
