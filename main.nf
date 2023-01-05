@@ -60,7 +60,6 @@ workflow {
     (graphlan_biom, table_qza) = GENERATEBIOMFORGRAPHLAN(metadata_ch, ioi_ch, input_ch, filter_samples_ch, tax_qza)
     COREMETRICPYTHON(metadata_ch, table_qza, input_ch, count_minmax_ch, rare_val_ch)
     COREMETRICPYTHON.out.distance.subscribe{ QZATOTSV("$it") }
-    QZATOTSV.out.view()
     REPORT01BARPLOT(input_ch, metadata_ch, report_one_ch, ioi_ch)
     graphlan_dir = RUNGRAPHLAN(metadata_ch, ioi_ch, tax_qza, graph_sh_ch, graphlan_biom)
     REPORT02GRAPHLANPHYLOGENETICTREE(graphlan_dir, ioi_ch, report_two_ch, report_two_local_ch)
