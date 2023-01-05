@@ -247,13 +247,15 @@ process QZATOTSV{
     import warnings
     import os
 
-    diversity_obj = Artifact.load('$diversity')
+    for item in $diversity:
 
-    Artifact.export_data(diversity_obj,'.')
-    artifact_name = $diversity
-    filename = str(artifact_name.split('.')[0]+'.tsv')
+        diversity_obj = Artifact.load('item')
 
-    os.rename('alpha-diversity.tsv', filename)
+        Artifact.export_data(diversity_obj,'.')
+        artifact_name = item
+        filename = str(artifact_name.split('.')[0]+'.tsv')
+
+        os.rename('alpha-diversity.tsv', filename)
     """
 }
 
