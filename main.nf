@@ -231,7 +231,7 @@ process QZATOTSV{
     
     output:
 
-    path("diversity_core/*_vector.tsv"), emit: vector
+    path("*_vector.tsv"), emit: vector
 
     script:
 
