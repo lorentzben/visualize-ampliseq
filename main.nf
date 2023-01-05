@@ -247,8 +247,8 @@ process QZATOTSV{
     import warnings
     import os
 
-    diversity_names = [ '$diversity' ]
-    #diversity_names = diversity_names.split(' ')
+    diversity_names = '$diversity'
+    diversity_names = diversity_names.split(' ')
 
     for item in diversity_names:
 
