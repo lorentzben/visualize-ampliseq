@@ -247,7 +247,10 @@ process QZATOTSV{
     import warnings
     import os
 
-    for item in $diversity:
+    diversity_names = [ '$diversity' ]
+    diversity_names = diversity_names.split(' ')
+
+    for item in diversity_names:
 
         diversity_obj = Artifact.load('item')
 
