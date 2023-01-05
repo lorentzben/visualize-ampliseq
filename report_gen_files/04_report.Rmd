@@ -42,6 +42,12 @@ evenness <- data.frame(evenness[1:2,])
 shannon <- data.frame(shannon[1:2,])
 faith_pd <- data.frame(faith_pd[1:2,])
 
+colnames(obs) <- c('id','observed_features')
+colnames(evenness) <- c("id","pielou_evenness")
+colnames(shannon) <- c('id','shannon_entropy')
+colnames(faith_pd) <- c("id","faith_pd")
+
+
 alpha_summary <- Reduce(function(...) merge(..., by='id', all.x=TRUE), list(obs,evenness,shannon,faith_pd))
 kable(alpha_summary) %>% 
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
