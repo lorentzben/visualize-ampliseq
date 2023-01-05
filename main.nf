@@ -65,8 +65,8 @@ workflow {
     REPORT02GRAPHLANPHYLOGENETICTREE(graphlan_dir, ioi_ch, report_two_ch, report_two_local_ch)
     REPORT03HEATMAP(input_ch, table_qza, tax_qza, metadata_ch, report_three_ch, ioi_ch, ord_ioi)
     //TODO update to COREMETRICPYTHON.out
-    REPORT04ALPHATABLE(input_ch,ioi_ch,report_four_ch)
-    //REPORT04ALPHATABLE(COREMETRICPYTHON.out.vector, ioi_ch, report_four_ch)
+    //REPORT04ALPHATABLE(input_ch,ioi_ch,report_four_ch)
+    REPORT04ALPHATABLE(COREMETRICPYTHON.out.vector, ioi_ch, report_four_ch)
     REPORT05ALPHABOXPLOT(input_ch, ioi_ch, ord_ioi, report_five_ch)
     REPORT06ORDINATION(table_qza, input_ch, ioi_ch, ord_ioi, report_six_ch, tax_qza, metadata_ch, COREMETRICPYTHON.out.pcoa, COREMETRICPYTHON.out.vector)
     REPORT07RAREFACTION(ioi_ch,ord_ioi,input_ch, report_seven_ch)
@@ -654,7 +654,7 @@ process REPORT04ALPHATABLE{
 
     input: 
 
-    path 'results'
+    path (vectors)
     file 'item_of_interest.csv'
     file '04_report.Rmd'
 
