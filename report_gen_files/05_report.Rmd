@@ -29,6 +29,9 @@ ioi_ord <- as.list(ioi_ord)[[ioi]]
 outdir_name <- "alpha_diversity_boxplot"
 if(!dir.exists(outdir_name)) {dir.create(outdir_name)}
 outdir <- outdir_name
+
+metadata = read.table("metadata.tsv", header=TRUE)
+metadata <- metadata[2:length(metadata[,1]),]
 ```
 
 ## 5 Alpha Diversity Plot 
@@ -43,10 +46,9 @@ library(ggplot2)
 ioi <- readLines("item_of_interest.csv")
 ioi<-as.character(ioi)
 obs_vals <- read.table("observed_features_vector.tsv", header = TRUE)
-#TODO remove this line if not needed
-metadata = read.table("metadata.tsv", header=TRUE)
-dims = dim(obs_vals)
-obs_vals <- data.frame(obs_vals[2:dims[1],])
+obs_vals$ID <- row.names(obs_vals)
+obs_vals <- data.frame(merge(metadata, obs_vals))
+
 obs_vals[[ioi]] <- factor(obs_vals[[ioi]], levels=ioi_ord)
 obs_vals$observed_features <- as.numeric(as.character(obs_vals$observed_features))
 obs_boxplot <- ggplot(obs_vals, aes_string(x=ioi,y = obs_vals$observed_features, fill=ioi)) + geom_boxplot() + ylab("Observed Features") +theme_bw()
@@ -72,15 +74,11 @@ library(tidyverse)
 library(rstatix)
 library(ggplot2)
 
-obs <- read.table("observed_features_vector.tsv", header = TRUE)
-#TODO remove this line if not needed
-#obs <- read.table("obs/metadata.tsv", header = TRUE)
-obs_stat <- data.frame(obs[c('id',ioi,'observed_features')])
 
 obs_vals[[ioi]] <- factor(obs_vals[[ioi]], levels=ioi_ord)
 
 form <- as.formula(paste0("observed_features ~ ", ioi))
-kruskal_table <- rstatix::kruskal_test(data = obs_stat, formula = form)
+kruskal_table <- rstatix::kruskal_test(data = obs_vals, formula = form)
 kruskal_table <- add_significance(kruskal_table, p.col="p",output.col = "p.signif",symbols =c("****", "***", "**", "$*$", "ns"))
 
 kable(kruskal_table) %>% 
@@ -88,7 +86,7 @@ kable(kruskal_table) %>%
 
 form = as.formula(paste0("observed_features ~", ioi))
 
-dunn_table <- rstatix::dunn_test(data = obs_stat, formula = form, p.adjust.method = "holm") 
+dunn_table <- rstatix::dunn_test(data = obs_vals, formula = form, p.adjust.method = "holm") 
 dunn_table<- add_significance(dunn_table, p.col="p.adj",output.col = "p.adj.signif",symbols =c("****", "***", "**", "$*$", "ns"))
 kable(dunn_table) %>% 
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
@@ -116,10 +114,9 @@ library(ggplot2)
 
 
 shannon_vals <- read.table("shannon_vector.tsv", header = TRUE)
-#TODO remove if not needed
-#shannon_vals <- read.table("shannon/metadata.tsv",sep = '\t', header = TRUE)
-dims = dim(shannon_vals)
-shannon_vals <- data.frame(shannon_vals[2:dims[1],])
+
+shannon_vals$ID <- row.names(shannon_vals)
+shannon_vals <- data.frame(merge(metadata, shannon_vals))
 shannon_vals[[ioi]] <- factor(shannon_vals[[ioi]], levels=ioi_ord)
 shannon_vals$shannon_entropy <- as.numeric(as.character(shannon_vals$shannon_entropy))
 shannon_boxplot <- ggplot(shannon_vals, aes_string(x=ioi, y=shannon_vals$shannon_entropy, fill=ioi)) + geom_boxplot() + ylab("Shannon") + theme_bw() + xlab(ioi)
@@ -143,23 +140,17 @@ library(ggpubr)
 library(tidyverse)
 library(ggplot2)
 
-
-shannon <- read.table("shannon_vector.tsv", header = TRUE)
-#TODO remove if not needed
-#shannon <- read.table("shannon/metadata.tsv", header = TRUE, sep='\t')
-shannon_stat <- data.frame(shannon[c('id',ioi,'shannon_entropy')])
-
 shannon_vals[[ioi]] <- factor(shannon_vals[[ioi]], levels=ioi_ord)
 
 form <- as.formula(paste0("shannon_entropy ~ ", ioi))
-kruskal_table <- rstatix::kruskal_test(data = shannon_stat, formula =form)
+kruskal_table <- rstatix::kruskal_test(data = shannon_vals, formula =form)
 kruskal_table <- add_significance(kruskal_table, p.col="p",output.col = "p.signif",symbols =c("****", "***", "**", "$*$", "ns"))
 kable(kruskal_table) %>% 
   kable_styling(bootstrap_options = c("hover", "condensed", "responsive"))
 
 form = as.formula(paste0("shannon_entropy ~", ioi))
 
-dunn_table <- rstatix::dunn_test(data = shannon_stat, formula = form, p.adjust.method = "holm")
+dunn_table <- rstatix::dunn_test(data = shannon_vals, formula = form, p.adjust.method = "holm")
 dunn_table<- add_significance(dunn_table, p.col="p.adj",output.col = "p.adj.signif",symbols =c("****", "***", "**", "$*$", "ns"))
 kable(dunn_table) %>% 
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
@@ -187,10 +178,10 @@ library(ggplot2)
 
 evenness_vals <- read.table("evenness_vector.tsv", header=TRUE)
 
-dims = dim(evenness_vals)
-evenness_vals <- data.frame(evenness_vals[2:dims[1],])
+evenness_vals$ID <- row.names(evenness_vals)
+evenness_vals <- data.frame(merge(metadata, evenness_vals))
 evenness_vals[[ioi]] <- factor(evenness_vals[[ioi]],levels=ioi_ord)
-evenness_vals$simpson <- as.numeric(as.character(evenness_vals$pielou_evenness))
+evenness_vals$pielou_evenness <- as.numeric(as.character(evenness_vals$pielou_evenness))
 evenness_boxplot <- ggplot(evenness_vals, aes_string(x=evenness_vals[[ioi]], y=evenness_vals$pielou_evenness, fill=ioi)) + geom_boxplot() + ylab("Evenness") + theme_bw() + xlab(ioi)
 evenness_boxplot
 
@@ -212,20 +203,18 @@ library(ggpubr)
 library(tidyverse)
 library(ggplot2)
 
-evenness <- read.table("evenness_vector.tsv", header=TRUE)
-evenness_stat <- data.frame(evenness[c('id',ioi,'pielou_evenness')])
 
 evenness_vals[[ioi]] <- factor(evenness_vals[[ioi]], levels=ioi_ord)
 
 form <- as.formula(paste0("pielou_evenness ~ ", ioi))
-kruskal_table <- rstatix::kruskal_test(data = evenness_stat, formula = form)
+kruskal_table <- rstatix::kruskal_test(data = evenness_vals, formula = form)
 kruskal_table <- add_significance(kruskal_table, p.col="p",output.col = "p.signif",symbols =c("****", "***", "**", "$*$", "ns"))
 kable(kruskal_table) %>% 
   kable_styling(bootstrap_options = c("hover", "condensed", "responsive"))
 
 form = as.formula(paste0("pielou_evenness ~", ioi))
 
-dunn_table <- rstatix::dunn_test(data = evenness_stat, formula = form, p.adjust.method = "holm") 
+dunn_table <- rstatix::dunn_test(data = evenness_vals, formula = form, p.adjust.method = "holm") 
 dunn_table<- add_significance(dunn_table, p.col="p.adj",output.col = "p.adj.signif",symbols =c("****", "***", "**", "$*$", "ns"))
 kable(dunn_table) %>% 
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
@@ -248,10 +237,9 @@ ggsave("evenness_boxplot_w_signif.png", plot=p, path=outdir)
 library(ggplot2)
 
 faith_pd_vals <- read.table("faith_pd_vector.tsv", header=TRUE)
-#TODO remove if not needed
-#faith_pd_vals <- read.table("faith_pd/metadata.tsv",sep = '\t', header = TRUE)
-dims = dim(faith_pd_vals)
-faith_pd_vals <- data.frame(faith_pd_vals[2:dims[1],])
+
+faith_pd_vals$ID <- row.names(faith_pd_vals)
+faith_pd_vals <- data.frame(merge(metadata, faith_pd_vals))
 faith_pd_vals[[ioi]] <- factor(faith_pd_vals[[ioi]], levels=ioi_ord)
 faith_pd_vals$faith_pd <- as.numeric(as.character(faith_pd_vals$faith_pd))
 faith_pd_boxplot <- ggplot(faith_pd_vals, aes_string(x=faith_pd_vals[[ioi]], y=faith_pd_vals$faith_pd, fill=ioi)) + geom_boxplot() + ylab("Faith PD") + theme_bw() + xlab(ioi)
@@ -275,22 +263,18 @@ library(ggpubr)
 library(tidyverse)
 library(ggplot2)
 
-faith_pd <- read.table("faith_pd_vector.tsv", header=TRUE)
-#TODO remove if not needed
-#faith_pd <- read.table("faith_pd/metadata.tsv", header = TRUE, sep='\t')
-faith_pd_stat <- data.frame(faith_pd[c('id',ioi,'faith_pd')])
 
 faith_pd_vals[[ioi]] <- factor(faith_pd_vals[[ioi]], levels=ioi_ord)
 
 form <- as.formula(paste0("faith_pd ~ ", ioi))
-kruskal_table <- rstatix::kruskal_test(data = faith_pd_stat, formula = form)
+kruskal_table <- rstatix::kruskal_test(data = faith_pd_vals, formula = form)
 kruskal_table <- add_significance(kruskal_table, p.col="p",output.col = "p.signif",symbols =c("****", "***", "**", "$*$", "ns"))
 kable(kruskal_table) %>% 
   kable_styling(bootstrap_options = c("hover", "condensed", "responsive"))
 
 form = as.formula(paste0("faith_pd ~", ioi))
 
-dunn_table <- rstatix::dunn_test(data = faith_pd_stat, formula = form, p.adjust.method = "holm") 
+dunn_table <- rstatix::dunn_test(data = faith_pd_vals, formula = form, p.adjust.method = "holm") 
 dunn_table<- add_significance(dunn_table, p.col="p.adj",output.col = "p.adj.signif",symbols =c("****", "***", "**", "$*$", "ns"))
 kable(dunn_table) %>% 
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
