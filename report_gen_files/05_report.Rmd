@@ -44,7 +44,7 @@ ioi <- readLines("item_of_interest.csv")
 ioi<-as.character(ioi)
 obs_vals <- read.table("observed_features_vector.tsv", header = TRUE)
 #TODO remove this line if not needed
-#obs_vals = read.csv("obs/metadata.tsv", sep='\t')
+metadata = read.table("metadata.tsv", header=TRUE)
 dims = dim(obs_vals)
 obs_vals <- data.frame(obs_vals[2:dims[1],])
 obs_vals[[ioi]] <- factor(obs_vals[[ioi]], levels=ioi_ord)
