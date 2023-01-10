@@ -42,7 +42,7 @@ library(ggplot2)
 #subsets and plots observed features in a boxplot format
 ioi <- readLines("item_of_interest.csv")
 ioi<-as.character(ioi)
-obs_vals <- read.table("results/qiime2/diversity/alpha_diversity/observed_features_vector/metadata.tsv", header = TRUE)
+obs_vals <- read.table("observed_features_vector.tsv", header = TRUE)
 #TODO remove this line if not needed
 #obs_vals = read.csv("obs/metadata.tsv", sep='\t')
 dims = dim(obs_vals)
@@ -72,7 +72,7 @@ library(tidyverse)
 library(rstatix)
 library(ggplot2)
 
-obs <- read.table("results/qiime2/diversity/alpha_diversity/observed_features_vector/metadata.tsv", header = TRUE)
+obs <- read.table("observed_features_vector.tsv", header = TRUE)
 #TODO remove this line if not needed
 #obs <- read.table("obs/metadata.tsv", header = TRUE)
 obs_stat <- data.frame(obs[c('id',ioi,'observed_features')])
@@ -115,7 +115,7 @@ ggsave("obs_boxplot_w_signif.png", plot=p, path=outdir)
 library(ggplot2)
 
 
-shannon_vals <- read.table("results/qiime2/diversity/alpha_diversity/shannon_vector/metadata.tsv", header = TRUE)
+shannon_vals <- read.table("shannon_vector.tsv", header = TRUE)
 #TODO remove if not needed
 #shannon_vals <- read.table("shannon/metadata.tsv",sep = '\t', header = TRUE)
 dims = dim(shannon_vals)
@@ -144,7 +144,7 @@ library(tidyverse)
 library(ggplot2)
 
 
-shannon <- read.table("results/qiime2/diversity/alpha_diversity/shannon_vector/metadata.tsv", header = TRUE)
+shannon <- read.table("shannon_vector.tsv", header = TRUE)
 #TODO remove if not needed
 #shannon <- read.table("shannon/metadata.tsv", header = TRUE, sep='\t')
 shannon_stat <- data.frame(shannon[c('id',ioi,'shannon_entropy')])
@@ -185,7 +185,7 @@ ggsave("shannon_boxplot_w_signif.png", plot=p, path=outdir)
 library(ggplot2) 
 
 
-evenness_vals <- read.table("results/qiime2/diversity/alpha_diversity/evenness_vector/metadata.tsv", header=TRUE)
+evenness_vals <- read.table("evenness_vector.tsv", header=TRUE)
 
 dims = dim(evenness_vals)
 evenness_vals <- data.frame(evenness_vals[2:dims[1],])
@@ -212,7 +212,7 @@ library(ggpubr)
 library(tidyverse)
 library(ggplot2)
 
-evenness <- read.table("results/qiime2/diversity/alpha_diversity/evenness_vector/metadata.tsv", header=TRUE)
+evenness <- read.table("evenness_vector.tsv", header=TRUE)
 evenness_stat <- data.frame(evenness[c('id',ioi,'pielou_evenness')])
 
 evenness_vals[[ioi]] <- factor(evenness_vals[[ioi]], levels=ioi_ord)
@@ -247,7 +247,7 @@ ggsave("evenness_boxplot_w_signif.png", plot=p, path=outdir)
 ```{r alpha diversity plot of PD_whole_tree, echo=FALSE, message=FALSE, warning=FALSE}
 library(ggplot2)
 
-faith_pd_vals <- read.table("results/qiime2/diversity/alpha_diversity/faith_pd_vector/metadata.tsv", header=TRUE)
+faith_pd_vals <- read.table("faith_pd_vector.tsv", header=TRUE)
 #TODO remove if not needed
 #faith_pd_vals <- read.table("faith_pd/metadata.tsv",sep = '\t', header = TRUE)
 dims = dim(faith_pd_vals)
@@ -275,7 +275,7 @@ library(ggpubr)
 library(tidyverse)
 library(ggplot2)
 
-faith_pd <- read.table("results/qiime2/diversity/alpha_diversity/faith_pd_vector/metadata.tsv", header=TRUE)
+faith_pd <- read.table("faith_pd_vector.tsv", header=TRUE)
 #TODO remove if not needed
 #faith_pd <- read.table("faith_pd/metadata.tsv", header = TRUE, sep='\t')
 faith_pd_stat <- data.frame(faith_pd[c('id',ioi,'faith_pd')])
