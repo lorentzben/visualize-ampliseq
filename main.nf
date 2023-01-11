@@ -67,6 +67,7 @@ workflow {
     REPORT04ALPHATABLE(QZATOTSV.out.vector, ioi_ch, report_four_ch)
     REPORT05ALPHABOXPLOT(QZATOTSV.out.vector, ioi_ch, ord_ioi, metadata_ch, report_five_ch)
     REPORT06ORDINATION(table_qza, input_ch, ioi_ch, ord_ioi, report_six_ch, tax_qza, metadata_ch, COREMETRICPYTHON.out.pcoa, COREMETRICPYTHON.out.vector)
+    //GENERATERAREFACTIONCURVE(metadata_ch, table_qza, input_ch, count_minmax_ch, rare_val_ch)
     REPORT07RAREFACTION(ioi_ch,ord_ioi,input_ch, report_seven_ch)
     REPORT08RANKEDABUNDANCE(table_qza,input_ch, ioi_ch, ord_ioi, report_eight_ch, tax_qza, metadata_ch)
     REPORT09UNIFRACHEATMAP(ioi_ch, ord_ioi, metadata_ch, COREMETRICPYTHON.out.distance, report_nine_ch)
@@ -111,8 +112,6 @@ process RAREFACTIONPLOT{
 
 process COREMETRICPYTHON{
     
-    //TODO update this block with python code https://docs.qiime2.org/2022.11/interfaces/artifact-api/
-
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/automate_16_nf:2.0' : 'lorentzb/automate_16_nf:2.0' }"
 
     input:
@@ -648,7 +647,6 @@ process REPORT04ALPHATABLE{
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/r_04:2.0' : 'lorentzb/r_04:2.0' }"
 
-    //TODO update so that it pulls from the COREMETRIC Process
 
     input: 
 
@@ -749,6 +747,108 @@ process REPORT06ORDINATION{
 
     Rscript -e "rmarkdown::render('06_report.Rmd', output_file='$PWD/06_report_$dt.pdf', output_format='pdf_document', clean=TRUE, knit_root_dir='$PWD')"
     '''
+}
+
+process GENERATERAREFACTIONCURVE{
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/automate_16_nf:2.0' : 'lorentzb/automate_16_nf:2.0' }"
+
+    input:
+    
+    file 'metadata.tsv'
+    file 'table.qza'
+    path 'results'
+    path 'count_table_minmax_reads.py'
+    val rare_val
+
+    output:
+
+    path("*.tsv"), emit rareVector
+
+    script:
+
+    """
+    #!/usr/bin/env python3
+
+
+    from qiime2.plugins.diversity.visualizers import alpha_rarefaction
+    from qiime2.plugins import diversity
+    from qiime2 import Metadata
+    from qiime2.plugins import feature_table
+    from qiime2 import Artifact
+    import pandas as pd
+    import sys
+    import warnings
+    import os
+
+    table = Artifact.load('table.qza')
+    metadata = Metadata.load('metadata.tsv')
+    rooted_tree = Artifact.load('results/qiime2/phylogenetic_tree/rooted-tree.qza')
+
+    # if the default value aka use count_table_minmax_reads
+    if $rare_val == 0:
+
+        uncompress_table='results/qiime2/abundance_tables/feature-table.tsv'
+
+        # adapted from count_table_minmax_reads.py @author Daniel Straub
+        # collected from nf-core/ampliseq
+        # read tsv and skip first two rows
+        data = pd.read_csv('results/qiime2/abundance_tables/feature-table.tsv', sep="\t", skiprows=[0, 1], header=None)  # count table
+
+        # drop feature ids
+        df = data.drop(data.columns[0], axis=1)
+
+        # make sums
+        sums = df.sum()
+
+        # we want minimum values
+        mindepth = int(sums.min())
+
+        if mindepth > 10000:
+            print("Use the sampling depth of " +str(mindepth)+" for rarefaction")
+        elif mindepth < 10000 and mindepth > 5000: 
+            print("WARNING The sampling depth of "+str(mindepth)+" is quite small for rarefaction")
+        elif mindepth < 5000 and mindepth > 1000: 
+            print("WARNING The sampling depth of "+str(mindepth)+" is very small for rarefaction")
+        elif mindepth < 1000: 
+            print("WARNING The sampling depth of "+str(mindepth)+" seems too small for rarefaction")
+        else:
+            print("ERROR this shouldn't happen")
+            exit(1)
+
+        #TODO check that mindepth is the correct cutoff, or if we want maxdepth 
+        rarefact = (table, rooted_tree, mindepth, metadata)
+        file = open("rarefaction.txt", "w")
+        file.write(str(mindepth))
+        file.close 
+    
+    # else if user submits the rarefaction depth they want to use based on rarefaction plot
+    else: 
+        core = diversity.pipelines.core_metrics_phylogenetic(unrarefied_table, rooted_tree, $rare_val, metadata)
+        file = open("rarefaction.txt", "w")
+        file.write(str($rare_val))
+        file.close 
+
+    #TODO update these save commands
+    Artifact.save(core[0], "diversity_core/rarefied_table")
+    Artifact.save(core[1], "diversity_core/faith_pd_vector")
+    Artifact.save(core[2], "diversity_core/observed_features_vector")
+    Artifact.save(core[3], "diversity_core/shannon_vector")
+    Artifact.save(core[4], "diversity_core/evenness_vector")
+    Artifact.save(core[5], "diversity_core/unweighted_unifrac_distance_matrix")
+    Artifact.save(core[6], "diversity_core/weighted_unifrac_distance_matrix")
+    Artifact.save(core[7], "diversity_core/jaccard_distance_matrix")
+    Artifact.save(core[8], "diversity_core/bray_curtis_distance_matrix")
+    Artifact.save(core[9], "diversity_core/unweighted_unifrac_pcoa_results")
+    Artifact.save(core[10], "diversity_core/weighted_unifrac_pcoa_results")
+    Artifact.save(core[11], "diversity_core/jaccard_pcoa_results")
+    Artifact.save(core[12], "diversity_core/bray_curtis_pcoa_results")
+    Artifact.save(core[13], "diversity_core/unweighted_unifrac_emperor")
+    Artifact.save(core[14], "diversity_core/weighted_unifrac_emperor")
+    Artifact.save(core[15], "diversity_core/jaccard_emperor")
+    Artifact.save(core[16], "diversity_core/bray_curtis_emperor") 
+
+
+    """
 }
 
 process REPORT07RAREFACTION{
