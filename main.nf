@@ -762,8 +762,7 @@ process GENERATERAREFACTIONCURVE{
     val rare_val
 
     output:
-
-    path("*.tsv"), emit rareVector
+    path("*.tsv"), emit: rareVector
 
     script:
 
