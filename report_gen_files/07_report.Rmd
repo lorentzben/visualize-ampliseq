@@ -29,6 +29,9 @@ ioi_ord <- as.list(ioi_ord)[[ioi]]
 outdir_name <- "rarefaction_plots"
 if(!dir.exists(outdir_name)) {dir.create(outdir_name)}
 outdir <- outdir_name
+
+metadata = read.table("metadata.tsv", header=TRUE)
+metadata <- metadata[2:length(metadata[,1]),]
 ```
 
 ## 7 Rarefaction Curves
@@ -43,7 +46,10 @@ numextract <- function(string){
   str_extract(string, "\\-*\\d+\\.*\\d*")
 }
 
+
+
 obs_rarefy <- read.csv("observed_features.csv")
+
 samples <- obs_rarefy[1]
 one <- obs_rarefy[2:11]
 two <- obs_rarefy[12:21]
