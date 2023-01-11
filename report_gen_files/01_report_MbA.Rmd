@@ -84,8 +84,6 @@ new_tree_file <- paste0(prepend,"qiime2/phylogenetic_tree/tree.nwk")
 mbSet <- ReadTreeFile(mbSet,new_tree_file)
 
 #import metadata file 
-#TODO , dont hard code this
-#TODO read csv skip row 1
 new_metadata_file <- paste0("metadata.tsv")
 new_metadata <- read.csv(new_metadata_file,sep = '\t',header=1) 
 new_metadata <- new_metadata[2:length(new_metadata$ID),]
@@ -134,7 +132,7 @@ if (topN < select_top){
 mbSet<-PlotTaxaAundanceBar(mbSet, paste0(outdir,"/taxa_alpha_merge_relative_",taxa_level),taxa_level,ioi, "none", "barnorm",10, "set3","sum",10, "bottom", "F", "png",dpi = dpi)
 
 # Shows top 10 taxa (Will error out if less than 10) relative abundance
-#TODO Create some code to check for top 10
+
 mbSet<-PlotTaxaAundanceBar(mbSet, paste0(outdir,"/taxa_alpha_subset_relative_",taxa_level),taxa_level,ioi, "none", "barnorm",10, "set3","sum",select_top, "top", "F", "png",dpi = dpi)
 
 # Merges taxa with counts lower than 10 absolute abundance
@@ -186,7 +184,7 @@ if (topN < select_top){
 mbSet<-PlotTaxaAundanceBar(mbSet, paste0(outdir,"/taxa_alpha_merge_relative_",taxa_level),taxa_level,ioi, "none", "barnorm",10, "set3","sum",10, "bottom", "F", "png",dpi = dpi)
 
 # Shows top 10 taxa (Will error out if less than 10) relative abundance
-#TODO Create some code to check for top 10
+
 mbSet<-PlotTaxaAundanceBar(mbSet, paste0(outdir,"/taxa_alpha_subset_relative_",taxa_level),taxa_level,ioi, "none", "barnorm",10, "set3","sum",select_top, "top", "F", "png",dpi = dpi)
 
 # Merges taxa with counts lower than 10 absolute abundance
@@ -237,7 +235,7 @@ if (topN < select_top){
 mbSet<-PlotTaxaAundanceBar(mbSet, paste0(outdir,"/taxa_alpha_merge_relative_",taxa_level),taxa_level,ioi, "none", "barnorm",10, "set3","sum",10, "bottom", "F", "png",dpi = dpi)
 
 # Shows top 10 taxa (Will error out if less than 10) relative abundance
-#TODO Create some code to check for top 10
+
 mbSet<-PlotTaxaAundanceBar(mbSet, paste0(outdir,"/taxa_alpha_subset_relative_",taxa_level),taxa_level,ioi, "none", "barnorm",10, "set3","sum",select_top, "top", "F", "png",dpi = dpi)
 
 # Merges taxa with counts lower than 10 absolute abundance

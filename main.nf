@@ -814,7 +814,7 @@ process GENERATERAREFACTIONCURVE{
             print("ERROR this shouldn't happen")
             exit(1)
 
-        #TODO check that mindepth is the correct cutoff, or if we want maxdepth 
+  
         rarefact = alpha_rarefaction(table=table, max_depth=mindepth, phylogeny=rooted_tree)
         file = open("rarefaction.txt", "w")
         file.write(str(mindepth))
@@ -827,7 +827,7 @@ process GENERATERAREFACTIONCURVE{
         file.write(str($rare_val))
         file.close 
 
-    #TODO update these save commands
+    
     Artifact.export_data(rarefact.visualization,'rarefact')
 
 

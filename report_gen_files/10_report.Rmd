@@ -35,12 +35,12 @@ outdir <- outdir_name
 
 ### 10.1 Weighted boxplots
 
-#TODO we need to find the boxplots from diversity, or modify the uncompress diversity or add a new process
+
 
 ```{r generated Weighted boxplots, echo=FALSE, message=FALSE, warning=FALSE}
 library(ggplot2)
 
-#TODO check if we need to unzip this qza object
+
 weighted_measurements <- read.csv(paste0("weighted-unifrac-pairwise.tsv"), sep="\t")
 
 split_weighted_measure <- split(weighted_measurements, weighted_measurements$Group1)
