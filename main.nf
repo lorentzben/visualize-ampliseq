@@ -67,7 +67,8 @@ workflow {
     REPORT04ALPHATABLE(QZATOTSV.out.vector, ioi_ch, report_four_ch)
     REPORT05ALPHABOXPLOT(QZATOTSV.out.vector, ioi_ch, ord_ioi, metadata_ch, report_five_ch)
     REPORT06ORDINATION(table_qza, input_ch, ioi_ch, ord_ioi, report_six_ch, tax_qza, metadata_ch, COREMETRICPYTHON.out.pcoa, COREMETRICPYTHON.out.vector)
-    //GENERATERAREFACTIONCURVE(metadata_ch, table_qza, input_ch, count_minmax_ch, rare_val_ch)
+    GENERATERAREFACTIONCURVE(metadata_ch, table_qza, input_ch, count_minmax_ch, rare_val_ch)
+    //TODO update channel with the GENERATERAREFACTIONCURVE.out.rareVector
     REPORT07RAREFACTION(ioi_ch,ord_ioi,input_ch, report_seven_ch)
     REPORT08RANKEDABUNDANCE(table_qza,input_ch, ioi_ch, ord_ioi, report_eight_ch, tax_qza, metadata_ch)
     REPORT09UNIFRACHEATMAP(ioi_ch, ord_ioi, metadata_ch, COREMETRICPYTHON.out.distance, report_nine_ch)
@@ -816,36 +817,20 @@ process GENERATERAREFACTIONCURVE{
             exit(1)
 
         #TODO check that mindepth is the correct cutoff, or if we want maxdepth 
-        rarefact = (table, rooted_tree, mindepth, metadata)
+        rarefact = alpha_rarefaction(table, rooted_tree, mindepth, metadata)
         file = open("rarefaction.txt", "w")
         file.write(str(mindepth))
         file.close 
     
     # else if user submits the rarefaction depth they want to use based on rarefaction plot
     else: 
-        core = diversity.pipelines.core_metrics_phylogenetic(unrarefied_table, rooted_tree, $rare_val, metadata)
+        rarefact = alpha_rarefaction(table, rooted_tree, $rare_val, metadata)
         file = open("rarefaction.txt", "w")
         file.write(str($rare_val))
         file.close 
 
     #TODO update these save commands
-    Artifact.save(core[0], "diversity_core/rarefied_table")
-    Artifact.save(core[1], "diversity_core/faith_pd_vector")
-    Artifact.save(core[2], "diversity_core/observed_features_vector")
-    Artifact.save(core[3], "diversity_core/shannon_vector")
-    Artifact.save(core[4], "diversity_core/evenness_vector")
-    Artifact.save(core[5], "diversity_core/unweighted_unifrac_distance_matrix")
-    Artifact.save(core[6], "diversity_core/weighted_unifrac_distance_matrix")
-    Artifact.save(core[7], "diversity_core/jaccard_distance_matrix")
-    Artifact.save(core[8], "diversity_core/bray_curtis_distance_matrix")
-    Artifact.save(core[9], "diversity_core/unweighted_unifrac_pcoa_results")
-    Artifact.save(core[10], "diversity_core/weighted_unifrac_pcoa_results")
-    Artifact.save(core[11], "diversity_core/jaccard_pcoa_results")
-    Artifact.save(core[12], "diversity_core/bray_curtis_pcoa_results")
-    Artifact.save(core[13], "diversity_core/unweighted_unifrac_emperor")
-    Artifact.save(core[14], "diversity_core/weighted_unifrac_emperor")
-    Artifact.save(core[15], "diversity_core/jaccard_emperor")
-    Artifact.save(core[16], "diversity_core/bray_curtis_emperor") 
+    print(rarefact)
 
 
     """
