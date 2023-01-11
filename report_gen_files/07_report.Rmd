@@ -32,6 +32,8 @@ outdir <- outdir_name
 
 metadata = read.table("metadata.tsv", header=TRUE)
 metadata <- metadata[2:length(metadata[,1]),]
+metadata$sample.id <- metadata$ID
+metadata <- subset(metadata, select=-ID)
 ```
 
 ## 7 Rarefaction Curves
@@ -49,6 +51,8 @@ numextract <- function(string){
 
 
 obs_rarefy <- read.csv("observed_features.csv")
+
+obs_rarefy <- merge(obs_rarefy, metadata)
 
 samples <- obs_rarefy[1]
 one <- obs_rarefy[2:11]
