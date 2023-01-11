@@ -43,7 +43,7 @@ numextract <- function(string){
   str_extract(string, "\\-*\\d+\\.*\\d*")
 }
 
-obs_rarefy <- read.csv("results/qiime2/alpha-rarefaction/observed_features.csv")
+obs_rarefy <- read.csv("observed_features.csv")
 samples <- obs_rarefy[1]
 one <- obs_rarefy[2:11]
 two <- obs_rarefy[12:21]

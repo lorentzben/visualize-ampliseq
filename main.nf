@@ -69,7 +69,7 @@ workflow {
     REPORT06ORDINATION(table_qza, input_ch, ioi_ch, ord_ioi, report_six_ch, tax_qza, metadata_ch, COREMETRICPYTHON.out.pcoa, COREMETRICPYTHON.out.vector)
     GENERATERAREFACTIONCURVE(metadata_ch, table_qza, input_ch, count_minmax_ch, rare_val_ch)
     //TODO update channel with the GENERATERAREFACTIONCURVE.out.rareVector
-    REPORT07RAREFACTION(ioi_ch,ord_ioi,input_ch, report_seven_ch)
+    REPORT07RAREFACTION(ioi_ch,ord_ioi,input_ch, report_seven_ch, GENERATERAREFACTIONCURVE.out.rareVector)
     REPORT08RANKEDABUNDANCE(table_qza,input_ch, ioi_ch, ord_ioi, report_eight_ch, tax_qza, metadata_ch)
     REPORT09UNIFRACHEATMAP(ioi_ch, ord_ioi, metadata_ch, COREMETRICPYTHON.out.distance, report_nine_ch)
     UNCOMPRESSDIVMATS(COREMETRICPYTHON.out.distance, uncompress_script_ch)
@@ -762,7 +762,7 @@ process GENERATERAREFACTIONCURVE{
     val rare_val
 
     output:
-    path("*.tsv"), emit: rareVector
+    path("rarefact/observed_features.csv"), emit: rareVector
 
     script:
 
@@ -807,29 +807,29 @@ process GENERATERAREFACTIONCURVE{
             print("Use the sampling depth of " +str(mindepth)+" for rarefaction")
         elif mindepth < 10000 and mindepth > 5000: 
             print("WARNING The sampling depth of "+str(mindepth)+" is quite small for rarefaction")
-        elif mindepth < 5000 and mindepth > 1000: 
+        elif mindepth < 5000 and mindepth > 1000:
             print("WARNING The sampling depth of "+str(mindepth)+" is very small for rarefaction")
-        elif mindepth < 1000: 
+        elif mindepth < 1000:
             print("WARNING The sampling depth of "+str(mindepth)+" seems too small for rarefaction")
         else:
             print("ERROR this shouldn't happen")
             exit(1)
 
         #TODO check that mindepth is the correct cutoff, or if we want maxdepth 
-        rarefact = alpha_rarefaction(table, rooted_tree, mindepth, metadata)
+        rarefact = alpha_rarefaction(table=table, max_depth=mindepth, phylogeny=rooted_tree)
         file = open("rarefaction.txt", "w")
         file.write(str(mindepth))
         file.close 
     
     # else if user submits the rarefaction depth they want to use based on rarefaction plot
     else: 
-        rarefact = alpha_rarefaction(table, rooted_tree, $rare_val, metadata)
+        rarefact = alpha_rarefaction(table=table, max_depth=$rare_val, phylogeny=rooted_tree)
         file = open("rarefaction.txt", "w")
         file.write(str($rare_val))
         file.close 
 
     #TODO update these save commands
-    print(rarefact)
+    Artifact.export_data(rarefact.visualization,'rarefact')
 
 
     """
@@ -849,6 +849,7 @@ process REPORT07RAREFACTION{
     file 'order_item_of_interest.csv'
     path 'results'
     file '07_report.Rmd'
+    path rarefact
 
     output:
 
