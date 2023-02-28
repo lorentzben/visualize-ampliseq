@@ -85,8 +85,9 @@ mbSet <- ReadTreeFile(mbSet,new_tree_file)
 
 #import metadata file 
 new_metadata_file <- paste0("metadata.tsv")
-new_metadata <- read.csv(new_metadata_file,sep = '\t',header=1) 
-new_metadata <- new_metadata[2:length(new_metadata$ID),]
+new_metadata <- read.csv(new_metadata_file,sep = '\t',header=1)
+new_metadata <- new_metadata[, colSums(is.na(new_metadata))==0]
+new_metadata <- new_metadata[2:length(new_metadata[,1]),]
 new_metadata_df <- data.frame(new_metadata)
 colnames(new_metadata_df)[1]<-"#NAME"
 write.table(new_metadata_df,file = paste0(mbadir,"/metadata.txt"),sep='\t',row.names = F,quote = F)
