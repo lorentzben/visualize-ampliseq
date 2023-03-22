@@ -801,6 +801,7 @@ process GENERATERAREFACTIONCURVE{
 
         # we want minimum values
         mindepth = int(sums.min())
+        maxdepth = int(sums.max())
 
         if mindepth > 10000:
             print("Use the sampling depth of " +str(mindepth)+" for rarefaction")
@@ -814,8 +815,12 @@ process GENERATERAREFACTIONCURVE{
             print("ERROR this shouldn't happen")
             exit(1)
 
-  
-        rarefact = alpha_rarefaction(table=table, max_depth=mindepth, phylogeny=rooted_tree)
+        # TODO convert this from bash to python
+        #check values
+        if [ "$maxdepth" -gt "75000" ]; then maxdepth="75000"; fi
+        if [ "$maxdepth" -gt "5000" ]; then maxsteps="250"; else maxsteps=$((maxdepth/20)); fi
+
+        rarefact = alpha_rarefaction(table=table, max_depth=mindepth, phylogeny=rooted_tree, steps=maxsteps)
         file = open("rarefaction.txt", "w")
         file.write(str(mindepth))
         file.close 
