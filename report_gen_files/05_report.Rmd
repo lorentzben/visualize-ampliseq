@@ -176,7 +176,7 @@ ggsave("shannon_boxplot_w_signif.png", plot=p, path=outdir)
 library(ggplot2) 
 
 
-evenness_vals <- read.table("evenness_vector.tsv", header=TRUE)
+evenness_vals <- read.table("evenness_vector.tsv", header=TRUE,fill=T)
 
 evenness_vals$ID <- row.names(evenness_vals)
 evenness_vals <- data.frame(merge(metadata, evenness_vals))

@@ -33,7 +33,7 @@ library(kableExtra)
 library(tidyverse)
 
 obs <- read.table("observed_features_vector.tsv", header = TRUE) 
-evenness <- read.table("evenness_vector.tsv", header=TRUE)
+evenness <- read.table("evenness_vector.tsv", header=TRUE, fill=T)
 shannon <- read.table("shannon_vector.tsv", header = TRUE)
 faith_pd <- read.table("faith_pd_vector.tsv", header=TRUE)
 
