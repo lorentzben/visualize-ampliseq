@@ -805,7 +805,7 @@ process GENERATERAREFACTIONCURVE{
 
         if mindepth > 10000:
             print("Use the sampling depth of " +str(mindepth)+" for rarefaction")
-        elif mindepth < 10000 and mindepth > 5000: 
+        elif mindepth < 10000 and maxdepth > 5000: 
             print("WARNING The sampling depth of "+str(mindepth)+" is quite small for rarefaction")
         elif mindepth < 5000 and mindepth > 1000:
             print("WARNING The sampling depth of "+str(mindepth)+" is very small for rarefaction")
@@ -826,7 +826,7 @@ process GENERATERAREFACTIONCURVE{
         else:
             maxsteps=(maxdepth/20)
 
-        rarefact = alpha_rarefaction(table=table, max_depth=mindepth, phylogeny=rooted_tree, steps=maxsteps)
+        rarefact = alpha_rarefaction(table=table, max_depth=maxdepth, phylogeny=rooted_tree, steps=maxsteps)
         file = open("rarefaction.txt", "w")
         file.write(str(mindepth))
         file.close 
