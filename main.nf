@@ -817,8 +817,16 @@ process GENERATERAREFACTIONCURVE{
 
         # TODO convert this from bash to python
         #check values
-        if [ "$maxdepth" -gt "75000" ]; then maxdepth="75000"; fi
-        if [ "$maxdepth" -gt "5000" ]; then maxsteps="250"; else maxsteps=$((maxdepth/20)); fi
+        #if [ "$maxdepth" -gt "75000" ]; then maxdepth="75000"; fi
+        #if [ "$maxdepth" -gt "5000" ]; then maxsteps="250"; else maxsteps=$((maxdepth/20)); fi
+
+        if maxdepth > 75000:
+            maxdepth = 75000
+        
+        if maxdepth > 5000:
+            maxsteps=250
+        else:
+            maxsteps=(maxdepth/20)
 
         rarefact = alpha_rarefaction(table=table, max_depth=mindepth, phylogeny=rooted_tree, steps=maxsteps)
         file = open("rarefaction.txt", "w")
