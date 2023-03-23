@@ -8,6 +8,7 @@ params.ioi = "treatment"
 params.ordioi = "ordered_item_of_interest.csv"
 params.outdir = "results"
 params.rare = 0
+params.controls = ""
 
 log.info """\
          V I S U A L I Z E   P I P E L I N E    
@@ -18,6 +19,7 @@ log.info """\
          ordered item of interest : ${params.ordioi}
          outdir   : ${params.outdir}
          rarefaction depth : ${params.rare}
+         controls: ${params.controls}
          profile : ${workflow.profile}
          """
          .stripIndent()
@@ -52,9 +54,11 @@ report_thirteen_ch = Channel.fromPath("${projectDir}/report_gen_files/13_report.
 report_thirteen_local_ch = Channel.fromPath("${projectDir}/report_gen_files/13_report_local.Rmd")
 report_fourteen_ch = Channel.fromPath("${projectDir}/report_gen_files/14_report.Rmd")
 uncompress_script_ch = Channel.fromPath("${projectDir}/r_scripts/uncompress_diversity.r")
+controls_ch = Channel.fromPath(params.controls, checkIfExists:false)
 
 workflow {
     ord_ioi = ORDERIOI(ioi_ch, metadata_ch, ord_ioi_ch)
+    FILTERNEGATIVECONTROL(input_ch, controls_ch, metadata_ch)
     RAREFACTIONPLOT(input_ch, rare_report_ch)
     tax_qza = REFORMATANDQZATAX(input_ch)
     (graphlan_biom, table_qza) = GENERATEBIOMFORGRAPHLAN(metadata_ch, ioi_ch, input_ch, filter_samples_ch, tax_qza)
@@ -80,6 +84,46 @@ workflow {
     lefse_dir = LEFSEANALYSIS(LEFSEFORMAT.out.combos,lefse_analysis_ch, plot_clado_file_ch, plot_res_file_ch)
     REPORT13LEFSE(lefse_dir, report_thirteen_ch, report_thirteen_local_ch, ioi_ch, ord_ioi)
     REPORT14CITATIONS(report_fourteen_ch)
+}
+
+process FILTERNEGATIVECONTROL{
+
+    publishDir "${params.outdir}/filtered-table", pattern: "*.qza", mode: "copy"
+    publishDir "${params.outdir}/filtered-table", pattern: "*.tsv", mode: "copy"
+
+
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/decontam:1.0' : 'lorentzb/decontam:1.0' }"
+
+    input:
+    path 'results'
+    path controls
+    path "metadata.tsv"
+ 
+
+    output:
+    path("*.qza"), emit: filtered_table_qza
+    path("*.tsv"), emit: filtered_table_tsv
+    
+
+    script:
+
+    '''
+    #!/usr/env R
+
+    library(tidyverse)
+    library(qiime2R)
+    library(phyloseq)
+    library(decontam)
+
+    table_dada2 <- "results/qiime2/input/table.qza"
+    rooted_tree <- "results/qiime2/phylogenetic_tree/rooted-tree.qza"
+    taxonomy_file <- "results/qiime2/input/taxonomy.qza"
+    metadata_file <- "metadata.tsv"
+
+    table_phlyo <- qza_to_phyloseq(table_dada2,rooted_tree,taxonomy_file,metadata_file)
+
+    '''
+
 }
 
 process RAREFACTIONPLOT{
