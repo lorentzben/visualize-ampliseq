@@ -64,7 +64,9 @@ workflow {
     ord_ioi = ORDERIOI(ioi_ch, metadata_ch, ord_ioi_ch)
 
     if (params.controls) {
-        FILTERNEGATIVECONTROL(input_ch, controls_ch, metadata_ch, contam_script_ch)
+        filtered_table = FILTERNEGATIVECONTROL(input_ch, controls_ch, metadata_ch, contam_script_ch)
+        qza_table = TSVTOQZA(filtered_table)
+        qza_table.view()
     }
 
     RAREFACTIONPLOT(input_ch, rare_report_ch)
@@ -122,6 +124,33 @@ process FILTERNEGATIVECONTROL{
 
     '''
 
+}
+
+process TSVTOQZA{
+    
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/automate_16_nf:2.0' : 'lorentzb/automate_16_nf:2.0' }"
+
+    input:
+    path "table.tsv"
+ 
+
+    output:
+    path("*.qza"), emit: table_qza
+    
+
+    script:
+
+    '''
+    #!/usr/bin/env bash
+
+    biom convert -i table.tsv -o feature-table.biom --to-hdf5
+
+    qiime tools import \
+    --input-path feature-table.biom \
+    --type 'FeatureTable[Frequency]' \
+    --input-format BIOMV210Format \
+    --output-path feature-table.qza
+    '''
 }
 
 process RAREFACTIONPLOT{
