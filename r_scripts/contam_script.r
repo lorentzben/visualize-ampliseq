@@ -12,13 +12,13 @@ taxonomy_file <- "results/qiime2/input/taxonomy.qza"
 metadata_file <- "metadata.tsv"
 
 #create phyloseq Obj
-table_phlyo <- qza_to_phyloseq(table_dada2,rooted_tree,taxonomy_file,metadata_file)
+table_phylo <- qza_to_phyloseq(table_dada2,rooted_tree,taxonomy_file,metadata_file)
 
 #TODO filter out Negative control samples
 
 #pre-processing filtered table
 OTU1 = as(otu_table(table_phylo), "matrix")
-if(taxa_are_rows(ps)){OTU1 <- t(OTU1)}
+if(taxa_are_rows(table_phylo)){OTU1 <- t(OTU1)}
 # Coerce to data.frame
 OTUdf = as.data.frame(OTU1)
 
