@@ -143,7 +143,7 @@ process TSVTOQZA{
     '''
     #!/usr/bin/env bash
 
-    biom convert -i table.tsv -o feature-table.biom --to-hdf5
+    biom convert -i table.tsv -o feature-table.biom --to-hdf5 --table-type="OTU table"
 
     qiime tools import \
     --input-path feature-table.biom \
