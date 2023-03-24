@@ -21,7 +21,7 @@ OTU1 = as(otu_table(table_phylo), "matrix")
 #if(taxa_are_rows(table_phylo)){OTU1 <- t(OTU1)}
 # Coerce to data.frame
 OTUdf = as.data.frame(OTU1)
-OTUdf$"#OTU ID" <- rownames(OTUdf)
+OTUdf$"#OTU" <- rownames(OTUdf)
 rownames(OTUdf) <- c()
 
 #Save table as a qza
