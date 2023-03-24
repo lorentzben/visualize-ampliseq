@@ -57,13 +57,14 @@ uncompress_script_ch = Channel.fromPath("${projectDir}/r_scripts/uncompress_dive
 if (params.controls) {
     controls_ch = Channel.fromPath(params.controls, checkIfExists:false)
 }
+contam_script_ch = Channel.fromPath("${projectDir}/r_scripts/contam_script.r")
     
 
 workflow {
     ord_ioi = ORDERIOI(ioi_ch, metadata_ch, ord_ioi_ch)
 
     if (params.controls) {
-        FILTERNEGATIVECONTROL(input_ch, controls_ch, metadata_ch)
+        FILTERNEGATIVECONTROL(input_ch, controls_ch, metadata_ch, contam_script_ch)
     }
 
     RAREFACTIONPLOT(input_ch, rare_report_ch)
@@ -105,6 +106,7 @@ process FILTERNEGATIVECONTROL{
     path 'results'
     path controls
     path "metadata.tsv"
+    path control_script
  
 
     output:
@@ -115,36 +117,18 @@ process FILTERNEGATIVECONTROL{
     script:
 
     '''
-    #!/usr/bin/env R
+    #!/usr/bin/env bash
 
-    library(tidyverse)
-    library(qiime2R)
-    library(phyloseq)
-    library(decontam)
+    
 
-    table_dada2 <- "results/qiime2/input/table.qza"
-    rooted_tree <- "results/qiime2/phylogenetic_tree/rooted-tree.qza"
-    taxonomy_file <- "results/qiime2/input/taxonomy.qza"
-    metadata_file <- "metadata.tsv"
+    biom convert -i table.tsv -o feature-table.biom --to-hdf5
+    
 
-    table_phlyo <- qza_to_phyloseq(table_dada2,rooted_tree,taxonomy_file,metadata_file)
-
-    OTU1 = as(otu_table(table_phylo), "matrix")
-    if(taxa_are_rows(ps)){OTU1 <- t(OTU1)}
-    # Coerce to data.frame
-    OTUdf = as.data.frame(OTU1)
-
-    write.table(OTUdf, file='table.tsv', quote=FALSE, sep='\t')
-
-    biom_command <- "biom convert -i table.tsv -o feature-table.biom --to-hdf5"
-    system(biom_command)
-
-    create_qza_command = "qiime tools import \
+    qiime tools import \
     --input-path feature-table.biom \
     --type 'FeatureTable[Frequency]' \
     --input-format BIOMV210Format \
-    --output-path feature-table.qza"
-    system(create_qza_command)
+    --output-path feature-table.qza
 
 
 
