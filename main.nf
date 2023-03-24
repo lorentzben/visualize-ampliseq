@@ -110,7 +110,6 @@ process FILTERNEGATIVECONTROL{
  
 
     output:
-    path("*.qza"), emit: filtered_table_qza
     path("*.tsv"), emit: filtered_table_tsv
     
 
