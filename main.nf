@@ -119,7 +119,7 @@ process FILTERNEGATIVECONTROL{
     '''
     #!/usr/bin/env bash
 
-    
+    Rscript contam_script.r
 
     biom convert -i table.tsv -o feature-table.biom --to-hdf5
     
