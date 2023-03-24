@@ -25,4 +25,4 @@ OTUdf$"#OTU ID" <- rownames(OTUdf)
 rownames(OTUdf) <- c()
 
 #Save table as a qza
-write.table(OTUdf, file='table.tsv', quote=FALSE, sep='\t')
+write.table(OTUdf, file='table.tsv', quote=FALSE, sep='\t', row.names=F)
