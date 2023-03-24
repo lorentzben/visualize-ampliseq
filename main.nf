@@ -54,11 +54,18 @@ report_thirteen_ch = Channel.fromPath("${projectDir}/report_gen_files/13_report.
 report_thirteen_local_ch = Channel.fromPath("${projectDir}/report_gen_files/13_report_local.Rmd")
 report_fourteen_ch = Channel.fromPath("${projectDir}/report_gen_files/14_report.Rmd")
 uncompress_script_ch = Channel.fromPath("${projectDir}/r_scripts/uncompress_diversity.r")
-controls_ch = Channel.fromPath(params.controls, checkIfExists:false)
+if (params.controls) {
+    controls_ch = Channel.fromPath(params.controls, checkIfExists:false)
+}
+    
 
 workflow {
     ord_ioi = ORDERIOI(ioi_ch, metadata_ch, ord_ioi_ch)
-    FILTERNEGATIVECONTROL(input_ch, controls_ch, metadata_ch)
+
+    if (params.controls) {
+        FILTERNEGATIVECONTROL(input_ch, controls_ch, metadata_ch)
+    }
+
     RAREFACTIONPLOT(input_ch, rare_report_ch)
     tax_qza = REFORMATANDQZATAX(input_ch)
     (graphlan_biom, table_qza) = GENERATEBIOMFORGRAPHLAN(metadata_ch, ioi_ch, input_ch, filter_samples_ch, tax_qza)
