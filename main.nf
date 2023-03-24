@@ -99,7 +99,7 @@ process FILTERNEGATIVECONTROL{
     publishDir "${params.outdir}/filtered-table", pattern: "*.tsv", mode: "copy"
 
 
-    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/decontam:1.0' : 'lorentzb/decontam:1.0' }"
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/decontam:1.1' : 'lorentzb/decontam:1.1' }"
 
     input:
     path 'results'
@@ -128,6 +128,25 @@ process FILTERNEGATIVECONTROL{
     metadata_file <- "metadata.tsv"
 
     table_phlyo <- qza_to_phyloseq(table_dada2,rooted_tree,taxonomy_file,metadata_file)
+
+    OTU1 = as(otu_table(table_phylo), "matrix")
+    if(taxa_are_rows(ps)){OTU1 <- t(OTU1)}
+    # Coerce to data.frame
+    OTUdf = as.data.frame(OTU1)
+
+    write.table(OTUdf, file='table.tsv', quote=FALSE, sep='\t')
+
+    biom_command <- "biom convert -i table.tsv -o feature-table.biom --to-hdf5"
+    system(biom_command)
+
+    create_qza_command = "qiime tools import \
+    --input-path feature-table.biom \
+    --type 'FeatureTable[Frequency]' \
+    --input-format BIOMV210Format \
+    --output-path feature-table.qza"
+    system(create_qza_command)
+
+
 
     '''
 
