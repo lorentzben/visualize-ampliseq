@@ -100,7 +100,7 @@ process FILTERNEGATIVECONTROL{
     publishDir "${params.outdir}/filtered-table", pattern: "*.tsv", mode: "copy"
 
 
-    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/decontam:1.1' : 'lorentzb/decontam:1.1' }"
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/decontam:1.0' : 'lorentzb/decontam:1.0' }"
 
     input:
     path 'results'
@@ -120,17 +120,6 @@ process FILTERNEGATIVECONTROL{
     #!/usr/bin/env bash
 
     Rscript contam_script.r
-
-    biom convert -i table.tsv -o feature-table.biom --to-hdf5
-    
-
-    qiime tools import \
-    --input-path feature-table.biom \
-    --type 'FeatureTable[Frequency]' \
-    --input-format BIOMV210Format \
-    --output-path feature-table.qza
-
-
 
     '''
 
