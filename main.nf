@@ -115,7 +115,7 @@ process FILTERNEGATIVECONTROL{
     script:
 
     '''
-    #!/usr/env R
+    #!/usr/bin/env R
 
     library(tidyverse)
     library(qiime2R)
