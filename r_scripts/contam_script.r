@@ -4,6 +4,7 @@ library(tidyverse)
 library(qiime2R)
 library(phyloseq)
 library(decontam)
+library(biomformat)
 
 #load data into memory
 table_dada2 <- "results/dada2/ASV_table.tsv"
@@ -22,23 +23,21 @@ table <- table %>% select(-c("ASV_ID"))
 table_ps <- otu_table(table, taxa_are_rows=T)
 
 tax_obj <- read_qza(taxonomy_file)
-nice_tax <- tax_table(matrix(parse_taxonomy(tax_obj$data)))
-tax_ps <- tax_table(as.matrix(nice_tax))
+tax_ps <- tax_table(as.matrix(parse_taxonomy(tax_obj$data)))
+
 
 tree_obj <- read_qza(rooted_tree)
 tree <- tree_obj$data
 
 ps <- phyloseq(table_ps, tax_ps, tree, metadata_ps)
 
+
+
 #TODO filter out Negative control samples
 
-#pre-processing filtered table
-OTU1 = as(otu_table(table_phylo), "matrix")
-#if(taxa_are_rows(table_phylo)){OTU1 <- t(OTU1)}
-# Coerce to data.frame
-OTUdf = as.data.frame(OTU1)
-OTUdf$"#OTU" <- rownames(OTUdf)
-rownames(OTUdf) <- c()
+#This is biom v1.0 can we turn it into a hd5 format?
+biom <- make_biom(otu_table(ps))
 
+write_biom(biom, "biomtest.biom")
 #Save table as a qza
 write.table(OTUdf, file='table.tsv', quote=FALSE, sep='\t', row.names=F)
