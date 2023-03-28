@@ -49,8 +49,12 @@ contamdf.prev05 <- isContaminant(ps, method="prevalence", neg="is.neg", threshol
 # filter the phyloseq object to remove contamination
 ps.noncontam <- phyloseq::prune_taxa(!contamdf.prev05$contaminant,ps)
 
+# save ASV table to disk
+
+write.table(otu_table(ps),sep='\t', "filtered-table.tsv")
+
 # turn phyloseq object into a biom file
 biom <- make_biom(data=otu_table(ps.noncontam))
 
 # save biom file to disk
-write_biom(biom, "dada2-filtered-table.biom")
+write_biom(biom, "filtered-table.biom")

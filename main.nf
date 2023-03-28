@@ -66,9 +66,9 @@ workflow {
     if (params.controls) {
         filtered_table = FILTERNEGATIVECONTROL(input_ch, controls_ch, metadata_ch, contam_script_ch)
         qza_table = TSVTOQZA(filtered_table,metadata_ch)
-        qza_table
+        
 
-        RAREFACTIONPLOT(input_ch, rare_report_ch)
+        RAREFACTIONPLOT(input_ch, rare_report_ch, qza_table)
         tax_qza = REFORMATANDQZATAX(input_ch)
         (graphlan_biom, table_qza) = GENERATEBIOMFORGRAPHLAN(metadata_ch, ioi_ch, input_ch, filter_samples_ch, tax_qza)
         COREMETRICPYTHON(metadata_ch, qza_table, input_ch, count_minmax_ch, rare_val_ch)
@@ -95,7 +95,7 @@ workflow {
         REPORT14CITATIONS(report_fourteen_ch)
     }
     else{
-        RAREFACTIONPLOT(input_ch, rare_report_ch)
+        RAREFACTIONPLOT(input_ch, rare_report_ch,qza_table)
         tax_qza = REFORMATANDQZATAX(input_ch)
         (graphlan_biom, table_qza) = GENERATEBIOMFORGRAPHLAN(metadata_ch, ioi_ch, input_ch, filter_samples_ch, tax_qza)
         COREMETRICPYTHON(metadata_ch, table_qza, input_ch, count_minmax_ch, rare_val_ch)
@@ -139,7 +139,8 @@ process FILTERNEGATIVECONTROL{
  
 
     output:
-    path("*.biom"), emit: filtered_table_tsv
+    path("*.biom"), emit: filtered_table_biom
+    path("*.tsv"), emit: filtered_table_tsv
     
 
     script:
