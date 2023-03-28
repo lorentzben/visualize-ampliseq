@@ -65,7 +65,7 @@ workflow {
 
     if (params.controls) {
         filtered_table = FILTERNEGATIVECONTROL(input_ch, controls_ch, metadata_ch, contam_script_ch)
-        qza_table = TSVTOQZA(filtered_table)
+        qza_table = TSVTOQZA(filtered_table,metadata_ch)
         qza_table.view()
     }
 
@@ -132,6 +132,7 @@ process TSVTOQZA{
 
     input:
     path "table.biom"
+    path "metadata.tsv"
  
 
     output:
@@ -141,10 +142,12 @@ process TSVTOQZA{
     script:
 
     '''
-    #!/usr/bin/env bash
+    #!/usr/bin/env 
+    
+    biom add-metadata -i table.biom -o md-table.biom --observation-metadata-fp metadata.tsv
 
     qiime tools import \
-    --input-path table.biom \
+    --input-path md-table.biom \
     --type 'FeatureTable[Frequency]' \
     --input-format BIOMV100Format \
     --output-path feature-table.qza
