@@ -149,7 +149,7 @@ process TSVTOQZA{
     qiime tools import \
     --input-path md-table.biom \
     --type 'FeatureTable[Frequency]' \
-    --input-format BIOMV100Format \
+    --input-format BIOMV210Format \
     --output-path feature-table.qza
     '''
 }
