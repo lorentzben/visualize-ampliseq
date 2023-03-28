@@ -36,6 +36,7 @@ ps <- phyloseq(table_ps, tax_ps, tree, metadata_ps)
 #TODO filter out Negative control samples
 
 #This is biom v1.0 can we turn it into a hd5 format?
-biom <- make_biom(data=otu_table(ps), sample_metadata=sample_data(ps), observation_metadata=tax_table(ps))
+#biom <- make_biom(data=otu_table(ps), sample_metadata=sample_data(ps), observation_metadata=tax_table(ps))
+biom <- make_biom(data=otu_table(ps))
 
 write_biom(biom, "dada2-filtered-table.biom")
