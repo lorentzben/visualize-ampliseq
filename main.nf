@@ -102,7 +102,7 @@ process FILTERNEGATIVECONTROL{
     publishDir "${params.outdir}/filtered-table", pattern: "*.tsv", mode: "copy"
 
 
-    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/decontam:1.0' : 'lorentzb/decontam:1.0' }"
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/decontam:1.2' : 'lorentzb/decontam:1.2' }"
 
     input:
     path 'results'
@@ -112,7 +112,7 @@ process FILTERNEGATIVECONTROL{
  
 
     output:
-    path("*.tsv"), emit: filtered_table_tsv
+    path("*.biom"), emit: filtered_table_tsv
     
 
     script:
@@ -131,7 +131,7 @@ process TSVTOQZA{
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/automate_16_nf:2.0' : 'lorentzb/automate_16_nf:2.0' }"
 
     input:
-    path "table.tsv"
+    path "table.biom"
  
 
     output:
@@ -143,12 +143,10 @@ process TSVTOQZA{
     '''
     #!/usr/bin/env bash
 
-    biom convert -i table.tsv -o feature-table.biom --to-hdf5 --table-type="OTU table"
-
     qiime tools import \
-    --input-path feature-table.biom \
+    --input-path table.biom \
     --type 'FeatureTable[Frequency]' \
-    --input-format BIOMV210Format \
+    --input-format BIOMV100Format \
     --output-path feature-table.qza
     '''
 }
