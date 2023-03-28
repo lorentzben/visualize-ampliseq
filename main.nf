@@ -142,7 +142,7 @@ process TSVTOQZA{
     script:
 
     '''
-    #!/usr/bin/env 
+    #!/usr/bin/env bash
     
     biom add-metadata -i table.biom -o md-table.biom --observation-metadata-fp metadata.tsv
 
