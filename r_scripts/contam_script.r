@@ -5,9 +5,12 @@ library(qiime2R)
 library(phyloseq)
 library(decontam)
 library(biomformat)
+library(readr)
 
 #load data into memory
-table_dada2 <- "results/dada2/ASV_table.tsv"
+#table_dada2 <- "results/dada2/ASV_table.tsv"
+# change table to be consistant with downstream processes
+table_dada2 <- "results/qiime2/abundance_tables/feature-table.tsv"
 rooted_tree <- "results/qiime2/phylogenetic_tree/rooted-tree.qza"
 taxonomy_file <- "results/qiime2/input/taxonomy.qza"
 metadata_file <- "metadata.tsv"
@@ -18,9 +21,9 @@ metadata <- metadata %>% remove_rownames %>% column_to_rownames(var="SampleID")
 metadata_ps <- sample_data(metadata)
 
 # format ASV table into phyloseq compatable
-table <- data.frame(read_table(table_dada2))
-rownames(table) <- table$ASV_ID
-table <- table %>% select(-c("ASV_ID"))
+table <- data.frame(read_tsv(table_dada2,skip=1))
+rownames(table) <- table$"X.OTU.ID"
+table <- table %>% select(-c("X.OTU.ID"))
 table_ps <- otu_table(table, taxa_are_rows=T)
 
 # format the taxonomy data into phylsoeq compatable

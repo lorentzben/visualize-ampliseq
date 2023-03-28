@@ -62,38 +62,65 @@ contam_script_ch = Channel.fromPath("${projectDir}/r_scripts/contam_script.r")
 
 workflow {
     ord_ioi = ORDERIOI(ioi_ch, metadata_ch, ord_ioi_ch)
-
+    
     if (params.controls) {
         filtered_table = FILTERNEGATIVECONTROL(input_ch, controls_ch, metadata_ch, contam_script_ch)
         qza_table = TSVTOQZA(filtered_table,metadata_ch)
-        qza_table.view()
-    }
+        qza_table
 
-    RAREFACTIONPLOT(input_ch, rare_report_ch)
-    tax_qza = REFORMATANDQZATAX(input_ch)
-    (graphlan_biom, table_qza) = GENERATEBIOMFORGRAPHLAN(metadata_ch, ioi_ch, input_ch, filter_samples_ch, tax_qza)
-    COREMETRICPYTHON(metadata_ch, table_qza, input_ch, count_minmax_ch, rare_val_ch)
-    QZATOTSV(COREMETRICPYTHON.out.vector)
-    REPORT01BARPLOT(input_ch, metadata_ch, report_one_ch, ioi_ch)
-    graphlan_dir = RUNGRAPHLAN(metadata_ch, ioi_ch, tax_qza, graph_sh_ch, graphlan_biom)
-    REPORT02GRAPHLANPHYLOGENETICTREE(graphlan_dir, ioi_ch, report_two_ch, report_two_local_ch)
-    REPORT03HEATMAP(input_ch, table_qza, tax_qza, metadata_ch, report_three_ch, ioi_ch, ord_ioi)
-    REPORT04ALPHATABLE(QZATOTSV.out.vector, ioi_ch, report_four_ch)
-    REPORT05ALPHABOXPLOT(QZATOTSV.out.vector, ioi_ch, ord_ioi, metadata_ch, report_five_ch)
-    REPORT06ORDINATION(table_qza, input_ch, ioi_ch, ord_ioi, report_six_ch, tax_qza, metadata_ch, COREMETRICPYTHON.out.pcoa, COREMETRICPYTHON.out.vector)
-    GENERATERAREFACTIONCURVE(metadata_ch, table_qza, input_ch, count_minmax_ch, rare_val_ch)
-    REPORT07RAREFACTION(ioi_ch,ord_ioi,input_ch, report_seven_ch, GENERATERAREFACTIONCURVE.out.rareVector, metadata_ch)
-    REPORT08RANKEDABUNDANCE(table_qza,input_ch, ioi_ch, ord_ioi, report_eight_ch, tax_qza, metadata_ch)
-    REPORT09UNIFRACHEATMAP(ioi_ch, ord_ioi, metadata_ch, COREMETRICPYTHON.out.distance, report_nine_ch)
-    UNCOMPRESSDIVMATS(COREMETRICPYTHON.out.distance, uncompress_script_ch)
-    GENERATEUNIFRAC(COREMETRICPYTHON.out.distance, metadata_ch, ioi_ch)
-    REPORT10BETABOXPLOT(ioi_ch,ord_ioi,metadata_ch,input_ch, report_ten_ch, GENERATEUNIFRAC.out.pairwise)
-    REPORT11UPGMA( table_qza, input_ch, ioi_ch, ord_ioi, tax_qza, metadata_ch, report_eleven_ch)
-    REPORT12PERMANOVA(table_qza, input_ch, ioi_ch, ord_ioi, tax_qza, metadata_ch, COREMETRICPYTHON.out.distance, report_twelve_ch)
-    LEFSEFORMAT(ioi_ch, table_qza, input_ch, tax_qza, metadata_ch, qiime_to_lefse_ch)
-    lefse_dir = LEFSEANALYSIS(LEFSEFORMAT.out.combos,lefse_analysis_ch, plot_clado_file_ch, plot_res_file_ch)
-    REPORT13LEFSE(lefse_dir, report_thirteen_ch, report_thirteen_local_ch, ioi_ch, ord_ioi)
-    REPORT14CITATIONS(report_fourteen_ch)
+        RAREFACTIONPLOT(input_ch, rare_report_ch)
+        tax_qza = REFORMATANDQZATAX(input_ch)
+        (graphlan_biom, table_qza) = GENERATEBIOMFORGRAPHLAN(metadata_ch, ioi_ch, input_ch, filter_samples_ch, tax_qza)
+        COREMETRICPYTHON(metadata_ch, qza_table, input_ch, count_minmax_ch, rare_val_ch)
+        QZATOTSV(COREMETRICPYTHON.out.vector)
+        REPORT01BARPLOT(input_ch, metadata_ch, report_one_ch, ioi_ch)
+        graphlan_dir = RUNGRAPHLAN(metadata_ch, ioi_ch, tax_qza, graph_sh_ch, graphlan_biom)
+        REPORT02GRAPHLANPHYLOGENETICTREE(graphlan_dir, ioi_ch, report_two_ch, report_two_local_ch)
+        REPORT03HEATMAP(input_ch, qza_table, tax_qza, metadata_ch, report_three_ch, ioi_ch, ord_ioi)
+        REPORT04ALPHATABLE(QZATOTSV.out.vector, ioi_ch, report_four_ch)
+        REPORT05ALPHABOXPLOT(QZATOTSV.out.vector, ioi_ch, ord_ioi, metadata_ch, report_five_ch)
+        REPORT06ORDINATION(qza_table, input_ch, ioi_ch, ord_ioi, report_six_ch, tax_qza, metadata_ch, COREMETRICPYTHON.out.pcoa, COREMETRICPYTHON.out.vector)
+        GENERATERAREFACTIONCURVE(metadata_ch, qza_table, input_ch, count_minmax_ch, rare_val_ch)
+        REPORT07RAREFACTION(ioi_ch,ord_ioi,input_ch, report_seven_ch, GENERATERAREFACTIONCURVE.out.rareVector, metadata_ch)
+        REPORT08RANKEDABUNDANCE(qza_table,input_ch, ioi_ch, ord_ioi, report_eight_ch, tax_qza, metadata_ch)
+        REPORT09UNIFRACHEATMAP(ioi_ch, ord_ioi, metadata_ch, COREMETRICPYTHON.out.distance, report_nine_ch)
+        UNCOMPRESSDIVMATS(COREMETRICPYTHON.out.distance, uncompress_script_ch)
+        GENERATEUNIFRAC(COREMETRICPYTHON.out.distance, metadata_ch, ioi_ch)
+        REPORT10BETABOXPLOT(ioi_ch,ord_ioi,metadata_ch,input_ch, report_ten_ch, GENERATEUNIFRAC.out.pairwise)
+        REPORT11UPGMA( qza_table, input_ch, ioi_ch, ord_ioi, tax_qza, metadata_ch, report_eleven_ch)
+        REPORT12PERMANOVA(qza_table, input_ch, ioi_ch, ord_ioi, tax_qza, metadata_ch, COREMETRICPYTHON.out.distance, report_twelve_ch)
+        LEFSEFORMAT(ioi_ch, qza_table, input_ch, tax_qza, metadata_ch, qiime_to_lefse_ch)
+        lefse_dir = LEFSEANALYSIS(LEFSEFORMAT.out.combos,lefse_analysis_ch, plot_clado_file_ch, plot_res_file_ch)
+        REPORT13LEFSE(lefse_dir, report_thirteen_ch, report_thirteen_local_ch, ioi_ch, ord_ioi)
+        REPORT14CITATIONS(report_fourteen_ch)
+    }
+    else{
+        RAREFACTIONPLOT(input_ch, rare_report_ch)
+        tax_qza = REFORMATANDQZATAX(input_ch)
+        (graphlan_biom, table_qza) = GENERATEBIOMFORGRAPHLAN(metadata_ch, ioi_ch, input_ch, filter_samples_ch, tax_qza)
+        COREMETRICPYTHON(metadata_ch, table_qza, input_ch, count_minmax_ch, rare_val_ch)
+        QZATOTSV(COREMETRICPYTHON.out.vector)
+        REPORT01BARPLOT(input_ch, metadata_ch, report_one_ch, ioi_ch)
+        graphlan_dir = RUNGRAPHLAN(metadata_ch, ioi_ch, tax_qza, graph_sh_ch, graphlan_biom)
+        REPORT02GRAPHLANPHYLOGENETICTREE(graphlan_dir, ioi_ch, report_two_ch, report_two_local_ch)
+        REPORT03HEATMAP(input_ch, table_qza, tax_qza, metadata_ch, report_three_ch, ioi_ch, ord_ioi)
+        REPORT04ALPHATABLE(QZATOTSV.out.vector, ioi_ch, report_four_ch)
+        REPORT05ALPHABOXPLOT(QZATOTSV.out.vector, ioi_ch, ord_ioi, metadata_ch, report_five_ch)
+        REPORT06ORDINATION(table_qza, input_ch, ioi_ch, ord_ioi, report_six_ch, tax_qza, metadata_ch, COREMETRICPYTHON.out.pcoa, COREMETRICPYTHON.out.vector)
+        GENERATERAREFACTIONCURVE(metadata_ch, table_qza, input_ch, count_minmax_ch, rare_val_ch)
+        REPORT07RAREFACTION(ioi_ch,ord_ioi,input_ch, report_seven_ch, GENERATERAREFACTIONCURVE.out.rareVector, metadata_ch)
+        REPORT08RANKEDABUNDANCE(table_qza,input_ch, ioi_ch, ord_ioi, report_eight_ch, tax_qza, metadata_ch)
+        REPORT09UNIFRACHEATMAP(ioi_ch, ord_ioi, metadata_ch, COREMETRICPYTHON.out.distance, report_nine_ch)
+        UNCOMPRESSDIVMATS(COREMETRICPYTHON.out.distance, uncompress_script_ch)
+        GENERATEUNIFRAC(COREMETRICPYTHON.out.distance, metadata_ch, ioi_ch)
+        REPORT10BETABOXPLOT(ioi_ch,ord_ioi,metadata_ch,input_ch, report_ten_ch, GENERATEUNIFRAC.out.pairwise)
+        REPORT11UPGMA( table_qza, input_ch, ioi_ch, ord_ioi, tax_qza, metadata_ch, report_eleven_ch)
+        REPORT12PERMANOVA(table_qza, input_ch, ioi_ch, ord_ioi, tax_qza, metadata_ch, COREMETRICPYTHON.out.distance, report_twelve_ch)
+        LEFSEFORMAT(ioi_ch, table_qza, input_ch, tax_qza, metadata_ch, qiime_to_lefse_ch)
+        lefse_dir = LEFSEANALYSIS(LEFSEFORMAT.out.combos,lefse_analysis_ch, plot_clado_file_ch, plot_res_file_ch)
+        REPORT13LEFSE(lefse_dir, report_thirteen_ch, report_thirteen_local_ch, ioi_ch, ord_ioi)
+        REPORT14CITATIONS(report_fourteen_ch)
+    }
 }
 
 process FILTERNEGATIVECONTROL{
@@ -164,6 +191,7 @@ process RAREFACTIONPLOT{
     input:
     path 'results'
     path report
+    path "table.qza"
  
 
     output:
