@@ -65,7 +65,7 @@ workflow {
     
     if (params.controls) {
         filtered_table = FILTERNEGATIVECONTROL(input_ch, controls_ch, metadata_ch, contam_script_ch)
-        qza_table = TSVTOQZA(FILTERNEGATIVECONTROL.out.filtered_table_biom, metadata_ch)
+        qza_table = TSVTOQZA(FILTERNEGATIVECONTROL.filtered_table_biom, metadata_ch)
         
 
         RAREFACTIONPLOT(input_ch, rare_report_ch, qza_table)
