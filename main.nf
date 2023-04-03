@@ -415,14 +415,16 @@ process REPORT01BARPLOT{
     file 'metadata.tsv'
     path report
     file 'item_of_interest.csv'
+    path table
 
     output:
 
     file "01_report_*.html"
     file "barplots/*"
      
+    
     script:
-
+    def table = table.name != 'NO_FILE' ? "$table" : ''
     '''
     #!/usr/bin/env bash
    
