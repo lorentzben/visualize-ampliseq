@@ -73,7 +73,7 @@ workflow {
         (graphlan_biom, table_qza) = GENERATEBIOMFORGRAPHLAN(metadata_ch, ioi_ch, input_ch, filter_samples_ch, tax_qza)
         COREMETRICPYTHON(metadata_ch, qza_table, input_ch, count_minmax_ch, rare_val_ch)
         QZATOTSV(COREMETRICPYTHON.out.vector)
-        REPORT01BARPLOT(input_ch, metadata_ch, report_one_ch, ioi_ch)
+        REPORT01BARPLOT(input_ch, metadata_ch, report_one_ch, ioi_ch, FILTERNEGATIVECONTROL.out.filtered_table_tsv)
         graphlan_dir = RUNGRAPHLAN(metadata_ch, ioi_ch, tax_qza, graph_sh_ch, graphlan_biom)
         REPORT02GRAPHLANPHYLOGENETICTREE(graphlan_dir, ioi_ch, report_two_ch, report_two_local_ch)
         REPORT03HEATMAP(input_ch, qza_table, tax_qza, metadata_ch, report_three_ch, ioi_ch, ord_ioi)
