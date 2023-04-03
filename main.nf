@@ -798,7 +798,6 @@ process REPORT05ALPHABOXPLOT{
     output:
 
     file "05_report_*.html"
-    file "05_report_*.pdf"
     path "alpha_diversity_boxplot/*"
      
     script:
@@ -1230,7 +1229,6 @@ process REPORT12PERMANOVA{
     output:
 
     file "12_report_*.html"
-    file "12_report_*.pdf"
     path "anosim/*"
      
     script:
