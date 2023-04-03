@@ -808,9 +808,7 @@ process REPORT05ALPHABOXPLOT{
 
     Rscript -e "rmarkdown::render('05_report.Rmd', output_file='$PWD/05_report_$dt.html', output_format='html_document', clean=TRUE, knit_root_dir='$PWD')"
 
-    #TODO understand issue that is causing the logfile generation 
-    #Rscript -e "rmarkdown::render('05_report.Rmd', output_file='$PWD/05_report_$dt.pdf', output_format='pdf_document', clean=TRUE, knit_root_dir='$PWD')"
-
+    
     '''
 }
 
@@ -1242,8 +1240,7 @@ process REPORT12PERMANOVA{
 
     Rscript -e "rmarkdown::render('12_report.Rmd', output_file='$PWD/12_report_$dt.html', output_format='html_document', clean=TRUE, knit_root_dir='$PWD')"
     
-    #TODO understand issue that is causing the logfile generation 
-    #Rscript -e "rmarkdown::render('12_report.Rmd', output_file='$PWD/12_report_$dt.pdf', output_format='pdf_document', clean=TRUE, knit_root_dir='$PWD')"
+    
     '''
 }
 
