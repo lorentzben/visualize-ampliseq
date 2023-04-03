@@ -95,7 +95,7 @@ workflow {
         REPORT14CITATIONS(report_fourteen_ch)
     }
     else{
-        RAREFACTIONPLOT(input_ch, rare_report_ch,qza_table)
+        RAREFACTIONPLOT(input_ch, rare_report_ch)
         tax_qza = REFORMATANDQZATAX(input_ch)
         (graphlan_biom, table_qza) = GENERATEBIOMFORGRAPHLAN(metadata_ch, ioi_ch, input_ch, filter_samples_ch, tax_qza)
         COREMETRICPYTHON(metadata_ch, table_qza, input_ch, count_minmax_ch, rare_val_ch)
@@ -192,7 +192,7 @@ process RAREFACTIONPLOT{
     input:
     path 'results'
     path report
-    path "table.qza"
+    path table
  
 
     output:
@@ -201,9 +201,11 @@ process RAREFACTIONPLOT{
     path("*.html"), emit: rare_report
 
     script:
-
+    def table = table.name != 'NO_FILE' ? "$table" : ''
     '''
     #!/usr/bin/env bash
+
+    cp $table table.qza
 
     Rscript -e "rmarkdown::render('rarefaction_report.Rmd', output_file='$PWD/rarefaction_report_$dt.html', output_format='html_document', clean=TRUE, knit_root_dir='$PWD')"
 
@@ -806,7 +808,8 @@ process REPORT05ALPHABOXPLOT{
 
     Rscript -e "rmarkdown::render('05_report.Rmd', output_file='$PWD/05_report_$dt.html', output_format='html_document', clean=TRUE, knit_root_dir='$PWD')"
 
-    Rscript -e "rmarkdown::render('05_report.Rmd', output_file='$PWD/05_report_$dt.pdf', output_format='pdf_document', clean=TRUE, knit_root_dir='$PWD')"
+    #TODO understand issue that is causing the logfile generation 
+    #Rscript -e "rmarkdown::render('05_report.Rmd', output_file='$PWD/05_report_$dt.pdf', output_format='pdf_document', clean=TRUE, knit_root_dir='$PWD')"
 
     '''
 }
@@ -1238,8 +1241,9 @@ process REPORT12PERMANOVA{
     dt=$(date '+%d-%m-%Y_%H.%M.%S');
 
     Rscript -e "rmarkdown::render('12_report.Rmd', output_file='$PWD/12_report_$dt.html', output_format='html_document', clean=TRUE, knit_root_dir='$PWD')"
-
-    Rscript -e "rmarkdown::render('12_report.Rmd', output_file='$PWD/12_report_$dt.pdf', output_format='pdf_document', clean=TRUE, knit_root_dir='$PWD')"
+    
+    #TODO understand issue that is causing the logfile generation 
+    #Rscript -e "rmarkdown::render('12_report.Rmd', output_file='$PWD/12_report_$dt.pdf', output_format='pdf_document', clean=TRUE, knit_root_dir='$PWD')"
     '''
 }
 
