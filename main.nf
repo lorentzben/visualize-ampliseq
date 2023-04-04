@@ -80,7 +80,7 @@ workflow {
         REPORT04ALPHATABLE(QZATOTSV.out.vector, ioi_ch, report_four_ch)
         REPORT05ALPHABOXPLOT(QZATOTSV.out.vector, ioi_ch, ord_ioi, metadata_ch, report_five_ch)
         REPORT06ORDINATION(qza_table, input_ch, ioi_ch, ord_ioi, report_six_ch, tax_qza, metadata_ch, COREMETRICPYTHON.out.pcoa, COREMETRICPYTHON.out.vector)
-        GENERATERAREFACTIONCURVE(metadata_ch, qza_table, input_ch, count_minmax_ch, rare_val_ch)
+        GENERATERAREFACTIONCURVE(metadata_ch, qza_table, input_ch, count_minmax_ch, rare_val_ch, FILTERNEGATIVECONTROL.out.filtered_table_tsv)
         REPORT07RAREFACTION(ioi_ch,ord_ioi,input_ch, report_seven_ch, GENERATERAREFACTIONCURVE.out.rareVector, metadata_ch)
         REPORT08RANKEDABUNDANCE(qza_table,input_ch, ioi_ch, ord_ioi, report_eight_ch, tax_qza, metadata_ch)
         REPORT09UNIFRACHEATMAP(ioi_ch, ord_ioi, metadata_ch, COREMETRICPYTHON.out.distance, report_nine_ch)
@@ -869,11 +869,13 @@ process GENERATERAREFACTIONCURVE{
     path 'results'
     path 'count_table_minmax_reads.py'
     val rare_val
+    file table_tsv
 
     output:
     path("rarefact/observed_features.csv"), emit: rareVector
 
     script:
+    def table_tsv = table_tsv.name != 'NO_FILE' ? "$table_tsv" : ''
 
     """
     #!/usr/bin/env python3
@@ -895,13 +897,15 @@ process GENERATERAREFACTIONCURVE{
 
     # if the default value aka use count_table_minmax_reads
     if $rare_val == 0:
-
-        uncompress_table='results/qiime2/abundance_tables/feature-table.tsv'
+        if os.file.exists("feature-table.tsv"):
+            uncompress_table='feature-table.tsv'            
+        else:
+            uncompress_table='results/qiime2/abundance_tables/feature-table.tsv'
 
         # adapted from count_table_minmax_reads.py @author Daniel Straub
         # collected from nf-core/ampliseq
         # read tsv and skip first two rows
-        data = pd.read_csv('results/qiime2/abundance_tables/feature-table.tsv', sep="\t", skiprows=[0, 1], header=None)  # count table
+        data = pd.read_csv(uncompress_table, sep="\t", skiprows=[0, 1], header=None)  # count table
 
         # drop feature ids
         df = data.drop(data.columns[0], axis=1)
