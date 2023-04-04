@@ -57,7 +57,7 @@ level = "Phylum"
 #import ASV table from ampliseq analysis and write out properly fomatted one
 
 # if filtered table is provided:
-if file.exists("filtered-table.tsv"){
+if (file.exists("filtered-table.tsv")){
   new_table_file <- paste0("filtered-table.tsv")
   new_table <- read.csv(new_table_file,sep='\t')
   new_table_df <- data.frame(new_table)
