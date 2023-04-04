@@ -535,7 +535,7 @@ process GENERATEBIOMFORGRAPHLAN{
     subprocess.run(['mkdir phylo_trees'], shell=True)
     subprocess.run(['mkdir biom_tabs'], shell=True)
 
-    if not os.path.isfile(feature-table.qza):
+    if not os.path.isfile("feature-table.qza"):
         create_qza_command = "qiime tools import \
         --input-path results/qiime2/abundance_tables/feature-table.biom \
         --type 'FeatureTable[Frequency]' \
