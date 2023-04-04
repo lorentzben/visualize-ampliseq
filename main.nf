@@ -95,7 +95,7 @@ workflow {
         REPORT14CITATIONS(report_fourteen_ch)
     }
     else{
-        empty_table = 'NO_FILE'
+        empty_table = ''
         RAREFACTIONPLOT(input_ch, rare_report_ch, empty_table)
         tax_qza = REFORMATANDQZATAX(input_ch)
         (graphlan_biom, table_qza) = GENERATEBIOMFORGRAPHLAN(metadata_ch, ioi_ch, input_ch, filter_samples_ch, tax_qza, empty_table)
