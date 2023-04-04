@@ -534,14 +534,14 @@ process GENERATEBIOMFORGRAPHLAN{
     subprocess.run(['mkdir phylo_trees'], shell=True)
     subprocess.run(['mkdir biom_tabs'], shell=True)
 
-    if [[! -f feature-table.qza]]; then
+    if not os.path.isfile(feature-table.qza):
         create_qza_command = "qiime tools import \
         --input-path results/qiime2/abundance_tables/feature-table.biom \
         --type 'FeatureTable[Frequency]' \
         --input-format BIOMV210Format \
         --output-path feature-table.qza"
         result = subprocess.run([create_qza_command], shell=True)
-    fi 
+    
 
     # iterates over the items of interest to produce a circular phylogenetic tree per category e.g. CONTROL TREATMENT
     for item in ioi_set:
