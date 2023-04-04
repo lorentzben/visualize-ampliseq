@@ -51,7 +51,7 @@ obs_vals <- data.frame(merge(metadata, obs_vals))
 
 obs_vals[[ioi]] <- factor(obs_vals[[ioi]], levels=ioi_ord)
 obs_vals$observed_features <- as.numeric(as.character(obs_vals$observed_features))
-obs_boxplot <- ggplot(obs_vals, aes_string(x=ioi,y = obs_vals$observed_features, fill=ioi)) + geom_boxplot() + ylab("Observed Features") +theme_bw()
+obs_boxplot <- ggplot(obs_vals, aes_string(x=ioi,y = obs_vals$observed_features, fill=ioi)) + geom_boxplot() + ylab("Observed Features") +theme_bw() + theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1))
 obs_boxplot 
 
 ggsave("obs_boxplot.png", plot=obs_boxplot, path=outdir)
@@ -60,7 +60,7 @@ ggsave("obs_boxplot.png", plot=obs_boxplot, path=outdir)
 p <- ggplot(obs_vals, aes(x=obs_vals[[ioi]], y=observed_features)) + geom_violin()+ geom_boxplot(width=0.1)
 p<- p + stat_summary(fun.y=mean, geom="point", shape=23, size=2)
 p<-p + stat_summary(fun.y=median, geom="point", size=2, color="red")
-p <- p+geom_jitter(shape=16, position=position_jitter(0.2)) + xlab(ioi) + ylab("Observed Features") + theme_bw()
+p <- p+geom_jitter(shape=16, position=position_jitter(0.2)) + xlab(ioi) + ylab("Observed Features") + theme_bw() + theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1))
 p
 
 ggsave("obs_violin_plot.png", plot=p, path=outdir)
@@ -98,7 +98,7 @@ p<- p + stat_summary(fun.y=mean, geom="point", shape=23, size=2)
 p<-p + stat_summary(fun.y=median, geom="point", size=2, color="red")
 p <- p+geom_jitter(shape=16, position=position_jitter(0.2)) + xlab(ioi) + ylab("Observed Features") + theme_bw()
 dunn_table<- add_significance(dunn_table, p.col="p.adj",output.col = "p.adj.signif")
-p <- p + stat_pvalue_manual(dunn_table, label = "p.adj.signif",hide.ns = TRUE )
+p <- p + stat_pvalue_manual(dunn_table, label = "p.adj.signif",hide.ns = TRUE ) + theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1))
 p
 ggsave("obs_boxplot_w_signif.png", plot=p, path=outdir)
 
@@ -119,7 +119,7 @@ shannon_vals$ID <- row.names(shannon_vals)
 shannon_vals <- data.frame(merge(metadata, shannon_vals))
 shannon_vals[[ioi]] <- factor(shannon_vals[[ioi]], levels=ioi_ord)
 shannon_vals$shannon_entropy <- as.numeric(as.character(shannon_vals$shannon_entropy))
-shannon_boxplot <- ggplot(shannon_vals, aes_string(x=ioi, y=shannon_vals$shannon_entropy, fill=ioi)) + geom_boxplot() + ylab("Shannon") + theme_bw() + xlab(ioi)
+shannon_boxplot <- ggplot(shannon_vals, aes_string(x=ioi, y=shannon_vals$shannon_entropy, fill=ioi)) + geom_boxplot() + ylab("Shannon") + theme_bw() + xlab(ioi) + theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1))
 shannon_boxplot
 
 ggsave("shannon_boxplot.png", plot=shannon_boxplot, path=outdir)
@@ -127,7 +127,7 @@ ggsave("shannon_boxplot.png", plot=shannon_boxplot, path=outdir)
 p <- ggplot(shannon_vals, aes(x=shannon_vals[[ioi]], y=shannon_entropy)) + geom_violin()+ geom_boxplot(width=0.1)
 p<- p + stat_summary(fun.y=mean, geom="point", shape=23, size=2)
 p<-p + stat_summary(fun.y=median, geom="point", size=2, color="red")
-p <- p+geom_jitter(shape=16, position=position_jitter(0.2)) + xlab(ioi) + ylab("Shannon") + theme_bw()
+p <- p+geom_jitter(shape=16, position=position_jitter(0.2)) + xlab(ioi) + ylab("Shannon") + theme_bw() + theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1))
 p
 
 ggsave("shannon_violin_plot.png", plot=p, path=outdir)
@@ -162,7 +162,7 @@ p<- p + stat_summary(fun.y=mean, geom="point", shape=23, size=2)
 p<-p + stat_summary(fun.y=median, geom="point", size=2, color="red")
 p <- p+geom_jitter(shape=16, position=position_jitter(0.2)) + xlab(ioi) + ylab("Shannon") + theme_bw()
 dunn_table<- add_significance(dunn_table, p.col="p.adj",output.col = "p.adj.signif")
-p <- p + stat_pvalue_manual(dunn_table, label = "p.adj.signif",hide.ns = TRUE)
+p <- p + stat_pvalue_manual(dunn_table, label = "p.adj.signif",hide.ns = TRUE) + theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1))
 p
 ggsave("shannon_boxplot_w_signif.png", plot=p, path=outdir)
 ```
@@ -182,7 +182,7 @@ evenness_vals$ID <- row.names(evenness_vals)
 evenness_vals <- data.frame(merge(metadata, evenness_vals))
 evenness_vals[[ioi]] <- factor(evenness_vals[[ioi]],levels=ioi_ord)
 evenness_vals$pielou_evenness <- as.numeric(as.character(evenness_vals$pielou_evenness))
-evenness_boxplot <- ggplot(evenness_vals, aes_string(x=evenness_vals[[ioi]], y=evenness_vals$pielou_evenness, fill=ioi)) + geom_boxplot() + ylab("Evenness") + theme_bw() + xlab(ioi)
+evenness_boxplot <- ggplot(evenness_vals, aes_string(x=evenness_vals[[ioi]], y=evenness_vals$pielou_evenness, fill=ioi)) + geom_boxplot() + ylab("Evenness") + theme_bw() + xlab(ioi) + theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1))
 evenness_boxplot
 
 ggsave("evenness_boxplot.png", plot=evenness_boxplot, path=outdir)
@@ -190,7 +190,7 @@ ggsave("evenness_boxplot.png", plot=evenness_boxplot, path=outdir)
 p <- ggplot(evenness_vals, aes(x=evenness_vals[[ioi]], y=pielou_evenness)) + geom_violin()+ geom_boxplot(width=0.1)
 p<- p + stat_summary(fun.y=mean, geom="point", shape=23, size=2)
 p<-p + stat_summary(fun.y=median, geom="point", size=2, color="red")
-p <- p+geom_jitter(shape=16, position=position_jitter(0.2)) + xlab(ioi) + ylab("Evenness") + theme_bw()
+p <- p+geom_jitter(shape=16, position=position_jitter(0.2)) + xlab(ioi) + ylab("Evenness") + theme_bw() + theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1))
 p
 
 ggsave("evenness_violin_plot.png", plot=p, path=outdir)
@@ -226,7 +226,7 @@ p<- p + stat_summary(fun.y=mean, geom="point", shape=23, size=2)
 p<-p + stat_summary(fun.y=median, geom="point", size=2, color="red")
 p <- p+geom_jitter(shape=16, position=position_jitter(0.2)) + xlab(ioi) + ylab("Evenness") + theme_bw()
 dunn_table<- add_significance(dunn_table, p.col="p.adj",output.col = "p.adj.signif")
-p <- p+ stat_pvalue_manual(dunn_table, label = "p.adj.signif", hide.ns = TRUE)
+p <- p+ stat_pvalue_manual(dunn_table, label = "p.adj.signif", hide.ns = TRUE) + theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1))
 p
 ggsave("evenness_boxplot_w_signif.png", plot=p, path=outdir)
 ```
@@ -242,7 +242,7 @@ faith_pd_vals$ID <- row.names(faith_pd_vals)
 faith_pd_vals <- data.frame(merge(metadata, faith_pd_vals))
 faith_pd_vals[[ioi]] <- factor(faith_pd_vals[[ioi]], levels=ioi_ord)
 faith_pd_vals$faith_pd <- as.numeric(as.character(faith_pd_vals$faith_pd))
-faith_pd_boxplot <- ggplot(faith_pd_vals, aes_string(x=faith_pd_vals[[ioi]], y=faith_pd_vals$faith_pd, fill=ioi)) + geom_boxplot() + ylab("Faith PD") + theme_bw() + xlab(ioi)
+faith_pd_boxplot <- ggplot(faith_pd_vals, aes_string(x=faith_pd_vals[[ioi]], y=faith_pd_vals$faith_pd, fill=ioi)) + geom_boxplot() + ylab("Faith PD") + theme_bw() + xlab(ioi) + theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1))
 faith_pd_boxplot
 
 ggsave("faith_pd_boxplot.png", plot=faith_pd_boxplot, path=outdir)
@@ -250,7 +250,7 @@ ggsave("faith_pd_boxplot.png", plot=faith_pd_boxplot, path=outdir)
 p <- ggplot(faith_pd_vals, aes(x=faith_pd_vals[[ioi]], y=faith_pd)) + geom_violin()+ geom_boxplot(width=0.1)
 p<- p + stat_summary(fun.y=mean, geom="point", shape=23, size=2)
 p<-p + stat_summary(fun.y=median, geom="point", size=2, color="red")
-p <- p+geom_jitter(shape=16, position=position_jitter(0.2)) + xlab(ioi) + ylab("Faith PD") + theme_bw()
+p <- p+geom_jitter(shape=16, position=position_jitter(0.2)) + xlab(ioi) + ylab("Faith PD") + theme_bw() + theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1))
 p
 
 ggsave("faith_pd_violin_plot.png", plot=p, path=outdir)
@@ -286,7 +286,7 @@ p<- p + stat_summary(fun.y=mean, geom="point", shape=23, size=2)
 p<-p + stat_summary(fun.y=median, geom="point", size=2, color="red")
 p <- p+geom_jitter(shape=16, position=position_jitter(0.2)) + xlab(ioi) + ylab("Faith PD") + theme_bw()
 dunn_table<- add_significance(dunn_table, p.col="p.adj",output.col = "p.adj.signif")
-p <- p+stat_pvalue_manual(dunn_table, label="p.adj.signif", hide.ns = TRUE)
+p <- p+stat_pvalue_manual(dunn_table, label="p.adj.signif", hide.ns = TRUE) + theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1))
 p
 ggsave("faith_pd_boxplot_w_signif.png", plot=p, path=outdir)
 ```
