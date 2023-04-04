@@ -524,6 +524,7 @@ process GENERATEBIOMFORGRAPHLAN{
     import pandas as pd
     import numpy as np 
     import time
+    import os
 
     metadata_table= pd.read_table(\"${metadata}\", sep='\t')
     metadata_table = metadata_table.drop([0,1])
