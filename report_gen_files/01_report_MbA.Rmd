@@ -56,10 +56,22 @@ level = "Phylum"
 
 #import ASV table from ampliseq analysis and write out properly fomatted one
 
-new_table_file <- paste0(prepend,"qiime2/abundance_tables/feature-table.tsv")
-new_table <- read.csv(new_table_file,sep='\t', skip=1)
-new_table_df <- data.frame(new_table)
-colnames(new_table_df)[1] <- "#NAME"
+# if filtered table is provided:
+if file.exists("filtered-table.tsv"){
+  new_table_file <- paste0("filtered-table.tsv")
+  new_table <- read.csv(new_table_file,sep='\t')
+  new_table_df <- data.frame(new_table)
+  new_table_df$"#NAME" <- rownames(new_table_df)
+  new_table_df <- new_table_df %>% select("#NAME", everything())
+  write.table(new_table_df,file = paste0(mbadir,"/ASV-tab.txt"),sep='\t',row.names = F)
+} else {
+  # if not: 
+  new_table_file <- paste0(prepend,"qiime2/abundance_tables/feature-table.tsv")
+  new_table <- read.csv(new_table_file,sep='\t', skip=1)
+  new_table_df <- data.frame(new_table)
+  colnames(new_table_df)[1] <- "#NAME"
+}
+
 write.table(new_table_df,file = paste0(mbadir,"/ASV-tab.txt"),sep='\t',row.names = F)
 
 mbSet <- Read16SAbundData(mbSet,paste0(mbadir,"/ASV-tab.txt"),"text",'SILVA','T')
