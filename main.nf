@@ -70,7 +70,7 @@ workflow {
 
         RAREFACTIONPLOT(input_ch, rare_report_ch, qza_table)
         tax_qza = REFORMATANDQZATAX(input_ch)
-        (graphlan_biom, table_qza) = GENERATEBIOMFORGRAPHLAN(metadata_ch, ioi_ch, input_ch, filter_samples_ch, tax_qza)
+        (graphlan_biom, table_qza) = GENERATEBIOMFORGRAPHLAN(metadata_ch, ioi_ch, input_ch, filter_samples_ch, tax_qza, qza_table)
         COREMETRICPYTHON(metadata_ch, qza_table, input_ch, count_minmax_ch, rare_val_ch)
         QZATOTSV(COREMETRICPYTHON.out.vector)
         REPORT01BARPLOT(input_ch, metadata_ch, report_one_ch, ioi_ch, FILTERNEGATIVECONTROL.out.filtered_table_tsv)
@@ -504,6 +504,8 @@ process GENERATEBIOMFORGRAPHLAN{
     path 'results'
     file "filter_samples.py" 
     file "taxonomy.qza"
+    file table
+    
 
     output:
     
@@ -515,6 +517,7 @@ process GENERATEBIOMFORGRAPHLAN{
     //label 'process_medium'
 
     script:
+    def table = table.name != 'NO_FILE' ? "$table" : ''
     """
     #!/usr/bin/env python3
     import subprocess
@@ -531,12 +534,14 @@ process GENERATEBIOMFORGRAPHLAN{
     subprocess.run(['mkdir phylo_trees'], shell=True)
     subprocess.run(['mkdir biom_tabs'], shell=True)
 
-    create_qza_command = "qiime tools import \
-    --input-path results/qiime2/abundance_tables/feature-table.biom \
-    --type 'FeatureTable[Frequency]' \
-    --input-format BIOMV210Format \
-    --output-path feature-table.qza"
-    result = subprocess.run([create_qza_command], shell=True)
+    if [[! -f feature-table.qza]]; then
+        create_qza_command = "qiime tools import \
+        --input-path results/qiime2/abundance_tables/feature-table.biom \
+        --type 'FeatureTable[Frequency]' \
+        --input-format BIOMV210Format \
+        --output-path feature-table.qza"
+        result = subprocess.run([create_qza_command], shell=True)
+    fi 
 
     # iterates over the items of interest to produce a circular phylogenetic tree per category e.g. CONTROL TREATMENT
     for item in ioi_set:
