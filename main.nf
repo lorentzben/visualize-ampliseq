@@ -40,6 +40,7 @@ report_four_ch = Channel.fromPath("${projectDir}/report_gen_files/04_report.Rmd"
 report_five_ch = Channel.fromPath("${projectDir}/report_gen_files/05_report.Rmd")
 count_minmax_ch = Channel.fromPath("${projectDir}/python_scripts/count_table_minmax_reads.py")
 report_six_ch = Channel.fromPath("${projectDir}/report_gen_files/06_report.Rmd")
+report_six_b_ch = Channel.fromPath("${projectDir}/report_gen_files/06b_report.Rmd")
 report_seven_ch = Channel.fromPath("${projectDir}/report_gen_files/07_report.Rmd")
 report_eight_ch = Channel.fromPath("${projectDir}/report_gen_files/08_report.Rmd")
 report_nine_ch = Channel.fromPath("${projectDir}/report_gen_files/09_report.Rmd")
@@ -80,6 +81,7 @@ workflow {
         REPORT04ALPHATABLE(QZATOTSV.out.vector, ioi_ch, report_four_ch)
         REPORT05ALPHABOXPLOT(QZATOTSV.out.vector, ioi_ch, ord_ioi, metadata_ch, report_five_ch)
         REPORT06ORDINATION(qza_table, input_ch, ioi_ch, ord_ioi, report_six_ch, tax_qza, metadata_ch, COREMETRICPYTHON.out.pcoa, COREMETRICPYTHON.out.vector)
+        REPORT06BNMDSORDINATION(qza_table, input_ch, ioi_ch, ord_ioi, report_six_b_ch, tax_qza, metadata_ch, COREMETRICPYTHON.out.pcoa, COREMETRICPYTHON.out.vector)
         GENERATERAREFACTIONCURVE(metadata_ch, qza_table, input_ch, count_minmax_ch, rare_val_ch, FILTERNEGATIVECONTROL.out.filtered_table_tsv)
         REPORT07RAREFACTION(ioi_ch,ord_ioi,input_ch, report_seven_ch, GENERATERAREFACTIONCURVE.out.rareVector, metadata_ch)
         REPORT08RANKEDABUNDANCE(qza_table,input_ch, ioi_ch, ord_ioi, report_eight_ch, tax_qza, metadata_ch)
@@ -108,6 +110,7 @@ workflow {
         REPORT04ALPHATABLE(QZATOTSV.out.vector, ioi_ch, report_four_ch)
         REPORT05ALPHABOXPLOT(QZATOTSV.out.vector, ioi_ch, ord_ioi, metadata_ch, report_five_ch)
         REPORT06ORDINATION(table_qza, input_ch, ioi_ch, ord_ioi, report_six_ch, tax_qza, metadata_ch, COREMETRICPYTHON.out.pcoa, COREMETRICPYTHON.out.vector)
+        REPORT06BNMDSORDINATION(table_qza, input_ch, ioi_ch, ord_ioi, report_six_b_ch, tax_qza, metadata_ch, COREMETRICPYTHON.out.pcoa, COREMETRICPYTHON.out.vector)
         GENERATERAREFACTIONCURVE(metadata_ch, table_qza, input_ch, count_minmax_ch, rare_val_ch, empty_table)
         REPORT07RAREFACTION(ioi_ch,ord_ioi,input_ch, report_seven_ch, GENERATERAREFACTIONCURVE.out.rareVector, metadata_ch)
         REPORT08RANKEDABUNDANCE(table_qza,input_ch, ioi_ch, ord_ioi, report_eight_ch, tax_qza, metadata_ch)
@@ -857,6 +860,45 @@ process REPORT06ORDINATION{
     Rscript -e "rmarkdown::render('06_report.Rmd', output_file='$PWD/06_report_$dt.html', output_format='html_document', clean=TRUE, knit_root_dir='$PWD')"
 
     Rscript -e "rmarkdown::render('06_report.Rmd', output_file='$PWD/06_report_$dt.pdf', output_format='pdf_document', clean=TRUE, knit_root_dir='$PWD')"
+    '''
+}
+
+process REPORT06BNMDSORDINATION{
+
+    publishDir "${params.outdir}/html", pattern: "*.html", mode: "copy"
+    publishDir "${params.outdir}/pdf", pattern: "*.pdf", mode: "copy"
+    publishDir "${params.outdir}", pattern: "*/*.png", mode: "copy"
+
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/r_06:2.0' : 'lorentzb/r_06:2.0' }"
+
+    input: 
+
+    file 'feature-table.qza'
+    path 'results'
+    file 'item_of_interest.csv'
+    file 'order_item_of_interest.csv'
+    file '06b_report.Rmd'
+    file 'taxonomy.qza'
+    file 'metadata.tsv'
+    path pcoas
+    path vectors
+
+    output:
+
+    file "06b_report_*.html"
+    file "06b_report_*.pdf"
+    path "beta_diversity_ordination/*"
+     
+    script:
+
+    '''
+    #!/usr/bin/env bash
+   
+    dt=$(date '+%d-%m-%Y_%H.%M.%S');
+
+    Rscript -e "rmarkdown::render('06b_report.Rmd', output_file='$PWD/06b_report_$dt.html', output_format='html_document', clean=TRUE, knit_root_dir='$PWD')"
+
+    Rscript -e "rmarkdown::render('06b_report.Rmd', output_file='$PWD/06b_report_$dt.pdf', output_format='pdf_document', clean=TRUE, knit_root_dir='$PWD')"
     '''
 }
 

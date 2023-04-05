@@ -1,0 +1,344 @@
+---
+title: "06 16s Analysis Report"
+output:
+  pdf_document:
+    df_print: kable
+  html_document:
+    df_print: kable
+    smart: false
+---
+
+```{r init renv, message=FALSE, warning=FALSE, include=FALSE}
+#library(renv)
+#renv::isolate()
+#renv::settings$snapshot.type("all")
+#renv::restore()
+```
+
+```{r parse item of interest and make outdir for figures, echo=FALSE, message=FALSE, warning=FALSE}
+#this may be required for each file
+#item of interest, comes from bash and python script that orchestrates everything
+wd <- getwd()
+ioi <- readLines("item_of_interest.csv")
+ioi<-as.character(ioi)
+
+ioi_ord <- read.csv("order_item_of_interest.csv")
+colnames(ioi_ord) <- ioi
+ioi_ord <- as.list(ioi_ord)[[ioi]]
+
+outdir_name <- "beta_diversity_ordination"
+if(!dir.exists(outdir_name)) {dir.create(outdir_name)}
+outdir <- outdir_name
+```
+
+```{r ampvis code from github so we dont need to query, echo=FALSE, message=FALSE, warning=FALSE}
+phyloseq_to_ampvis2 <- function(physeq) {
+  #check object for class
+  if(!any(class(physeq) %in% "phyloseq"))
+    stop("physeq object must be of class \"phyloseq\"", call. = FALSE)
+  
+  #ampvis2 requires taxonomy and abundance table, phyloseq checks for the latter
+  if(is.null(physeq@tax_table))
+    stop("No taxonomy found in the phyloseq object and is required for ampvis2", call. = FALSE)
+  
+  #OTUs must be in rows, not columns
+  if(phyloseq::taxa_are_rows(physeq))
+    abund <- as.data.frame(phyloseq::otu_table(physeq)@.Data)
+  else
+    abund <- as.data.frame(t(phyloseq::otu_table(physeq)@.Data))
+  
+  #tax_table is assumed to have OTUs in rows too
+  tax <- phyloseq::tax_table(physeq)@.Data
+  
+  #merge by rownames (OTUs)
+  otutable <- merge(
+    abund,
+    tax,
+    by = 0,
+    all.x = TRUE,
+    all.y = FALSE,
+    sort = FALSE
+  )
+  colnames(otutable)[1] <- "OTU"
+  
+  #extract sample_data (metadata)
+  if(!is.null(physeq@sam_data)) {
+    metadata <- data.frame(
+      phyloseq::sample_data(physeq),
+      row.names = phyloseq::sample_names(physeq), 
+      stringsAsFactors = FALSE, 
+      check.names = FALSE
+    )
+    
+    #check if any columns match exactly with rownames
+    #if none matched assume row names are sample identifiers
+    samplesCol <- unlist(lapply(metadata, function(x) {
+      identical(x, rownames(metadata))}))
+    
+    if(any(samplesCol)) {
+      #error if a column matched and it's not the first
+      if(!samplesCol[[1]])
+        stop("Sample ID's must be in the first column in the sample metadata, please reorder", call. = FALSE)
+    } else {
+      #assume rownames are sample identifiers, merge at the end with name "SampleID"
+      if(any(colnames(metadata) %in% "SampleID"))
+        stop("A column in the sample metadata is already named \"SampleID\" but does not seem to contain sample ID's", call. = FALSE)
+      metadata$SampleID <- rownames(metadata)
+      
+      #reorder columns so SampleID is the first
+      metadata <- metadata[, c(which(colnames(metadata) %in% "SampleID"), 1:(ncol(metadata)-1L)), drop = FALSE]
+    }
+  } else
+    metadata <- NULL
+  
+  #extract phylogenetic tree, assumed to be of class "phylo"
+  if(!is.null(physeq@phy_tree)) {
+    tree <- phyloseq::phy_tree(physeq)
+  } else
+    tree <- NULL
+  
+  #extract OTU DNA sequences, assumed to be of class "XStringSet"
+  if(!is.null(physeq@refseq)) {
+    #convert XStringSet to DNAbin using a temporary file (easiest)
+    fastaTempFile <- tempfile(pattern = "ampvis2_", fileext = ".fa")
+    Biostrings::writeXStringSet(physeq@refseq, filepath = fastaTempFile)
+  } else
+    fastaTempFile <- NULL
+  
+  #load as normally with amp_load
+  ampvis2::amp_load(
+    otutable = otutable,
+    metadata = metadata,
+    tree = tree,
+    fasta = fastaTempFile
+  )
+}
+```
+
+## 6 Beta diversity 
+
+### 6.1 Bray curtis ordination
+
+```{r beta diversity plot of bray curtis measurement, echo=FALSE, message=FALSE, warning=FALSE}
+library(qiime2R)
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(ggConvexHull)
+library(phyloseq)
+
+table_dada2 <- "feature-table.qza"
+rooted_tree <- "results/qiime2/phylogenetic_tree/rooted-tree.qza"
+taxonomy_file <- "taxonomy.qza"
+metadata_file <- "metadata.tsv"
+
+cycle_1 <- qza_to_phyloseq(table_dada2,rooted_tree,taxonomy_file,metadata_file) 
+cycle_1.ord <- ordinate(cycle_1, "NMDS", "bray")
+bray_ord <- plot_ordination(cycle_1, cycle_1.ord, type="samples", color=ioi) + ggtitle("NMDS ordination of Bray curtis")
+bray_ord_poly <- bray_ord + geom_polygon(aes(fill=ioi)) 
+
+ggsave("bray_curtis_pcoa_ordination_polygon.png", plot=bray_ord_poly, path=outdir)
+ggsave("bray_curtis_pcoa_ordination.png", plot=bray_ord, path=outdir)
+```
+
+
+
+
+### 6.2 Jaccard ordination
+
+```{r pcoa using Jaccard distance, echo=FALSE, message=FALSE, warning=FALSE}
+library(qiime2R)
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(ggConvexHull)
+
+metadata<-read_q2metadata(metadata_file)
+jaccard <- qiime2R::read_qza("jaccard_pcoa_results.qza")
+shannon<-qiime2R::read_qza("shannon_vector.qza")
+shannon <- shannon$data %>% rownames_to_column("SampleID")
+
+metadata[[ioi]] <- factor(metadata[[ioi]], levels=ioi_ord)
+
+jaccard_pcoa <- jaccard$data$Vectors %>%
+  dplyr::select(SampleID, PC1, PC2) %>%
+  left_join(metadata) %>%
+  left_join(shannon) %>%
+  ggplot(aes_string(x="PC1", y="PC2", color=ioi))+
+  geom_point() +
+  geom_convexhull(alpha=0.5, aes_string(fill=ioi)) +
+  theme_q2r() +
+  scale_size_continuous(name="Shannon Diversity") +
+  scale_color_discrete(name=ioi)
+
+jaccard_pcoa_no_polygon <- jaccard$data$Vectors %>%
+  dplyr::select(SampleID, PC1, PC2) %>%
+  left_join(metadata) %>%
+  left_join(shannon) %>%
+  ggplot(aes_string(x="PC1", y="PC2", color=ioi))+
+  geom_point() +
+  theme_q2r() +
+  scale_size_continuous(name="Shannon Diversity") +
+  scale_color_discrete(name=ioi)
+
+jaccard_pcoa
+
+ggsave("jaccard_pcoa_ordination.png", plot=jaccard_pcoa, path=outdir)
+
+jaccard_pcoa_no_polygon
+ggsave("jaccard_pcoa_ordination_no_polygons.png", plot=jaccard_pcoa_no_polygon, path=outdir)
+
+
+```
+
+
+
+
+### 6.3 Unweighted unifrac ordination
+
+```{r unweighted unifrac pcoa ordination, echo=FALSE, message=FALSE, warning=FALSE}
+library(qiime2R)
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(ggConvexHull)
+
+metadata<-read_q2metadata(metadata_file)
+metadata[[ioi]] <- factor(metadata[[ioi]], levels=ioi_ord)
+jaccard <- qiime2R::read_qza("unweighted_unifrac_pcoa_results.qza")
+shannon<-qiime2R::read_qza("shannon_vector.qza")
+shannon <- shannon$data %>% rownames_to_column("SampleID")
+
+
+unweight_unifrac_pcoa <- jaccard$data$Vectors %>%
+  dplyr::select(SampleID, PC1, PC2) %>%
+  left_join(metadata) %>%
+  left_join(shannon) %>%
+  ggplot(aes_string(x="PC1", y="PC2", color=ioi))+
+  geom_point() +
+  geom_convexhull(alpha=0.5, aes_string(fill=ioi)) +
+  theme_q2r() +
+  scale_color_discrete(name=ioi)
+
+unweight_unifrac_pcoa 
+
+ggsave("unweighted_unifrac_pcoa_ordination.png", plot=unweight_unifrac_pcoa, path=outdir)
+
+unweight_unifrac_pcoa_no_polygon <- jaccard$data$Vectors %>%
+  dplyr::select(SampleID, PC1, PC2) %>%
+  left_join(metadata) %>%
+  left_join(shannon) %>%
+  ggplot(aes_string(x="PC1", y="PC2", color=ioi))+
+  geom_point() +
+  theme_q2r() +
+  scale_color_discrete(name=ioi)
+
+unweight_unifrac_pcoa_no_polygon
+
+ggsave("unweighted_unifrac_pcoa_ordination_no_polygons.png", plot=unweight_unifrac_pcoa_no_polygon, path=outdir)
+
+
+```
+
+
+
+
+### 6.4 Weighted unifrac ordination
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(qiime2R)
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(ggConvexHull)
+
+metadata<-read_q2metadata(metadata_file)
+metadata[[ioi]] <- factor(metadata[[ioi]], levels=ioi_ord)
+jaccard <- qiime2R::read_qza("weighted_unifrac_pcoa_results.qza")
+shannon<-qiime2R::read_qza("shannon_vector.qza")
+shannon <- shannon$data %>% rownames_to_column("SampleID")
+
+weighted_unifrac_pcoa <- jaccard$data$Vectors %>%
+  dplyr::select(SampleID, PC1, PC2) %>%
+  left_join(metadata) %>%
+  left_join(shannon)
+
+
+weighted_unifrac_pcoa <- jaccard$data$Vectors %>%
+  dplyr::select(SampleID, PC1, PC2) %>%
+  left_join(metadata) %>%
+  left_join(shannon) %>%
+  ggplot(aes_string(x="PC1", y="PC2", color=ioi))+
+  geom_point() +
+  geom_convexhull(alpha=0.5, aes_string(fill=ioi)) +
+  theme_q2r() +
+  scale_color_discrete(name=ioi)
+
+weighted_unifrac_pcoa
+
+ggsave("weighted_unifrac_pcoa_ordination.png", plot=weighted_unifrac_pcoa, path=outdir)
+
+weighted_unifrac_pcoa_no_polygon <- jaccard$data$Vectors %>%
+  dplyr::select(SampleID, PC1, PC2) %>%
+  left_join(metadata) %>%
+  left_join(shannon) %>%
+  ggplot(aes_string(x="PC1", y="PC2", color=ioi))+
+  geom_point() +
+  theme_q2r() +
+  scale_color_discrete(name=ioi)
+
+weighted_unifrac_pcoa_no_polygon
+ggsave("weighted_unifrac_pcoa_ordination_no_polygons.png", plot=weighted_unifrac_pcoa_no_polygon, path=outdir)
+```
+
+
+
+
+### 6.5 Principal Components Analysis
+
+```{r PCA created by ampvis2, echo=FALSE, message=FALSE, warning=FALSE}
+library(dplyr)
+library(qiime2R)
+library(ampvis2)
+library(ggplot2)
+library(ggConvexHull)
+library(reshape2)
+
+#devtools::source_gist("8d0ca4206a66be7ff6d76fc4ab8e66c6")
+#potentially need to add a row that is qiime types
+cycle_1 <- qza_to_phyloseq(table_dada2,rooted_tree,taxonomy_file,metadata_file) 
+cycle_1@sam_data[[ioi]] <- factor(cycle_1@sam_data[[ioi]], levels=ioi_ord)
+cycle_1_amp <- phyloseq_to_ampvis2(cycle_1)
+
+euclidean_frame <- amp_ordinate(cycle_1_amp, filter_species = 0, type = "PCA", transform = "hellinger", print_caption = T,sample_color_by = ioi, sample_colorframe = T, detailed_output = T,envfit_factor =ioi,envfit_show = F) 
+euclidean_frame$plot
+print(euclidean_frame$evf_factor_model)
+print(euclidean_frame$screeplot)
+ggsave("PCA_ordination_with_boundries.png", plot=euclidean_frame$plot , path=outdir)
+
+loading <- as.data.frame(euclidean_frame$dspecies)
+#loading <- select(loading, "PC1", "PC2" , "Genus")
+loading <- subset(loading, select = c(PC1, PC2, Genus))
+loading <- melt(loading, id.vars="Genus")
+loading <- arrange(loading, desc(abs(value)))
+
+loading$Genus <- factor(loading$Genus, levels= unique(loading$Genus))
+
+cutoff <- summary(loading$value)[2]
+
+loading2 <- subset(loading, abs(value) > abs(cutoff))
+
+loading <- loading2[1:100,]
+
+p <- ggplot(data=loading, aes(x=Genus, y=value, fill=variable))+
+  geom_bar(stat="identity", width=0.4,position = position_dodge(width = 0.5)) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+p
+ggsave("Loading_top_100_genera.png", plot=p , path=outdir)
+
+
+euclidean <- amp_ordinate(cycle_1_amp, filter_species = 0, type = "PCA", transform = "hellinger", print_caption = T,sample_color_by = ioi) 
+euclidean
+
+ggsave("PCA_ordination_without_boundries.png", plot=euclidean , path=outdir)
+```
