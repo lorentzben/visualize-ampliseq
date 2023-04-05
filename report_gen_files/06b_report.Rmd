@@ -135,7 +135,11 @@ metadata_file <- "metadata.tsv"
 cycle_1 <- qza_to_phyloseq(table_dada2,rooted_tree,taxonomy_file,metadata_file) 
 cycle_1.ord <- ordinate(cycle_1, "NMDS", "bray")
 bray_ord <- plot_ordination(cycle_1, cycle_1.ord, type="samples", color=ioi) + ggtitle("NMDS ordination of Bray curtis")
-bray_ord_poly <- bray_ord + geom_polygon(aes(fill=ioi)) 
+bray_ord_poly <- bray_ord + geom_polygon(aes_string(fill=ioi)) 
+
+bray_ord
+
+bray_ord_poly
 
 ggsave("bray_curtis_pcoa_ordination_polygon.png", plot=bray_ord_poly, path=outdir)
 ggsave("bray_curtis_pcoa_ordination.png", plot=bray_ord, path=outdir)
