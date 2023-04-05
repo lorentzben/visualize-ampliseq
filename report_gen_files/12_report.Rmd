@@ -376,7 +376,7 @@ w_uni_pear %>%
 #ggsave("ANOSIM_weighted_unifrac_boxplot.png", plot = w_uni_plot,path = outdir)
 
 #Weighted Unifrac ANOSIM Plot No Bracket
-w_uni_plot_no_brac <- autoplot(res, notch=F) + theme_bw()+ aes(fill=res$class.vec) +labs(title = "ANOSIM Weighted Unifrac", fill=ioi)+ xlab(as.character(ioi)) + ylab("Rank Value")
+w_uni_plot_no_brac <- autoplot(res, notch=F) + theme_bw()+ aes(fill=res$class.vec) +labs(title = "ANOSIM Weighted Unifrac", fill=ioi)+ xlab(as.character(ioi)) + ylab("Rank Value") + theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1))
 w_uni_plot_no_brac
 #Save image to disk
 ggsave("ANOSIM_weighted_unifrac_boxplot_no_signif.png", plot = w_uni_plot_no_brac,path = outdir)
@@ -400,7 +400,7 @@ uw_uni_pair %>%
 #save to disk
 #ggsave("ANOSIM_unweighted_unifrac_boxplot.png", plot=uw_uni_plot, path=outdir)
 #Unweighted Unifrac ANOSIM plot No bracket
-uw_uni_plot_no_brac <- autoplot(res,notch = F) + theme_bw() + aes(fill=res$class.vec)+ labs(title = "ANOSIM Unweighted Unifrac", fill=ioi) + xlab(as.character(ioi)) + ylab("Rank Value")
+uw_uni_plot_no_brac <- autoplot(res,notch = F) + theme_bw() + aes(fill=res$class.vec)+ labs(title = "ANOSIM Unweighted Unifrac", fill=ioi) + xlab(as.character(ioi)) + ylab("Rank Value") + theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1))
 uw_uni_plot_no_brac
 #save to disk
 ggsave("ANOSIM_unweighted_unifrac_boxplot_no_brackets.png", plot=uw_uni_plot_no_brac, path=outdir)
@@ -421,7 +421,7 @@ bray_pair %>%
 #save to disk
 #ggsave("ANOSIM_bray_curtis_boxplot.png", plot=bray_plot, path=outdir)
 #Bray Curtis ANOSIM plot No Bracket
-bray_plot_no_brac <- autoplot(ano, notch=F) + theme_bw() +aes(fill=ano$class.vec) + labs(title ="ANOSIM Bray Curtis", fill=ioi) + xlab(as.character(ioi)) + ylab("Rank Value")
+bray_plot_no_brac <- autoplot(ano, notch=F) + theme_bw() +aes(fill=ano$class.vec) + labs(title ="ANOSIM Bray Curtis", fill=ioi) + xlab(as.character(ioi)) + ylab("Rank Value") + theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1))
 bray_plot_no_brac
 #save to disk
 ggsave("ANOSIM_bray_curtis_boxplot_no_bracket.png", plot=bray_plot_no_brac, path=outdir)
@@ -442,7 +442,7 @@ jaccard_pair %>%
 #save to disk 
 #ggsave("ANOSIM_jaccard_boxplot.png", plot=jaccard_plot, path = outdir)
 #Jaccard ANOSIM plot No Bracket
-jaccard_plot_no_brac <- autoplot(ano, notch =F) + theme_bw() +aes(fill=ano$class.vec) + labs(title = "ANOSIM Jaccard", fill=ioi) +  xlab(as.character(ioi)) + ylab("Rank Value")
+jaccard_plot_no_brac <- autoplot(ano, notch =F) + theme_bw() +aes(fill=ano$class.vec) + labs(title = "ANOSIM Jaccard", fill=ioi) +  xlab(as.character(ioi)) + ylab("Rank Value") + theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1))
 jaccard_plot_no_brac
 #save to disk 
 ggsave("ANOSIM_jaccard_boxplot_no_bracket.png", plot=jaccard_plot_no_brac, path = outdir)
