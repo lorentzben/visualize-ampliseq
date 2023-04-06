@@ -1,5 +1,5 @@
 ---
-title: "06 16s Analysis Report"
+title: "06b 16s Analysis Report"
 output:
   pdf_document:
     df_print: kable
