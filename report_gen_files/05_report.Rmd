@@ -91,9 +91,14 @@ if (shapiro_res$p.value > 0.05){
 
   summary(obs_aov)
 
-  tmp <- TukeyHSD(obs_aov)
+  tukey_res <- tukey_hsd(x= obs_vals, formula = form, p.adjust.method = "holm")
+  tukey_df <- add_significance(tukey_res , p.col="p.adj",output.col = "p.adj.signif",symbols =c("****", "***", "**", "$*$", "ns"))
 
-  tukey_df <- data.frame(tmp$Treatment)
+  kable(tukey_df) %>% 
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+
+  tukey_df <- tukey_df %>% add_xy_position(data=obs_vals, formula=form)
+
 
   p <- ggplot(obs_vals, aes(x=obs_vals[[ioi]], y=observed_features)) + geom_violin()+ geom_boxplot(width=0.1)
   p<- p + stat_summary(fun.y=mean, geom="point", shape=23, size=2)
