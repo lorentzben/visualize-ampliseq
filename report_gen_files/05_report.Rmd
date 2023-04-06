@@ -31,7 +31,8 @@ if(!dir.exists(outdir_name)) {dir.create(outdir_name)}
 outdir <- outdir_name
 
 metadata = read.table("metadata.tsv", header=TRUE)
-metadata <- metadata[2:length(metadata[,1]),]
+# I don't think this is needed if error examine
+#metadata <- metadata[2:length(metadata[,1]),]
 ```
 
 ## 5 Alpha Diversity Plot 
@@ -78,29 +79,60 @@ library(ggplot2)
 obs_vals[[ioi]] <- factor(obs_vals[[ioi]], levels=ioi_ord)
 
 form <- as.formula(paste0("observed_features ~ ", ioi))
-kruskal_table <- rstatix::kruskal_test(data = obs_vals, formula = form)
-kruskal_table <- add_significance(kruskal_table, p.col="p",output.col = "p.signif",symbols =c("****", "***", "**", "$*$", "ns"))
 
-kable(kruskal_table) %>% 
+# check normality 
+shapiro_res <- shapiro.test(obs_vals$observed_features)
+
+shapiro_res
+
+if (shapiro_res$p.value > 0.05){
+  # Data is Normally Distributed
+  obs_aov <- aov(form, data = obs_vals)
+
+  summary(obs_aov)
+
+  tmp <- TukeyHSD(obs_aov)
+
+  tukey_df <- data.frame(tmp$Treatment)
+
+  p <- ggplot(obs_vals, aes(x=obs_vals[[ioi]], y=observed_features)) + geom_violin()+ geom_boxplot(width=0.1)
+  p<- p + stat_summary(fun.y=mean, geom="point", shape=23, size=2)
+  p<-p + stat_summary(fun.y=median, geom="point", size=2, color="red")
+  p <- p+geom_jitter(shape=16, position=position_jitter(0.2)) + xlab(ioi) + ylab("Observed Features") + theme_bw()
+  tukey_df <- add_significance(tukey_df, p.col="p.adj",output.col = "p.adj.signif")
+  p <- p + stat_pvalue_manual(tukey_df, label = "p.adj.signif",hide.ns = TRUE ) + theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1))
+  p
+  ggsave("obs_boxplot_w_signif.png", plot=p, path=outdir)
+
+} else{
+  # Data is Not Normally Distributed
+  kruskal_table <- rstatix::kruskal_test(data = obs_vals, formula = form)
+  kruskal_table <- add_significance(kruskal_table, p.col="p",output.col = "p.signif",symbols =c("****", "***", "**", "$*$", "ns"))
+
+  kable(kruskal_table) %>% 
   kable_styling(bootstrap_options = c("hover", "condensed", "responsive"))
 
-form = as.formula(paste0("observed_features ~", ioi))
+  form = as.formula(paste0("observed_features ~", ioi))
 
-dunn_table <- rstatix::dunn_test(data = obs_vals, formula = form, p.adjust.method = "holm") 
-dunn_table<- add_significance(dunn_table, p.col="p.adj",output.col = "p.adj.signif",symbols =c("****", "***", "**", "$*$", "ns"))
-kable(dunn_table) %>% 
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+  dunn_table <- rstatix::dunn_test(data = obs_vals, formula = form, p.adjust.method = "holm") 
+  dunn_table<- add_significance(dunn_table, p.col="p.adj",output.col = "p.adj.signif",symbols =c("****", "***", "**", "$*$", "ns"))
+  kable(dunn_table) %>% 
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
 
-dunn_table <- dunn_table %>% add_xy_position()
+  dunn_table <- dunn_table %>% add_xy_position()
 
-p <- ggplot(obs_vals, aes(x=obs_vals[[ioi]], y=observed_features)) + geom_violin()+ geom_boxplot(width=0.1)
-p<- p + stat_summary(fun.y=mean, geom="point", shape=23, size=2)
-p<-p + stat_summary(fun.y=median, geom="point", size=2, color="red")
-p <- p+geom_jitter(shape=16, position=position_jitter(0.2)) + xlab(ioi) + ylab("Observed Features") + theme_bw()
-dunn_table<- add_significance(dunn_table, p.col="p.adj",output.col = "p.adj.signif")
-p <- p + stat_pvalue_manual(dunn_table, label = "p.adj.signif",hide.ns = TRUE ) + theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1))
-p
-ggsave("obs_boxplot_w_signif.png", plot=p, path=outdir)
+  p <- ggplot(obs_vals, aes(x=obs_vals[[ioi]], y=observed_features)) + geom_violin()+ geom_boxplot(width=0.1)
+  p<- p + stat_summary(fun.y=mean, geom="point", shape=23, size=2)
+  p<-p + stat_summary(fun.y=median, geom="point", size=2, color="red")
+  p <- p+geom_jitter(shape=16, position=position_jitter(0.2)) + xlab(ioi) + ylab("Observed Features") + theme_bw()
+  dunn_table<- add_significance(dunn_table, p.col="p.adj",output.col = "p.adj.signif")
+  p <- p + stat_pvalue_manual(dunn_table, label = "p.adj.signif",hide.ns = TRUE ) + theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1))
+  p
+  ggsave("obs_boxplot_w_signif.png", plot=p, path=outdir)
+
+}
+
+
 
 ```
 
