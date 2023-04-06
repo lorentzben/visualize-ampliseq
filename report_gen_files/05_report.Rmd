@@ -83,7 +83,7 @@ form <- as.formula(paste0("observed_features ~ ", ioi))
 # check normality 
 shapiro_res <- shapiro.test(obs_vals$observed_features)
 
-shapiro_res
+print(shapiro_res)
 
 if (shapiro_res$p.value > 0.05){
   # Data is Normally Distributed
@@ -106,7 +106,9 @@ if (shapiro_res$p.value > 0.05){
   p <- p+geom_jitter(shape=16, position=position_jitter(0.2)) + xlab(ioi) + ylab("Observed Features") + theme_bw()
   tukey_df <- add_significance(tukey_df, p.col="p.adj",output.col = "p.adj.signif")
   p <- p + stat_pvalue_manual(tukey_df, label = "p.adj.signif",hide.ns = TRUE ) + theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1)) + ggtitle("ANOVA test of Observed Features")
-  p
+
+  print(p)
+
   ggsave("obs_boxplot_w_signif.png", plot=p, path=outdir)
 
 } else{
@@ -132,7 +134,9 @@ if (shapiro_res$p.value > 0.05){
   p <- p+geom_jitter(shape=16, position=position_jitter(0.2)) + xlab(ioi) + ylab("Observed Features") + theme_bw()
   dunn_table<- add_significance(dunn_table, p.col="p.adj",output.col = "p.adj.signif")
   p <- p + stat_pvalue_manual(dunn_table, label = "p.adj.signif",hide.ns = TRUE ) + theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1)) + ggtitle("Kruskal-Wallis test of Observed Features")
-  p
+
+  print(p)
+
   ggsave("obs_boxplot_w_signif.png", plot=p, path=outdir)
 
 }
@@ -184,7 +188,7 @@ form <- as.formula(paste0("shannon_entropy ~ ", ioi))
 # check normality 
 shapiro_res <- shapiro.test(shannon_vals$shannon_entropy)
 
-shapiro_res
+print(shapiro_res)
 
 if (shapiro_res$p.value > 0.05){
   # Data is Normally Distributed
@@ -207,7 +211,7 @@ if (shapiro_res$p.value > 0.05){
   p <- p+geom_jitter(shape=16, position=position_jitter(0.2)) + xlab(ioi) + ylab("Shannon") + theme_bw()
   tukey_df <- add_significance(tukey_df, p.col="p.adj",output.col = "p.adj.signif")
   p <- p + stat_pvalue_manual(tukey_df, label = "p.adj.signif",hide.ns = TRUE ) + theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1)) + ggtitle("ANOVA test of Shannon")
-  p
+  print(p)
   ggsave("shannon_boxplot_w_signif.png", plot=p, path=outdir)
 
 } else {
@@ -232,7 +236,7 @@ if (shapiro_res$p.value > 0.05){
   p <- p+geom_jitter(shape=16, position=position_jitter(0.2)) + xlab(ioi) + ylab("Shannon") + theme_bw()
   dunn_table<- add_significance(dunn_table, p.col="p.adj",output.col = "p.adj.signif")
   p <- p + stat_pvalue_manual(dunn_table, label = "p.adj.signif",hide.ns = TRUE) + theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1)) + ggtitle("Kruskal-Wallis test of Shannon")
-  p
+  print(p)
   ggsave("shannon_boxplot_w_signif.png", plot=p, path=outdir)
 }
 ```
@@ -281,7 +285,7 @@ form <- as.formula(paste0("pielou_evenness ~ ", ioi))
 # check normality 
 shapiro_res <- shapiro.test(shannon_vals$shannon_entropy)
 
-shapiro_res
+print(shapiro_res)
 
 if (shapiro_res$p.value > 0.05){
   # Data is Normally Distributed
@@ -304,7 +308,7 @@ if (shapiro_res$p.value > 0.05){
   p <- p+geom_jitter(shape=16, position=position_jitter(0.2)) + xlab(ioi) + ylab("Evenness") + theme_bw()
   tukey_df <- add_significance(tukey_df, p.col="p.adj",output.col = "p.adj.signif")
   p <- p + stat_pvalue_manual(tukey_df, label = "p.adj.signif",hide.ns = TRUE ) + theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1)) + ggtitle("ANOVA test of Evenness")
-  p
+  print(p)
   ggsave("evenness_boxplot_w_signif.png", plot=p, path=outdir)
 
 } else{
@@ -329,7 +333,7 @@ if (shapiro_res$p.value > 0.05){
   p <- p+geom_jitter(shape=16, position=position_jitter(0.2)) + xlab(ioi) + ylab("Evenness") + theme_bw()
   dunn_table<- add_significance(dunn_table, p.col="p.adj",output.col = "p.adj.signif")
   p <- p+ stat_pvalue_manual(dunn_table, label = "p.adj.signif", hide.ns = TRUE) + theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1)) + ggtitle("Kruskal-Wallis test of Evenness")
-  p
+  print(p)
   ggsave("evenness_boxplot_w_signif.png", plot=p, path=outdir)
 }
 ```
@@ -373,7 +377,7 @@ form <- as.formula(paste0("faith_pd ~ ", ioi))
 # check normality 
 shapiro_res <- shapiro.test(shannon_vals$shannon_entropy)
 
-shapiro_res
+print(shapiro_res)
 
 if (shapiro_res$p.value > 0.05){
   # Data is Normally Distributed
@@ -396,9 +400,9 @@ if (shapiro_res$p.value > 0.05){
   p <- p+geom_jitter(shape=16, position=position_jitter(0.2)) + xlab(ioi) + ylab("Faith PD") + theme_bw()
   tukey_df <- add_significance(tukey_df, p.col="p.adj",output.col = "p.adj.signif")
   p <- p + stat_pvalue_manual(tukey_df, label = "p.adj.signif",hide.ns = TRUE ) + theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1)) + ggtitle("ANOVA test of Faith PD")
-  p
+  print(p)
   ggsave("faith_pd_boxplot_w_signif.png", plot=p, path=outdir)
-  
+
 } else{
   
   #Data is not normally distributed
@@ -422,7 +426,7 @@ if (shapiro_res$p.value > 0.05){
   p <- p+geom_jitter(shape=16, position=position_jitter(0.2)) + xlab(ioi) + ylab("Faith PD") + theme_bw()
   dunn_table<- add_significance(dunn_table, p.col="p.adj",output.col = "p.adj.signif")
   p <- p+stat_pvalue_manual(dunn_table, label="p.adj.signif", hide.ns = TRUE) + theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1)) + ggtitle("Kruskal-Wallis test of Faith PD")
-  p
+  print(p)
   ggsave("faith_pd_boxplot_w_signif.png", plot=p, path=outdir)
 
 }
