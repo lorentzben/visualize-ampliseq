@@ -16,7 +16,7 @@ RUN cd opt/figaro &&\
 ENV PYTHONUNBUFFERED=1
 
 RUN apt-get -qq update && apt-get -y upgrade && \
-    apt-get install -y procps
+    apt-get install -y procps jq 
 
 #CMD ["python3", "/opt/figaro/figaro/figaro.py"]
 CMD ["bash"]
