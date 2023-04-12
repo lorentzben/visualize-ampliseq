@@ -150,9 +150,10 @@ metadata_file <- "metadata.tsv"
 
 cycle_1 <- qza_to_phyloseq(table_dada2,rooted_tree,taxonomy_file,metadata_file)
 sample_data(cycle_1)[[ioi]] <- factor(sample_data(cycle_1)[[ioi]], levels=ioi_ord)
+cycle_1@sam_data[[ioi]] <- droplevels(cycle_1@sam_data[[ioi]])
 
 # PERMANOVA of Weighted Unifrac
-u_unifrac <- UniFrac(cycle_1, weighted = T,)
+u_unifrac <- UniFrac(cycle_1, weighted = T)
 
 res <- PERMANOVA::PerMANOVA.Simple(D = as.matrix(u_unifrac), grupo = cycle_1@sam_data[[ioi]])
 
@@ -188,6 +189,7 @@ library(tidyverse)
 
 cycle_1 <- qza_to_phyloseq(table_dada2,rooted_tree,taxonomy_file,metadata_file)
 sample_data(cycle_1)[[ioi]] <- factor(sample_data(cycle_1)[[ioi]], levels=ioi_ord)
+cycle_1@sam_data[[ioi]] <- droplevels(cycle_1@sam_data[[ioi]])
 # PERMANOVA of Unweighted Unifrac
 u_unifrac <- UniFrac(cycle_1, weighted = F)
 grp <- get_variable(cycle_1, ioi)
@@ -223,6 +225,7 @@ library(kableExtra)
 library(tidyverse)
 cycle_1 <- qza_to_phyloseq(table_dada2,rooted_tree,taxonomy_file,metadata_file)
 sample_data(cycle_1)[[ioi]] <- factor(sample_data(cycle_1)[[ioi]], levels=ioi_ord)
+cycle_1@sam_data[[ioi]] <- droplevels(cycle_1@sam_data[[ioi]])
 #PERMANOVA Bray Curtis
 grp <- get_variable(cycle_1, ioi)
 
@@ -255,6 +258,7 @@ library(kableExtra)
 library(tidyverse)
 cycle_1 <- qza_to_phyloseq(table_dada2,rooted_tree,taxonomy_file,metadata_file)
 sample_data(cycle_1)[[ioi]] <- factor(sample_data(cycle_1)[[ioi]], levels=ioi_ord)
+cycle_1@sam_data[[ioi]] <- droplevels(cycle_1@sam_data[[ioi]])
 # PERMANOVA Jaccard distance
 grp <- get_variable(cycle_1, ioi)
 
@@ -355,6 +359,7 @@ library(ggvegan)
 
 cycle_1 <- qza_to_phyloseq(table_dada2,rooted_tree,taxonomy_file,metadata_file)
 sample_data(cycle_1)[[ioi]] <- factor(sample_data(cycle_1)[[ioi]], levels=ioi_ord)
+cycle_1@sam_data[[ioi]] <- droplevels(cycle_1@sam_data[[ioi]])
 
 #Weighted Unifrac Anosim
 tmp <- UniFrac(cycle_1, weighted=T)
@@ -525,6 +530,7 @@ library(qiime2R)
 
 cycle_1 <- qza_to_phyloseq(table_dada2,rooted_tree,taxonomy_file,metadata_file)
 sample_data(cycle_1)[[ioi]] <- factor(sample_data(cycle_1)[[ioi]], levels=ioi_ord)
+cycle_1@sam_data[[ioi]] <- droplevels(cycle_1@sam_data[[ioi]])
 
 # Weighted Unifrac
 w_uni <- UniFrac(cycle_1, weighted = T)
@@ -646,6 +652,7 @@ library(tidyverse)
 
 cycle_1 <- qza_to_phyloseq(table_dada2,rooted_tree,taxonomy_file,metadata_file)
 sample_data(cycle_1)[[ioi]] <- factor(sample_data(cycle_1)[[ioi]], levels=ioi_ord)
+cycle_1@sam_data[[ioi]] <- droplevels(cycle_1@sam_data[[ioi]])
 
 #AMOVA Weighted Unifrac
 tmp <- UniFrac(cycle_1, weighted = T)
