@@ -89,7 +89,7 @@ if (shapiro_res$p.value > 0.05){
   # Data is Normally Distributed
   obs_aov <- aov(form, data = obs_vals)
 
-  print(anova_summary(obs_aov))
+  print(kable(anova_summary(obs_aov)))
 
   tukey_res <- tukey_hsd(x= obs_vals, formula = form, p.adjust.method = "holm")
   tukey_df <- add_significance(tukey_res , p.col="p.adj",output.col = "p.adj.signif",symbols =c("****", "***", "**", "$*$", "ns"))
@@ -201,7 +201,7 @@ if (shapiro_res$p.value > 0.05){
   # Data is Normally Distributed
   obs_aov <- aov(form, data = obs_vals)
 
-  print(anova_summary(obs_aov))
+  print(kable(anova_summary(obs_aov)))
 
   tukey_res <- tukey_hsd(x= obs_vals, formula = form, p.adjust.method = "holm")
   tukey_df <- add_significance(tukey_res , p.col="p.adj",output.col = "p.adj.signif",symbols =c("****", "***", "**", "$*$", "ns"))
@@ -306,7 +306,7 @@ if (shapiro_res$p.value > 0.05){
   # Data is Normally Distributed
   obs_aov <- aov(form, data = obs_vals)
 
-  print(anova_summary(obs_aov))
+  print(kable(anova_summary(obs_aov)))
 
   tukey_res <- tukey_hsd(x= obs_vals, formula = form, p.adjust.method = "holm")
   tukey_df <- add_significance(tukey_res , p.col="p.adj",output.col = "p.adj.signif",symbols =c("****", "***", "**", "$*$", "ns"))
@@ -406,7 +406,7 @@ if (shapiro_res$p.value > 0.05){
   # Data is Normally Distributed
   obs_aov <- aov(form, data = obs_vals)
 
-  print(anova_summary(obs_aov))
+  print(kable(anova_summary(obs_aov)))
 
   tukey_res <- tukey_hsd(x= obs_vals, formula = form, p.adjust.method = "holm")
   tukey_df <- add_significance(tukey_res , p.col="p.adj",output.col = "p.adj.signif",symbols =c("****", "***", "**", "$*$", "ns"))
