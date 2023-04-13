@@ -89,13 +89,15 @@ if (shapiro_res$p.value > 0.05){
   # Data is Normally Distributed
   obs_aov <- aov(form, data = obs_vals)
 
-  summary(obs_aov)
+  print(summary(obs_aov))
 
   tukey_res <- tukey_hsd(x= obs_vals, formula = form, p.adjust.method = "holm")
   tukey_df <- add_significance(tukey_res , p.col="p.adj",output.col = "p.adj.signif",symbols =c("****", "***", "**", "$*$", "ns"))
 
-  kable(tukey_df) %>% 
+  tukey <- kable(tukey_df) %>% 
     kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+
+  print(tukey)
 
   tukey_df <- tukey_df %>% add_xy_position(data=obs_vals, formula=form)
 
@@ -116,15 +118,20 @@ if (shapiro_res$p.value > 0.05){
   kruskal_table <- rstatix::kruskal_test(data = obs_vals, formula = form)
   kruskal_table <- add_significance(kruskal_table, p.col="p",output.col = "p.signif",symbols =c("****", "***", "**", "$*$", "ns"))
 
-  kable(kruskal_table) %>% 
+  k_tab <- kable(kruskal_table) %>% 
   kable_styling(bootstrap_options = c("hover", "condensed", "responsive"))
+
+  print(k_tab)
 
   form = as.formula(paste0("observed_features ~", ioi))
 
   dunn_table <- rstatix::dunn_test(data = obs_vals, formula = form, p.adjust.method = "holm") 
   dunn_table<- add_significance(dunn_table, p.col="p.adj",output.col = "p.adj.signif",symbols =c("****", "***", "**", "$*$", "ns"))
-  kable(dunn_table) %>% 
+
+  dunn <- kable(dunn_table) %>% 
     kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+
+  print(dunn)
 
   dunn_table <- dunn_table %>% add_xy_position()
 
@@ -194,13 +201,15 @@ if (shapiro_res$p.value > 0.05){
   # Data is Normally Distributed
   obs_aov <- aov(form, data = obs_vals)
 
-  summary(obs_aov)
+  print(summary(obs_aov))
 
   tukey_res <- tukey_hsd(x= obs_vals, formula = form, p.adjust.method = "holm")
   tukey_df <- add_significance(tukey_res , p.col="p.adj",output.col = "p.adj.signif",symbols =c("****", "***", "**", "$*$", "ns"))
 
-  kable(tukey_df) %>% 
+  tukey <- kable(tukey_df) %>% 
     kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+
+  print(tukey)
 
   tukey_df <- tukey_df %>% add_xy_position(data=obs_vals, formula=form)
 
@@ -218,15 +227,21 @@ if (shapiro_res$p.value > 0.05){
   # Data is not normally distributed
   kruskal_table <- rstatix::kruskal_test(data = shannon_vals, formula =form)
   kruskal_table <- add_significance(kruskal_table, p.col="p",output.col = "p.signif",symbols =c("****", "***", "**", "$*$", "ns"))
-  kable(kruskal_table) %>% 
+  
+  kruskal <- kable(kruskal_table) %>% 
     kable_styling(bootstrap_options = c("hover", "condensed", "responsive"))
+
+  print(kruskal)
 
   form = as.formula(paste0("shannon_entropy ~", ioi))
 
   dunn_table <- rstatix::dunn_test(data = shannon_vals, formula = form, p.adjust.method = "holm")
   dunn_table<- add_significance(dunn_table, p.col="p.adj",output.col = "p.adj.signif",symbols =c("****", "***", "**", "$*$", "ns"))
-  kable(dunn_table) %>% 
+
+  dunn <- kable(dunn_table) %>% 
     kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+  
+  print(dunn)
 
   dunn_table <- dunn_table  %>% add_xy_position()
 
@@ -291,13 +306,15 @@ if (shapiro_res$p.value > 0.05){
   # Data is Normally Distributed
   obs_aov <- aov(form, data = obs_vals)
 
-  summary(obs_aov)
+  print(summary(obs_aov))
 
   tukey_res <- tukey_hsd(x= obs_vals, formula = form, p.adjust.method = "holm")
   tukey_df <- add_significance(tukey_res , p.col="p.adj",output.col = "p.adj.signif",symbols =c("****", "***", "**", "$*$", "ns"))
 
-  kable(tukey_df) %>% 
+  tukey <- kable(tukey_df) %>% 
     kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+
+  print(tukey)
 
   tukey_df <- tukey_df %>% add_xy_position(data=obs_vals, formula=form)
 
@@ -315,15 +332,21 @@ if (shapiro_res$p.value > 0.05){
   # Data is not Normally Distributed
   kruskal_table <- rstatix::kruskal_test(data = evenness_vals, formula = form)
   kruskal_table <- add_significance(kruskal_table, p.col="p",output.col = "p.signif",symbols =c("****", "***", "**", "$*$", "ns"))
-  kable(kruskal_table) %>% 
+  
+  kruskal <- kable(kruskal_table) %>% 
     kable_styling(bootstrap_options = c("hover", "condensed", "responsive"))
+
+  print(kruskal)
 
   form = as.formula(paste0("pielou_evenness ~", ioi))
 
   dunn_table <- rstatix::dunn_test(data = evenness_vals, formula = form, p.adjust.method = "holm") 
   dunn_table<- add_significance(dunn_table, p.col="p.adj",output.col = "p.adj.signif",symbols =c("****", "***", "**", "$*$", "ns"))
-  kable(dunn_table) %>% 
+
+  dunn <- kable(dunn_table) %>% 
     kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+
+  print(dunn)
 
   dunn_table <- dunn_table %>% add_xy_position()
 
@@ -383,13 +406,15 @@ if (shapiro_res$p.value > 0.05){
   # Data is Normally Distributed
   obs_aov <- aov(form, data = obs_vals)
 
-  summary(obs_aov)
+  print(summary(obs_aov))
 
   tukey_res <- tukey_hsd(x= obs_vals, formula = form, p.adjust.method = "holm")
   tukey_df <- add_significance(tukey_res , p.col="p.adj",output.col = "p.adj.signif",symbols =c("****", "***", "**", "$*$", "ns"))
 
-  kable(tukey_df) %>% 
+  tukey <- kable(tukey_df) %>% 
     kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+  
+  print(tukey)
 
   tukey_df <- tukey_df %>% add_xy_position(data=obs_vals, formula=form)
 
@@ -408,15 +433,21 @@ if (shapiro_res$p.value > 0.05){
   #Data is not normally distributed
   kruskal_table <- rstatix::kruskal_test(data = faith_pd_vals, formula = form)
   kruskal_table <- add_significance(kruskal_table, p.col="p",output.col = "p.signif",symbols =c("****", "***", "**", "$*$", "ns"))
-  kable(kruskal_table) %>% 
+
+  kruskal <- kable(kruskal_table) %>% 
     kable_styling(bootstrap_options = c("hover", "condensed", "responsive"))
+  
+  print(kruskal)
 
   form = as.formula(paste0("faith_pd ~", ioi))
 
   dunn_table <- rstatix::dunn_test(data = faith_pd_vals, formula = form, p.adjust.method = "holm") 
   dunn_table<- add_significance(dunn_table, p.col="p.adj",output.col = "p.adj.signif",symbols =c("****", "***", "**", "$*$", "ns"))
-  kable(dunn_table) %>% 
+
+  dunn <- kable(dunn_table) %>% 
     kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+
+  print(dunn)
 
   dunn_table <- dunn_table %>% add_xy_position()
 
