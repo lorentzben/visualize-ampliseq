@@ -89,7 +89,10 @@ if (shapiro_res$p.value > 0.05){
   # Data is Normally Distributed
   obs_aov <- aov(form, data = obs_vals)
 
-  anova_kabel <-kable(data.frame(anova_summary(obs_aov))) %>% 
+  pretty_aov <- data.frame(anova_summary(obs_aov))
+  colnames(pretty_aov) <- colnames(anova_summary(obs_aov))
+
+  anova_kabel <- kable(pretty_aov) %>% 
     kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
 
   print(anova_kabel)
@@ -204,7 +207,10 @@ if (shapiro_res$p.value > 0.05){
   # Data is Normally Distributed
   obs_aov <- aov(form, data = obs_vals)
 
-  anova_kabel <-kable(data.frame(anova_summary(obs_aov))) %>% 
+  pretty_aov <- data.frame(anova_summary(obs_aov))
+  colnames(pretty_aov) <- colnames(anova_summary(obs_aov))
+
+  anova_kabel <- kable(pretty_aov) %>% 
     kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
 
   print(anova_kabel)
@@ -312,7 +318,10 @@ if (shapiro_res$p.value > 0.05){
   # Data is Normally Distributed
   obs_aov <- aov(form, data = obs_vals)
 
-  anova_kabel <-kable(data.frame(anova_summary(obs_aov))) %>% 
+  pretty_aov <- data.frame(anova_summary(obs_aov))
+  colnames(pretty_aov) <- colnames(anova_summary(obs_aov))
+
+  anova_kabel <- kable(pretty_aov) %>% 
     kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
 
   print(anova_kabel)
@@ -415,9 +424,12 @@ if (shapiro_res$p.value > 0.05){
   # Data is Normally Distributed
   obs_aov <- aov(form, data = obs_vals)
 
-  anova_kabel <-kable(data.frame(anova_summary(obs_aov))) %>% 
-    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+  pretty_aov <- data.frame(anova_summary(obs_aov))
+  colnames(pretty_aov) <- colnames(anova_summary(obs_aov))
 
+  anova_kabel <- kable(pretty_aov) %>% 
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+    
   print(anova_kabel)
 
   tukey_res <- tukey_hsd(x= obs_vals, formula = form, p.adjust.method = "holm")
