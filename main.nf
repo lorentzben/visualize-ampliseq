@@ -72,10 +72,12 @@ workflow {
             
             //TODO Convert this call to qiime SRS and 
             //RAREFACTIONPLOT(input_ch, rare_report_ch, qza_table)
+            SRSCURVE(qza_table,FILTERNEGATIVECONTROL.out.filtered_table_tsv)
             tax_qza = REFORMATANDQZATAX(input_ch)
             (graphlan_biom, table_qza) = GENERATEBIOMFORGRAPHLAN(metadata_ch, ioi_ch, input_ch, filter_samples_ch, tax_qza, qza_table)
             //TODO update coremetric with my version of coremetric
             //COREMETRICPYTHON(metadata_ch, qza_table, input_ch, count_minmax_ch, rare_val_ch)
+            COREMETRICSRS(metadata_ch, qza_table, input_ch, count_minmax_ch, rare_val_ch)
             QZATOTSV(COREMETRICPYTHON.out.vector)
             REPORT01BARPLOT(input_ch, metadata_ch, report_one_ch, ioi_ch, FILTERNEGATIVECONTROL.out.filtered_table_tsv)
             graphlan_dir = RUNGRAPHLAN(metadata_ch, ioi_ch, tax_qza, graph_sh_ch, graphlan_biom)
@@ -102,11 +104,13 @@ workflow {
         } else{
             empty_table = ord_ioi_ch
             //TODO update this report with SRS
+            SRSCURVE(table_qza,FILTERNEGATIVECONTROL.out.filtered_table_tsv)
             //RAREFACTIONPLOT(input_ch, rare_report_ch, empty_table)
             tax_qza = REFORMATANDQZATAX(input_ch)
             (graphlan_biom, table_qza) = GENERATEBIOMFORGRAPHLAN(metadata_ch, ioi_ch, input_ch, filter_samples_ch, tax_qza, empty_table)
             //TODO update core metric with my method
             //COREMETRICPYTHON(metadata_ch, table_qza, input_ch, count_minmax_ch, rare_val_ch)
+            COREMETRICSRS(metadata_ch, table_qza, input_ch, count_minmax_ch, rare_val_ch)
             QZATOTSV(COREMETRICPYTHON.out.vector)
             REPORT01BARPLOT(input_ch, metadata_ch, report_one_ch, ioi_ch, ord_ioi_ch)
             graphlan_dir = RUNGRAPHLAN(metadata_ch, ioi_ch, tax_qza, graph_sh_ch, graphlan_biom)
@@ -396,6 +400,115 @@ process COREMETRICPYTHON{
     Artifact.save(core[16], "diversity_core/bray_curtis_emperor")  
 
     """
+}
+
+process COREMETRICSRS{
+     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/automate_16_nf:2.0' : 'lorentzb/automate_16_nf:2.0' }"
+
+    input:
+
+    file 'metadata.tsv'
+    file 'table.qza'
+    path 'results'
+    path 'count_table_minmax_reads.py'
+    val rare_val
+    
+
+    output:
+
+    path("diversity_core/*_pcoa_results.qza")   , emit: pcoa
+    path("diversity_core/*_vector.qza")         , emit: vector
+    path("diversity_core/*_distance_matrix.qza"), emit: distance
+    path("*rarefaction.txt") , emit: depth
+    path("diversity_core/rarefied_table.qza"), emit: rare_table
+
+    script:
+
+    """
+    #!/usr/bin/env python3
+
+    from qiime2.plugins import diversity
+    from qiime2 import Metadata
+    from qiime2.plugins import feature_table
+    from qiime2 import Artifact
+    import pandas as pd
+    import sys
+    import warnings
+    import os
+
+    os.mkdir("diversity_core")
+
+    warnings.filterwarnings('ignore')
+
+    metadata = Metadata.load('metadata.tsv')
+
+    unrarefied_table = Artifact.load('table.qza')
+
+    rooted_tree = Artifact.load('results/qiime2/phylogenetic_tree/rooted-tree.qza')
+
+    # if the default value aka use count_table_minmax_reads
+    if $rare_val == 0:
+
+        uncompress_table='results/qiime2/abundance_tables/feature-table.tsv'
+
+        # adapted from count_table_minmax_reads.py @author Daniel Straub
+        # collected from nf-core/ampliseq
+        # read tsv and skip first two rows
+        data = pd.read_csv('results/qiime2/abundance_tables/feature-table.tsv', sep="\t", skiprows=[0, 1], header=None)  # count table
+
+        # drop feature ids
+        df = data.drop(data.columns[0], axis=1)
+
+        # make sums
+        sums = df.sum()
+
+        # we want minimum values
+        mindepth = int(sums.min())
+
+        if mindepth > 10000:
+            print("Use the sampling depth of " +str(mindepth)+" for rarefaction")
+        elif mindepth < 10000 and mindepth > 5000: 
+            print("WARNING The sampling depth of "+str(mindepth)+" is quite small for rarefaction")
+        elif mindepth < 5000 and mindepth > 1000: 
+            print("WARNING The sampling depth of "+str(mindepth)+" is very small for rarefaction")
+        elif mindepth < 1000: 
+            print("WARNING The sampling depth of "+str(mindepth)+" seems too small for rarefaction")
+        else:
+            print("ERROR this shouldn't happen")
+            exit(1)
+
+        core = diversity.pipelines.core_metrics_phylogenetic(unrarefied_table, rooted_tree, mindepth, metadata)
+        file = open("rarefaction.txt", "w")
+        file.write(str(mindepth))
+        file.close 
+    
+    # else if user submits the rarefaction depth they want to use based on rarefaction plot
+    else: 
+        core = diversity.pipelines.core_metrics_phylogenetic(unrarefied_table, rooted_tree, $rare_val, metadata)
+        file = open("rarefaction.txt", "w")
+        file.write(str($rare_val))
+        file.close 
+
+    Artifact.save(core[0], "diversity_core/rarefied_table")
+    Artifact.save(core[1], "diversity_core/faith_pd_vector")
+    Artifact.save(core[2], "diversity_core/observed_features_vector")
+    Artifact.save(core[3], "diversity_core/shannon_vector")
+    Artifact.save(core[4], "diversity_core/evenness_vector")
+    Artifact.save(core[5], "diversity_core/unweighted_unifrac_distance_matrix")
+    Artifact.save(core[6], "diversity_core/weighted_unifrac_distance_matrix")
+    Artifact.save(core[7], "diversity_core/jaccard_distance_matrix")
+    Artifact.save(core[8], "diversity_core/bray_curtis_distance_matrix")
+    Artifact.save(core[9], "diversity_core/unweighted_unifrac_pcoa_results")
+    Artifact.save(core[10], "diversity_core/weighted_unifrac_pcoa_results")
+    Artifact.save(core[11], "diversity_core/jaccard_pcoa_results")
+    Artifact.save(core[12], "diversity_core/bray_curtis_pcoa_results")
+    Artifact.save(core[13], "diversity_core/unweighted_unifrac_emperor")
+    Artifact.save(core[14], "diversity_core/weighted_unifrac_emperor")
+    Artifact.save(core[15], "diversity_core/jaccard_emperor")
+    Artifact.save(core[16], "diversity_core/bray_curtis_emperor")  
+
+    """
+
 }
 
 process QZATOTSV{
@@ -973,6 +1086,108 @@ process REPORT06BNMDSORDINATION{
 
     Rscript -e "rmarkdown::render('06b_report.Rmd', output_file='$PWD/06b_report_$dt.pdf', output_format='pdf_document', clean=TRUE, knit_root_dir='$PWD')"
     '''
+}
+
+process SRSCURVE{
+    publishDir "${params.outdir}/srs_curve", pattern: "*.qzv", mode: "copy"
+
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/srs:2.0' : 'lorentzb/srs:2.0' }"
+
+    input:
+    file 'table.qza'
+    file 'table.tsv'
+    path 'results'
+    
+
+    output:
+    file "SRScurve-plot.qzv"
+    file "srs_curve_val.txt"
+
+    script:
+    """
+    #!/usr/bin/env python3
+
+    
+    from qiime2 import Metadata
+    from qiime2.plugins import feature_table
+    from qiime2 import Artifact
+    from qiime2.plugins import srs
+    import pandas as pd
+    import subprocess
+    import sys
+    import warnings
+    import os
+
+    
+    # if the default value aka use count_table_minmax_reads
+    if $rare_val == 0:
+        if os.file.exists("table.tsv"):
+            uncompress_table='table.tsv'            
+        else:
+            uncompress_table='results/qiime2/abundance_tables/feature-table.tsv'
+
+        # adapted from count_table_minmax_reads.py @author Daniel Straub
+        # collected from nf-core/ampliseq
+        # read tsv and skip first two rows
+        data = pd.read_csv(uncompress_table, sep="\t", skiprows=[0, 1], header=None)  # count table
+
+        # drop feature ids
+        df = data.drop(data.columns[0], axis=1)
+
+        # make sums
+        sums = df.sum()
+
+        # we want minimum values
+        mindepth = int(sums.min())
+        maxdepth = int(sums.max())
+
+        if mindepth > 10000:
+            print("Use the sampling depth of " +str(mindepth)+" for rarefaction")
+        elif mindepth < 10000 and maxdepth > 5000: 
+            print("WARNING The sampling depth of "+str(mindepth)+" is quite small for rarefaction")
+        elif mindepth < 5000 and mindepth > 1000:
+            print("WARNING The sampling depth of "+str(mindepth)+" is very small for rarefaction")
+        elif mindepth < 1000:
+            print("WARNING The sampling depth of "+str(mindepth)+" seems too small for rarefaction")
+        else:
+            print("ERROR this shouldn't happen")
+            exit(1)
+
+        # TODO convert this from bash to python
+        #check values
+        
+        if maxdepth > 75000:
+            maxdepth = 75000
+        
+        if maxdepth > 5000:
+            maxsteps=250
+        else:
+            maxsteps=(maxdepth/20)
+
+        curve_command = "qiime srs SRScurve \
+            --i-table feature-table.qza \
+            --p-step 100 \
+            --p-max-sample-size "+str(maxdepth)+" \
+            --p-rarefy-comparison \
+            --p-rarefy-comparison-legend \
+            --p-rarefy-repeats 100 \
+            --p-srs-color 'blue' \
+            --p-rarefy-color '#333333' \
+            --o-visualization SRScurve-plot.qzv \
+            --verbose"
+
+        #result = subprocess.run([curve_command], shell=True)
+
+        table = Artifact.load('table.qza')
+        srs_curve = srs.actions.SRScurve(table)
+
+        Artifact.export_data(srs_curve,'srs')
+    
+        file = open("srs_curve_val.txt", "w")
+        file.write(str(maxdepth))
+        file.close
+    """
+
 }
 
 process GENERATERAREFACTIONCURVE{
