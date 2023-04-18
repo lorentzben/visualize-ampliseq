@@ -1117,10 +1117,7 @@ process SRSCURVE{
     import sys
     import warnings
     import os
-
-    
-    # if the default value aka use count_table_minmax_reads
-    if $rare_val == 0:
+  
         if os.file.exists("table.tsv"):
             uncompress_table='table.tsv'            
         else:
