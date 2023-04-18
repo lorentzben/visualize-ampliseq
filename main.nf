@@ -88,7 +88,7 @@ workflow {
             REPORT06ORDINATION(COREMETRICPYTHON.out.rare_table, input_ch, ioi_ch, ord_ioi, report_six_ch, tax_qza, metadata_ch, COREMETRICPYTHON.out.pcoa, COREMETRICPYTHON.out.vector)
             REPORT06BNMDSORDINATION(COREMETRICPYTHON.out.rare_table, input_ch, ioi_ch, ord_ioi, report_six_b_ch, tax_qza, metadata_ch, COREMETRICPYTHON.out.pcoa, COREMETRICPYTHON.out.vector)
             //TODO update this curve to SRS Curve
-            //GENERATERAREFACTIONCURVE(metadata_ch, qza_table, input_ch, count_minmax_ch, rare_val_ch, FILTERNEGATIVECONTROL.out.filtered_table_tsv)
+            GENERATERAREFACTIONCURVE(metadata_ch, qza_table, input_ch, count_minmax_ch, rare_val_ch, FILTERNEGATIVECONTROL.out.filtered_table_tsv)
             REPORT07RAREFACTION(ioi_ch,ord_ioi,input_ch, report_seven_ch, GENERATERAREFACTIONCURVE.out.rareVector, metadata_ch)
             REPORT08RANKEDABUNDANCE(COREMETRICPYTHON.out.rare_table,input_ch, ioi_ch, ord_ioi, report_eight_ch, tax_qza, metadata_ch)
             REPORT09UNIFRACHEATMAP(ioi_ch, ord_ioi, metadata_ch, COREMETRICPYTHON.out.distance, report_nine_ch)
