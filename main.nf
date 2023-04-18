@@ -1118,7 +1118,7 @@ process SRSCURVE{
     import warnings
     import os
   
-    if os.file.exists("table.tsv"):
+    if os.path.exists("table.tsv"):
         uncompress_table='table.tsv'            
     else:
         uncompress_table='results/qiime2/abundance_tables/feature-table.tsv'
@@ -1225,7 +1225,7 @@ process GENERATERAREFACTIONCURVE{
 
     # if the default value aka use count_table_minmax_reads
     if $rare_val == 0:
-        if os.file.exists("feature-table.tsv"):
+        if os.path.exists("feature-table.tsv"):
             uncompress_table='feature-table.tsv'            
         else:
             uncompress_table='results/qiime2/abundance_tables/feature-table.tsv'
