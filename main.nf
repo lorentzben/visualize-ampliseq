@@ -72,7 +72,7 @@ workflow {
             
             //TODO Convert this call to qiime SRS and 
             //RAREFACTIONPLOT(input_ch, rare_report_ch, qza_table)
-            SRSCURVE(qza_table,FILTERNEGATIVECONTROL.out.filtered_table_tsv)
+            SRSCURVE(qza_table,FILTERNEGATIVECONTROL.out.filtered_table_tsv, input_ch)
             tax_qza = REFORMATANDQZATAX(input_ch)
             (graphlan_biom, table_qza) = GENERATEBIOMFORGRAPHLAN(metadata_ch, ioi_ch, input_ch, filter_samples_ch, tax_qza, qza_table)
             //TODO update coremetric with my version of coremetric
@@ -104,7 +104,7 @@ workflow {
         } else{
             empty_table = ord_ioi_ch
             //TODO update this report with SRS
-            SRSCURVE(table_qza,FILTERNEGATIVECONTROL.out.filtered_table_tsv)
+            SRSCURVE(table_qza,FILTERNEGATIVECONTROL.out.filtered_table_tsv, input_ch)
             //RAREFACTIONPLOT(input_ch, rare_report_ch, empty_table)
             tax_qza = REFORMATANDQZATAX(input_ch)
             (graphlan_biom, table_qza) = GENERATEBIOMFORGRAPHLAN(metadata_ch, ioi_ch, input_ch, filter_samples_ch, tax_qza, empty_table)
