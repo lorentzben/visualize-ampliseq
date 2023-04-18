@@ -99,8 +99,7 @@ workflow {
             lefse_dir = LEFSEANALYSIS(LEFSEFORMAT.out.combos,lefse_analysis_ch, plot_clado_file_ch, plot_res_file_ch)
             REPORT13LEFSE(lefse_dir, report_thirteen_ch, report_thirteen_local_ch, ioi_ch, ord_ioi)
             REPORT14CITATIONS(report_fourteen_ch)
-        }
-        else{
+        } else{
             empty_table = ord_ioi_ch
             //TODO update this report with SRS
             //RAREFACTIONPLOT(input_ch, rare_report_ch, empty_table)
@@ -132,8 +131,6 @@ workflow {
             REPORT13LEFSE(lefse_dir, report_thirteen_ch, report_thirteen_local_ch, ioi_ch, ord_ioi)
             REPORT14CITATIONS(report_fourteen_ch)
         }
-
-    }
 
     } else {
         if (params.controls) {
