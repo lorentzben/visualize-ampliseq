@@ -13,7 +13,7 @@ if (length(args)==0) {
 
   png('SRS_curve.png')
   #srs_curve = SRScurve(just_table, cmax)
-  SRScurve(just_table, cmax)
+  print(SRScurve(just_table, cmax))
   dev.off()
 
   Artifact.export_data(srs_curve,'srs')
