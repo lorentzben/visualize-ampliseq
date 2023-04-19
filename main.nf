@@ -1108,12 +1108,6 @@ process SRSCURVE{
     script:
     """
     #!/usr/bin/env python3
-
-    
-    from qiime2 import Metadata
-    from qiime2.plugins import feature_table
-    from qiime2 import Artifact
-    from qiime2.plugins import srs
     import pandas as pd
     import subprocess
     import sys
