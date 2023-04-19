@@ -57,6 +57,7 @@ report_thirteen_ch = Channel.fromPath("${projectDir}/report_gen_files/13_report.
 report_thirteen_local_ch = Channel.fromPath("${projectDir}/report_gen_files/13_report_local.Rmd")
 report_fourteen_ch = Channel.fromPath("${projectDir}/report_gen_files/14_report.Rmd")
 uncompress_script_ch = Channel.fromPath("${projectDir}/r_scripts/uncompress_diversity.r")
+srs_curve_ch = Channel.fromPath("${projectDir}/r_scripts/srs_curve.r")
 if (params.controls) {
     controls_ch = Channel.fromPath(params.controls, checkIfExists:false)
 }
@@ -1091,16 +1092,16 @@ process REPORT06BNMDSORDINATION{
 process SRSCURVE{
     publishDir "${params.outdir}/srs_curve", pattern: "*.qzv", mode: "copy"
 
-    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/srs:2.0' : 'lorentzb/srs:2.0' }"
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/srs:1.0' : 'lorentzb/srs:1.0' }"
 
     input:
     file 'table.qza'
     file 'table.tsv'
-    path 'results'
+    file 'srs_curve.r'
     
 
     output:
-    file "SRScurve-plot.qzv"
+    file "SRS_curve.png"
     file "srs_curve_val.txt"
 
     script:
@@ -1161,24 +1162,8 @@ process SRSCURVE{
     else:
         maxsteps=(maxdepth/20)
 
-    curve_command = "qiime srs SRScurve \
-        --i-table feature-table.qza \
-        --p-step 100 \
-        --p-max-sample-size "+str(maxdepth)+" \
-        --p-rarefy-comparison \
-        --p-rarefy-comparison-legend \
-        --p-rarefy-repeats 100 \
-        --p-srs-color 'blue' \
-        --p-rarefy-color '#333333' \
-        --o-visualization SRScurve-plot.qzv \
-        --verbose"
+    Rscript -e srs_curve.r maxdepth
 
-    #result = subprocess.run([curve_command], shell=True)
-
-    table = Artifact.load('table.qza')
-    srs_curve = srs.actions.SRScurve(table)
-
-    Artifact.export_data(srs_curve,'srs')
     
     file = open("srs_curve_val.txt", "w")
     file.write(str(maxdepth))
