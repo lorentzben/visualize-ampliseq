@@ -1097,6 +1097,7 @@ process SRSCURVE{
     input:
     file 'table.qza'
     file 'table.tsv'
+    path 'results'
     file 'srs_curve.r'
     
 
