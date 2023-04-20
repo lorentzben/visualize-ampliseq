@@ -23,7 +23,7 @@ just_table <- table$data
 
 png('SRS_curve.png')
 #srs_curve = SRScurve(just_table, cmax)
-print(SRScurve(just_table, cmax))
+print(SRScurve(just_table, max.sample.size=cmax))
 dev.off()
 
 Artifact.export_data(srs_curve,'srs')
