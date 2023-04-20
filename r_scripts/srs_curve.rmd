@@ -1,0 +1,29 @@
+---
+title: "SRS Curve Plot for Alpha Coverage"
+output:
+  pdf_document:
+    df_print: kable
+  html_document:
+    df_print: kable
+    smart: false
+---
+Might need to install kable
+
+```{r generate srs curve}
+library(SRS)
+library(qiime2R)
+
+cmax_file = read.table("srs_curve_val.txt")
+cmax <- as.numeric(cmax[1,1])
+
+table = read_qza('table.qza')
+just_table <- table$data
+
+png('SRS_curve.png')
+#srs_curve = SRScurve(just_table, cmax)
+print(SRScurve(just_table, cmax))
+dev.off()
+
+Artifact.export_data(srs_curve,'srs')
+
+```

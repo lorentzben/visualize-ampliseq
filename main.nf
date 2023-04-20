@@ -1098,11 +1098,12 @@ process SRSCURVE{
     file 'table.qza'
     file 'table.tsv'
     path 'results'
-    file 'srs_curve.r'
+    file 'srs_curve.rmd'
     
 
     output:
-    file "SRS_curve.png"
+    file "*.pdf"
+    file "*.html"
     file "srs_curve_val.txt"
 
     script:
@@ -1157,14 +1158,17 @@ process SRSCURVE{
     else:
         maxsteps=(maxdepth/20)
 
-    srs_command = "script srs_curve.r " +str(maxdepth)
-    
-    os.system(srs_command)
-
-    
     file = open("srs_curve_val.txt", "w")
     file.write(str(maxdepth))
     file.close
+
+    srs_command_pdf = 'Rscript -e "rmarkdown::render(\'srs_curve.rmd\', output_file=\'$PWD/srs_curve.pdf\', output_format=\'pdf_document\', clean=TRUE, knit_root_dir=\'$PWD\')"'
+    srs_command_html = 'Rscript -e "rmarkdown::render(\'srs_curve.rmd\', output_file=\'$PWD/srs_curve.html\', output_format=\'html_document\', clean=TRUE, knit_root_dir=\'$PWD\')"'
+                   
+    
+    os.system(srs_command_pdf)
+    os.system(srs_command_html)
+
     """
 
 }
