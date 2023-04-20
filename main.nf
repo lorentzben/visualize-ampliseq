@@ -1162,8 +1162,8 @@ process SRSCURVE{
     file.write(str(maxdepth))
     file.close
 
-    srs_command_pdf = 'Rscript -e "rmarkdown::render(\'srs_curve.rmd\', output_file=\'$PWD/srs_curve.pdf\', output_format=\'pdf_document\', clean=TRUE, knit_root_dir=\'$PWD\')"'
-    srs_command_html = 'Rscript -e "rmarkdown::render(\'srs_curve.rmd\', output_file=\'$PWD/srs_curve.html\', output_format=\'html_document\', clean=TRUE, knit_root_dir=\'$PWD\')"'
+    srs_command_pdf = "Rscript -e \"rmarkdown::render(\'srs_curve.rmd\', output_file=\'$PWD/srs_curve.pdf\', output_format=\'pdf_document\', clean=TRUE, knit_root_dir=\'$PWD\')\""
+    srs_command_html = "Rscript -e \"rmarkdown::render(\'srs_curve.rmd\', output_file=\'$PWD/srs_curve.html\', output_format=\'html_document\', clean=TRUE, knit_root_dir=\'$PWD\')\""
                    
     
     os.system(srs_command_pdf)
