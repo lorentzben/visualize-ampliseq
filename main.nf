@@ -57,7 +57,7 @@ report_thirteen_ch = Channel.fromPath("${projectDir}/report_gen_files/13_report.
 report_thirteen_local_ch = Channel.fromPath("${projectDir}/report_gen_files/13_report_local.Rmd")
 report_fourteen_ch = Channel.fromPath("${projectDir}/report_gen_files/14_report.Rmd")
 uncompress_script_ch = Channel.fromPath("${projectDir}/r_scripts/uncompress_diversity.r")
-srs_curve_ch = Channel.fromPath("${projectDir}/r_scripts/srs_curve.r")
+srs_curve_ch = Channel.fromPath("${projectDir}/r_scripts/srs_curve.rmd")
 if (params.controls) {
     controls_ch = Channel.fromPath(params.controls, checkIfExists:false)
 }
