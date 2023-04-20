@@ -26,6 +26,6 @@ png('SRS_curve.png')
 print(SRScurve(just_table, max.sample.size=cmax))
 dev.off()
 
-Artifact.export_data(srs_curve,'srs')
+#Artifact.export_data(srs_curve,'srs')
 
 ```
