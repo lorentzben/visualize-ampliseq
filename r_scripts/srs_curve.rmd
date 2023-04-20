@@ -13,8 +13,10 @@ Might need to install kable
 library(SRS)
 library(qiime2R)
 
+list.files()
+
 cmax_file = read.table("srs_curve_val.txt")
-cmax <- as.numeric(cmax[1,1])
+cmax <- as.numeric(cmax_file[1,1])
 
 table = read_qza('table.qza')
 just_table <- table$data
