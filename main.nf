@@ -58,6 +58,7 @@ report_thirteen_local_ch = Channel.fromPath("${projectDir}/report_gen_files/13_r
 report_fourteen_ch = Channel.fromPath("${projectDir}/report_gen_files/14_report.Rmd")
 uncompress_script_ch = Channel.fromPath("${projectDir}/r_scripts/uncompress_diversity.r")
 srs_curve_ch = Channel.fromPath("${projectDir}/r_scripts/srs_curve.rmd")
+srs_render_ch = Channel.fromPath("${projectDir}/bin/render_srs.sh")
 if (params.controls) {
     controls_ch = Channel.fromPath(params.controls, checkIfExists:false)
 }
@@ -73,7 +74,7 @@ workflow {
             
             //TODO Convert this call to qiime SRS and 
             //RAREFACTIONPLOT(input_ch, rare_report_ch, qza_table)
-            SRSCURVE(qza_table, FILTERNEGATIVECONTROL.out.filtered_table_tsv, input_ch,srs_curve_ch)
+            SRSCURVE(qza_table, FILTERNEGATIVECONTROL.out.filtered_table_tsv, input_ch,srs_curve_ch, srs_render_ch)
             tax_qza = REFORMATANDQZATAX(input_ch)
             (graphlan_biom, table_qza) = GENERATEBIOMFORGRAPHLAN(metadata_ch, ioi_ch, input_ch, filter_samples_ch, tax_qza, qza_table)
             //TODO update coremetric with my version of coremetric
@@ -105,7 +106,7 @@ workflow {
         } else{
             empty_table = ord_ioi_ch
             //TODO update this report with SRS
-            SRSCURVE(table_qza,FILTERNEGATIVECONTROL.out.filtered_table_tsv, input_ch,srs_curve_ch)
+            SRSCURVE(table_qza,FILTERNEGATIVECONTROL.out.filtered_table_tsv, input_ch,srs_curve_ch, srs_render_ch)
             //RAREFACTIONPLOT(input_ch, rare_report_ch, empty_table)
             tax_qza = REFORMATANDQZATAX(input_ch)
             (graphlan_biom, table_qza) = GENERATEBIOMFORGRAPHLAN(metadata_ch, ioi_ch, input_ch, filter_samples_ch, tax_qza, empty_table)
@@ -1099,6 +1100,7 @@ process SRSCURVE{
     file 'table.tsv'
     path 'results'
     file 'srs_curve.rmd'
+    file 'render_srs.sh'
     
 
     output:
@@ -1162,13 +1164,8 @@ process SRSCURVE{
     file.write(str(maxdepth))
     file.close
 
-    srs_command_pdf = 'Rscript -e \'rmarkdown::render(\"srs_curve.rmd\", output_file=\"$PWD/srs_curve.pdf\", output_format=\"pdf_document\", clean=TRUE, knit_root_dir=\"$PWD\")\''
-    srs_command_html = 'Rscript -e \'rmarkdown::render(\"srs_curve.rmd\", output_file=\"$PWD/srs_curve.html\", output_format=\"html_document\", clean=TRUE, knit_root_dir=\"$PWD\")\''
-                   
-    
-    os.system(srs_command_pdf)
-    os.system(srs_command_html)
-
+    srs_render_command = "bash render_srs.sh"
+    os.system(srs_render_command)
     """
 
 }
