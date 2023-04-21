@@ -48,6 +48,10 @@ if maxdepth > 5000:
 else:
     maxsteps=(maxdepth/20)
 
-file = open("srs_curve_val.txt", "w")
+file = open("srs_max_curve_val.txt", "w")
 file.write(str(maxdepth))
+file.close
+
+file = open("srs_min_curve_val.txt", "w")
+file.write(str(mindepth))
 file.close

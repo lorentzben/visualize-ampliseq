@@ -15,7 +15,7 @@ library(qiime2R)
 
 list.files()
 
-cmax_file = read.table("srs_curve_val.txt")
+cmax_file = read.table("srs_max_curve_val.txt")
 cmax <- as.numeric(cmax_file[1,1])
 
 table = read_qza('table.qza')

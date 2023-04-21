@@ -78,7 +78,9 @@ workflow {
             tax_qza = REFORMATANDQZATAX(input_ch)
             (graphlan_biom, table_qza) = GENERATEBIOMFORGRAPHLAN(metadata_ch, ioi_ch, input_ch, filter_samples_ch, tax_qza, qza_table)
             //TODO update coremetric with my version of coremetric
-            COREMETRICPYTHON(metadata_ch, qza_table, input_ch, count_minmax_ch, rare_val_ch)
+            SRSNORMALIZE( FILTERNEGATIVECONTROL.out.filtered_table_tsv, input_ch, SRSCURVE.out.min_val, params.rare)
+            TSVTOQZA(SRSNORMALIZE.out.biom, metadata_ch)
+            COREMETRICPYTHON(metadata_ch, TSVTOQZA.out.table_qza, input_ch, count_minmax_ch, rare_val_ch)
             COREMETRICSRS(metadata_ch, qza_table, input_ch, count_minmax_ch, rare_val_ch)
             QZATOTSV(COREMETRICPYTHON.out.vector)
             REPORT01BARPLOT(input_ch, metadata_ch, report_one_ch, ioi_ch, FILTERNEGATIVECONTROL.out.filtered_table_tsv)
@@ -90,8 +92,8 @@ workflow {
             REPORT06ORDINATION(COREMETRICPYTHON.out.rare_table, input_ch, ioi_ch, ord_ioi, report_six_ch, tax_qza, metadata_ch, COREMETRICPYTHON.out.pcoa, COREMETRICPYTHON.out.vector)
             REPORT06BNMDSORDINATION(COREMETRICPYTHON.out.rare_table, input_ch, ioi_ch, ord_ioi, report_six_b_ch, tax_qza, metadata_ch, COREMETRICPYTHON.out.pcoa, COREMETRICPYTHON.out.vector)
             //TODO update this curve to SRS Curve
-            GENERATERAREFACTIONCURVE(metadata_ch, qza_table, input_ch, count_minmax_ch, rare_val_ch, FILTERNEGATIVECONTROL.out.filtered_table_tsv)
-            REPORT07RAREFACTION(ioi_ch,ord_ioi,input_ch, report_seven_ch, GENERATERAREFACTIONCURVE.out.rareVector, metadata_ch)
+            //GENERATERAREFACTIONCURVE(metadata_ch, qza_table, input_ch, count_minmax_ch, rare_val_ch, FILTERNEGATIVECONTROL.out.filtered_table_tsv)
+            //REPORT07RAREFACTION(ioi_ch,ord_ioi,input_ch, report_seven_ch, GENERATERAREFACTIONCURVE.out.rareVector, metadata_ch)
             REPORT08RANKEDABUNDANCE(COREMETRICPYTHON.out.rare_table,input_ch, ioi_ch, ord_ioi, report_eight_ch, tax_qza, metadata_ch)
             REPORT09UNIFRACHEATMAP(ioi_ch, ord_ioi, metadata_ch, COREMETRICPYTHON.out.distance, report_nine_ch)
             UNCOMPRESSDIVMATS(COREMETRICPYTHON.out.distance, uncompress_script_ch)
@@ -105,13 +107,14 @@ workflow {
             REPORT14CITATIONS(report_fourteen_ch)
         } else{
             empty_table = ord_ioi_ch
-            //TODO update this report with SRS
-            SRSCURVE(table_qza,FILTERNEGATIVECONTROL.out.filtered_table_tsv, input_ch,srs_curve_ch, srs_min_max_ch)
+            //TODO fix the FILTERNEGATIVECONTROL.out.filtered_table_tsv so that it comes from results
+            SRSCURVE(table_qza, empty_table, input_ch,srs_curve_ch, srs_min_max_ch)
             //RAREFACTIONPLOT(input_ch, rare_report_ch, empty_table)
             tax_qza = REFORMATANDQZATAX(input_ch)
             (graphlan_biom, table_qza) = GENERATEBIOMFORGRAPHLAN(metadata_ch, ioi_ch, input_ch, filter_samples_ch, tax_qza, empty_table)
             //TODO update core metric with my method
             //COREMETRICPYTHON(metadata_ch, table_qza, input_ch, count_minmax_ch, rare_val_ch)
+            SRSNORMALIZE(empty_table, input_ch, SRSCURVE.out.min_val, params.rare )
             COREMETRICSRS(metadata_ch, table_qza, input_ch, count_minmax_ch, rare_val_ch)
             QZATOTSV(COREMETRICPYTHON.out.vector)
             REPORT01BARPLOT(input_ch, metadata_ch, report_one_ch, ioi_ch, ord_ioi_ch)
@@ -124,7 +127,7 @@ workflow {
             REPORT06BNMDSORDINATION(COREMETRICPYTHON.out.rare_table, input_ch, ioi_ch, ord_ioi, report_six_b_ch, tax_qza, metadata_ch, COREMETRICPYTHON.out.pcoa, COREMETRICPYTHON.out.vector)
             //TODO update rarefaction with SRS curve
             //GENERATERAREFACTIONCURVE(metadata_ch, table_qza, input_ch, count_minmax_ch, rare_val_ch, empty_table)
-            REPORT07RAREFACTION(ioi_ch,ord_ioi,input_ch, report_seven_ch, GENERATERAREFACTIONCURVE.out.rareVector, metadata_ch)
+            //REPORT07RAREFACTION(ioi_ch,ord_ioi,input_ch, report_seven_ch, GENERATERAREFACTIONCURVE.out.rareVector, metadata_ch)
             REPORT08RANKEDABUNDANCE(COREMETRICPYTHON.out.rare_table,input_ch, ioi_ch, ord_ioi, report_eight_ch, tax_qza, metadata_ch)
             REPORT09UNIFRACHEATMAP(ioi_ch, ord_ioi, metadata_ch, COREMETRICPYTHON.out.distance, report_nine_ch)
             UNCOMPRESSDIVMATS(COREMETRICPYTHON.out.distance, uncompress_script_ch)
@@ -404,8 +407,62 @@ process COREMETRICPYTHON{
     """
 }
 
+process SRSNORMALIZE{
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/srs:1.0' : 'lorentzb/srs:1.0' }"
+
+    input:
+
+    file table
+    path "results"
+    val srs_min
+    val rare_val
+    
+    
+
+    output:
+    file '*.tsv', emit: tsv_normalized
+    file '*.biom', emit: biom_normalized
+    
+    script:
+    def table = table.name != 'NO_FILE' ? "$table" : ''
+    """
+    #!/usr/bin/env Rscript
+
+    library(qiime2R)
+    library(SRS)
+    library(phyloseq)
+
+    #read in table from either decontam or results/qiime2/abundance_tables/feature-table.tsv
+
+    if(file.exists('feature-table.tsv')){
+        print("using contam-filtered-table")
+        un_rare_tab <- read.table('table.tsv')
+    } else {
+        print('using qiime unfiltered table')
+        un_rare_tab <- read_q2biom("results/qiime2/abundance_tables/feature-table.biom")
+
+    }
+
+
+    if ($rare_val != 0){
+        norm_tab <- SRS(un_rare_tab, $rare_val)
+    } else {qii
+        norm_tab <- SRS(un_rare_tab, $srs_min)
+    }
+
+    # Save norm_tab.tsv
+
+    write.table(norm_tab, "normalized-table.tsv")
+
+    # convert norm_tab to biom
+
+    write_biom(norm_tab, "normalized-table.biom")
+
+    """
+}
+
 process COREMETRICSRS{
-     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/automate_16_nf:2.0' : 'lorentzb/automate_16_nf:2.0' }"
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/automate_16_nf:2.0' : 'lorentzb/automate_16_nf:2.0' }"
 
     input:
 
@@ -1091,7 +1148,7 @@ process REPORT06BNMDSORDINATION{
 }
 
 process SRSCURVE{
-    publishDir "${params.outdir}/srs_curve", pattern: "*.qzv", mode: "copy"
+    publishDir "${params.outdir}/srs_curve", pattern: "*.png", mode: "copy"
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/srs:1.0' : 'lorentzb/srs:1.0' }"
 
@@ -1106,7 +1163,9 @@ process SRSCURVE{
     output:
     file "*.pdf"
     file "*.html"
-    file "srs_curve_val.txt"
+    file "*.png"
+    file "srs_max_curve_val.txt", emit: max_val
+    file "srs_min_curve_val.txt", emit: min_val
 
     script:
     '''
