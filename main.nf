@@ -79,7 +79,7 @@ workflow {
             (graphlan_biom, table_qza) = GENERATEBIOMFORGRAPHLAN(metadata_ch, ioi_ch, input_ch, filter_samples_ch, tax_qza, qza_table)
             //TODO update coremetric with my version of coremetric
             SRSNORMALIZE( FILTERNEGATIVECONTROL.out.filtered_table_tsv, input_ch, SRSCURVE.out.min_val, params.rare)
-            TSVTOQZA(SRSNORMALIZE.out.biom, metadata_ch)
+            TSVTOQZA(SRSNORMALIZE.out.biom_normalized, metadata_ch)
             COREMETRICPYTHON(metadata_ch, TSVTOQZA.out.table_qza, input_ch, count_minmax_ch, rare_val_ch)
             COREMETRICSRS(metadata_ch, qza_table, input_ch, count_minmax_ch, rare_val_ch)
             QZATOTSV(COREMETRICPYTHON.out.vector)
