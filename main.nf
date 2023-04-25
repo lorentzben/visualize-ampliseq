@@ -420,8 +420,8 @@ process SRSNORMALIZE{
     
 
     output:
-    file("*.tsv"), emit: tsv_normalized
-    file("*.biom"), emit: biom_normalized
+    path("*.tsv"), emit: tsv_normalized
+    path("*.biom"), emit: biom_normalized
     
     script:
     def table = table.name != 'NO_FILE' ? "$table" : ''
