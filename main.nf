@@ -420,8 +420,8 @@ process SRSNORMALIZE{
     
 
     output:
-    file '*.tsv', emit: tsv_normalized
-    file '*.biom', emit: biom_normalized
+    file ("*.tsv"), emit: tsv_normalized
+    file ("*.biom"), emit: biom_normalized
     
     script:
     def table = table.name != 'NO_FILE' ? "$table" : ''
@@ -1164,8 +1164,8 @@ process SRSCURVE{
     file "*.pdf"
     file "*.html"
     file "*.png"
-    file "srs_max_curve_val.txt", emit: max_val
-    file "srs_min_curve_val.txt", emit: min_val
+    file ("srs_max_curve_val.txt"), emit: max_val
+    file ("srs_min_curve_val.txt"), emit: min_val
 
     script:
     '''
@@ -1589,7 +1589,7 @@ process LEFSEFORMAT {
     file "qiime_to_lefse.R" 
       
     output:
-    path "combos/*", emit : combos
+    path ("combos/*"), emit : combos
 
     script:
     """
