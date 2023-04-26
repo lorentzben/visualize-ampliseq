@@ -64,6 +64,7 @@ if (params.controls) {
 }
 contam_script_ch = Channel.fromPath("${projectDir}/r_scripts/contam_script.r")
     
+include { TSVTOQZA; TSVTOQZA as TSVTOQZA2 } from "${projectDir}/modules/local/tsvtoqza.nf"
 
 workflow {
     ord_ioi = ORDERIOI(ioi_ch, metadata_ch, ord_ioi_ch)
@@ -79,8 +80,8 @@ workflow {
             (graphlan_biom, table_qza) = GENERATEBIOMFORGRAPHLAN(metadata_ch, ioi_ch, input_ch, filter_samples_ch, tax_qza, qza_table)
             //TODO update coremetric with my version of coremetric
             SRSNORMALIZE( FILTERNEGATIVECONTROL.out.filtered_table_tsv, input_ch, SRSCURVE.out.min_val, params.rare)
-            TSVTOQZA(SRSNORMALIZE.out.biom_normalized, metadata_ch)
-            COREMETRICPYTHON(metadata_ch, TSVTOQZA.out.table_qza, input_ch, count_minmax_ch, rare_val_ch)
+            TSVTOQZA2(SRSNORMALIZE.out.biom_normalized, metadata_ch)
+            COREMETRICPYTHON(metadata_ch, TSVTOQZA2.out.table_qza, input_ch, count_minmax_ch, rare_val_ch)
             COREMETRICSRS(metadata_ch, qza_table, input_ch, count_minmax_ch, rare_val_ch)
             QZATOTSV(COREMETRICPYTHON.out.vector)
             REPORT01BARPLOT(input_ch, metadata_ch, report_one_ch, ioi_ch, FILTERNEGATIVECONTROL.out.filtered_table_tsv)
@@ -239,6 +240,7 @@ process FILTERNEGATIVECONTROL{
 
 }
 
+/*
 process TSVTOQZA{
     
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/automate_16_nf:2.0' : 'lorentzb/automate_16_nf:2.0' }"
@@ -266,6 +268,7 @@ process TSVTOQZA{
     --output-path feature-table.qza
     '''
 }
+*/
 
 process RAREFACTIONPLOT{
     publishDir "${params.outdir}/rarefaction", pattern: "*.png", mode: "copy"
