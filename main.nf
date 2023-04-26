@@ -73,7 +73,7 @@ workflow {
             filtered_table = FILTERNEGATIVECONTROL(input_ch, controls_ch, metadata_ch, contam_script_ch)
 
             tsv_map_1 = FILTERNEGATIVECONTROL.out.filtered_table_biom.map{
-                it ->  [ ["Filtered-NC-Biom"], [it] ]
+                it ->  [ [id: "Filtered-NC-Biom"], it ]
             }
 
             tsvout = TSVTOQZA(tsv_map_1, metadata_ch)
@@ -88,11 +88,11 @@ workflow {
             SRSNORMALIZE( FILTERNEGATIVECONTROL.out.filtered_table_tsv, input_ch, SRSCURVE.out.min_val, params.rare)
             
             tsv_map_2 = SRSNORMALIZE.out.biom_normalized.map{
-                it ->  [ ["SRS-Normalized-Biom"], [it] ]
+                it ->  [ [id: "SRS-Normalized-Biom"], it ]
             }
 
             TSVTOQZA2(tsv_map_2, metadata_ch)
-            
+
             COREMETRICPYTHON(metadata_ch, TSVTOQZA2.out[1], input_ch, count_minmax_ch, rare_val_ch)
             COREMETRICSRS(metadata_ch, qza_table, input_ch, count_minmax_ch, rare_val_ch)
             QZATOTSV(COREMETRICPYTHON.out.vector)
