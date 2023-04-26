@@ -81,7 +81,7 @@ workflow {
             //TODO update coremetric with my version of coremetric
             SRSNORMALIZE( FILTERNEGATIVECONTROL.out.filtered_table_tsv, input_ch, SRSCURVE.out.min_val, params.rare)
             TSVTOQZA2([["SRS-Normalized-Biom"],[SRSNORMALIZE.out.biom_normalized]], metadata_ch)
-            COREMETRICPYTHON(metadata_ch, TSVTOQZA2.out.table_qza, input_ch, count_minmax_ch, rare_val_ch)
+            COREMETRICPYTHON(metadata_ch, TSVTOQZA2.out[1], input_ch, count_minmax_ch, rare_val_ch)
             COREMETRICSRS(metadata_ch, qza_table, input_ch, count_minmax_ch, rare_val_ch)
             QZATOTSV(COREMETRICPYTHON.out.vector)
             REPORT01BARPLOT(input_ch, metadata_ch, report_one_ch, ioi_ch, FILTERNEGATIVECONTROL.out.filtered_table_tsv)
