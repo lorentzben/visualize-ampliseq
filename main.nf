@@ -92,6 +92,8 @@ workflow {
             }
 
             TSVTOQZA2(tsv_map_2, metadata_ch)
+            
+            qza_table.view()
 
             COREMETRICPYTHON(metadata_ch, TSVTOQZA2.out[1], input_ch, count_minmax_ch, rare_val_ch)
             COREMETRICSRS(metadata_ch, qza_table, input_ch, count_minmax_ch, rare_val_ch)
