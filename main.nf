@@ -71,7 +71,13 @@ workflow {
     if (params.srs){
         if (params.controls) {
             filtered_table = FILTERNEGATIVECONTROL(input_ch, controls_ch, metadata_ch, contam_script_ch)
-            tsvout = TSVTOQZA([["Filtered-NC-Biom"],[FILTERNEGATIVECONTROL.out.filtered_table_biom]], metadata_ch)
+
+            tsv_map_1 = FILTERNEGATIVECONTROL.out.filtered_table_biom.map{
+                it ->  [ ["Filtered-NC-Biom"], [it] ]
+            }
+
+            tsvout = TSVTOQZA(tsv_map_1, metadata_ch)
+
             qza_table = tsvout[1]
             //TODO Convert this call to qiime SRS and 
             //RAREFACTIONPLOT(input_ch, rare_report_ch, qza_table)
@@ -80,7 +86,13 @@ workflow {
             (graphlan_biom, table_qza) = GENERATEBIOMFORGRAPHLAN(metadata_ch, ioi_ch, input_ch, filter_samples_ch, tax_qza, qza_table)
             //TODO update coremetric with my version of coremetric
             SRSNORMALIZE( FILTERNEGATIVECONTROL.out.filtered_table_tsv, input_ch, SRSCURVE.out.min_val, params.rare)
-            TSVTOQZA2([["SRS-Normalized-Biom"],[SRSNORMALIZE.out.biom_normalized]], metadata_ch)
+            
+            tsv_map_2 = SRSNORMALIZE.out.biom_normalized.map{
+                it ->  [ ["SRS-Normalized-Biom"], [it] ]
+            }
+
+            TSVTOQZA2(tsv_map_2, metadata_ch)
+            
             COREMETRICPYTHON(metadata_ch, TSVTOQZA2.out[1], input_ch, count_minmax_ch, rare_val_ch)
             COREMETRICSRS(metadata_ch, qza_table, input_ch, count_minmax_ch, rare_val_ch)
             QZATOTSV(COREMETRICPYTHON.out.vector)
