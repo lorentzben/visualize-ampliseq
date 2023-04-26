@@ -78,7 +78,7 @@ workflow {
 
             tsvout = TSVTOQZA(tsv_map_1, metadata_ch)
 
-            qza_table = tsvout[1]
+            qza_table = tsvout
             //TODO Convert this call to qiime SRS and 
             //RAREFACTIONPLOT(input_ch, rare_report_ch, qza_table)
             SRSCURVE(qza_table, FILTERNEGATIVECONTROL.out.filtered_table_tsv, input_ch, srs_curve_ch, srs_min_max_ch)
