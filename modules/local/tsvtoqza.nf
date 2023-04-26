@@ -16,7 +16,7 @@ process TSVTOQZA {
     //               This information may not be required in some instances e.g. indexing reference genome files:
     //               https://github.com/nf-core/modules/blob/master/modules/nf-core/bwa/index/main.nf
     
-    tuple val(meta), path(tsv)
+    tuple val(meta), path(biom)
     path "metadata.tsv"
 
     output:
@@ -33,9 +33,7 @@ process TSVTOQZA {
     """
     #!/usr/bin/env bash
     
-    biom add-metadata -i table.biom \
-        -o md-table.biom \
-        --observation-metadata-fp metadata.tsv
+    biom add-metadata -i $biom -o md-table.biom --observation-metadata-fp metadata.tsv
 
     qiime tools import \
         --input-path md-table.biom \
