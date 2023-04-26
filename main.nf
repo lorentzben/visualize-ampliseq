@@ -71,11 +71,11 @@ workflow {
     if (params.srs){
         if (params.controls) {
             filtered_table = FILTERNEGATIVECONTROL(input_ch, controls_ch, metadata_ch, contam_script_ch)
-            qza_table = TSVTOQZA([["Filtered-NC-Biom"],[FILTERNEGATIVECONTROL.out.filtered_table_biom]], metadata_ch)
-            
+            tsvout = TSVTOQZA([["Filtered-NC-Biom"],[FILTERNEGATIVECONTROL.out.filtered_table_biom]], metadata_ch)
+            qza_table = tsvout[1]
             //TODO Convert this call to qiime SRS and 
             //RAREFACTIONPLOT(input_ch, rare_report_ch, qza_table)
-            SRSCURVE(qza_table, FILTERNEGATIVECONTROL.out.filtered_table_tsv, input_ch,srs_curve_ch, srs_min_max_ch)
+            SRSCURVE(qza_table, FILTERNEGATIVECONTROL.out.filtered_table_tsv, input_ch, srs_curve_ch, srs_min_max_ch)
             tax_qza = REFORMATANDQZATAX(input_ch)
             (graphlan_biom, table_qza) = GENERATEBIOMFORGRAPHLAN(metadata_ch, ioi_ch, input_ch, filter_samples_ch, tax_qza, qza_table)
             //TODO update coremetric with my version of coremetric
@@ -109,7 +109,7 @@ workflow {
         } else{
             empty_table = ord_ioi_ch
             //TODO fix the FILTERNEGATIVECONTROL.out.filtered_table_tsv so that it comes from results
-            SRSCURVE(table_qza, empty_table, input_ch,srs_curve_ch, srs_min_max_ch)
+            SRSCURVE(table_qza, [] , input_ch, srs_curve_ch, srs_min_max_ch)
             //RAREFACTIONPLOT(input_ch, rare_report_ch, empty_table)
             tax_qza = REFORMATANDQZATAX(input_ch)
             (graphlan_biom, table_qza) = GENERATEBIOMFORGRAPHLAN(metadata_ch, ioi_ch, input_ch, filter_samples_ch, tax_qza, empty_table)
@@ -145,8 +145,8 @@ workflow {
     } else {
         if (params.controls) {
             filtered_table = FILTERNEGATIVECONTROL(input_ch, controls_ch, metadata_ch, contam_script_ch)
-            qza_table = TSVTOQZA(FILTERNEGATIVECONTROL.out.filtered_table_biom, metadata_ch)
-            
+            tsvout = TSVTOQZA(FILTERNEGATIVECONTROL.out.filtered_table_biom, metadata_ch)
+            qza_table = tsvout[1]
 
             RAREFACTIONPLOT(input_ch, rare_report_ch, qza_table)
             tax_qza = REFORMATANDQZATAX(input_ch)
