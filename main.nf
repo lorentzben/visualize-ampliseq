@@ -78,8 +78,10 @@ workflow {
 
             tsvout = TSVTOQZA(tsv_map_1, metadata_ch)
 
-            
-            qza_table = tsvout[0].last()
+            qza_table = TSVTOQZA.out.qza.last()
+            //qza_table = tsvout[0].last()[1]
+
+            qza_table.view()
 
             //TODO Convert this call to qiime SRS and 
             //RAREFACTIONPLOT(input_ch, rare_report_ch, qza_table)
@@ -95,8 +97,6 @@ workflow {
 
             TSVTOQZA2(tsv_map_2, metadata_ch)
             
-            qza_table.view()
-
             COREMETRICPYTHON(metadata_ch, TSVTOQZA2.out[1], input_ch, count_minmax_ch, rare_val_ch)
             COREMETRICSRS(metadata_ch, qza_table, input_ch, count_minmax_ch, rare_val_ch)
             QZATOTSV(COREMETRICPYTHON.out.vector)
@@ -162,8 +162,8 @@ workflow {
         if (params.controls) {
             filtered_table = FILTERNEGATIVECONTROL(input_ch, controls_ch, metadata_ch, contam_script_ch)
             tsvout = TSVTOQZA(FILTERNEGATIVECONTROL.out.filtered_table_biom, metadata_ch)
-            qza_table = tsvout[0].last()
-
+            //qza_table = tsvout[0].last()
+            qza_table = TSVTOQZA.out.qza.last()
            
             RAREFACTIONPLOT(input_ch, rare_report_ch, qza_table)
             tax_qza = REFORMATANDQZATAX(input_ch)
