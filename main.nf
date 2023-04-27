@@ -96,7 +96,7 @@ workflow {
 
             norm_qza_table = TSVTOQZA2.out.qza.map{it.last()}
             
-            //COREMETRICPYTHON(metadata_ch, norm_qza_table, input_ch, count_minmax_ch, rare_val_ch)
+            COREMETRICPYTHON(metadata_ch, norm_qza_table, input_ch, count_minmax_ch, rare_val_ch)
             COREMETRICSRS(metadata_ch, norm_qza_table, input_ch, count_minmax_ch, rare_val_ch)
             //TODO make this a module too?
             QZATOTSV(COREMETRICPYTHON.out.vector)
