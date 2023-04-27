@@ -448,6 +448,7 @@ process SRSNORMALIZE{
     library(qiime2R)
     library(SRS)
     library(phyloseq)
+    library(biomformat)
 
     #read in table from either decontam or results/qiime2/abundance_tables/feature-table.tsv
 
