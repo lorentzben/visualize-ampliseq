@@ -79,7 +79,7 @@ workflow {
             tsvout = TSVTOQZA(tsv_map_1, metadata_ch)
 
             qza_table = tsvout.map{
-                it -> it[0] 
+                it -> it.last()
             }
 
             //qza_table = tsvout[0][1]
@@ -167,7 +167,7 @@ workflow {
             //qza_table = tsvout[0][1]
 
             qza_table = tsvout.map{
-                it -> it[0] 
+                it -> it.last()
             }
 
             RAREFACTIONPLOT(input_ch, rare_report_ch, qza_table)
