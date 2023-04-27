@@ -93,9 +93,12 @@ workflow {
             }
 
             TSVTOQZA2(tsv_map_2, metadata_ch)
+
+            norm_qza_table = TSVTOQZA2.out.qza.map{it.last()}
             
-            COREMETRICPYTHON(metadata_ch, TSVTOQZA2.out[1], input_ch, count_minmax_ch, rare_val_ch)
-            COREMETRICSRS(metadata_ch, qza_table, input_ch, count_minmax_ch, rare_val_ch)
+            COREMETRICPYTHON(metadata_ch, norm_qza_table, input_ch, count_minmax_ch, rare_val_ch)
+            COREMETRICSRS(metadata_ch, norm_qza_table, input_ch, count_minmax_ch, rare_val_ch)
+            //TODO make this a module too?
             QZATOTSV(COREMETRICPYTHON.out.vector)
             REPORT01BARPLOT(input_ch, metadata_ch, report_one_ch, ioi_ch, FILTERNEGATIVECONTROL.out.filtered_table_tsv)
             graphlan_dir = RUNGRAPHLAN(metadata_ch, ioi_ch, tax_qza, graph_sh_ch, graphlan_biom)
