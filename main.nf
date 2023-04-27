@@ -451,20 +451,24 @@ process SRSNORMALIZE{
 
     #read in table from either decontam or results/qiime2/abundance_tables/feature-table.tsv
 
-    if(file.exists('feature-table.tsv')){
+    if(file.exists('$table')){
         print("using contam-filtered-table")
-        un_rare_tab <- read.table('table.tsv')
+        un_rare_tab <- read.table('$table')
     } else {
-        print('using qiime unfiltered table')
+        print("using qiime unfiltered table")
         un_rare_tab <- read_q2biom("results/qiime2/abundance_tables/feature-table.biom")
 
+    }
+
+    if(file.exists('$srs_min')){
+        srs_min <- as.numeric(readLines('$srs_min'))
     }
 
 
     if ($rare_val != 0){
         norm_tab <- SRS(un_rare_tab, $rare_val)
-    } else {qii
-        norm_tab <- SRS(un_rare_tab, $srs_min)
+    } else {
+        norm_tab <- SRS(un_rare_tab, srs_min)
     }
 
     # Save norm_tab.tsv
