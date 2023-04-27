@@ -475,13 +475,17 @@ process SRSNORMALIZE{
         norm_tab <- SRS(un_rare_tab, srs_min)
     }
 
+    rownames(norm_tab) <- rownames(un_rare_tab)
+
     # Save norm_tab.tsv
 
-    write.table(norm_tab, "normalized-table.tsv",row.names=F)
+    #write.table(norm_tab, "normalized-table.tsv",row.names=F)
+    write.table(norm_tab, "normalized-table.tsv")
 
-    # convert norm_tab to biom
+    # convert norm_tab to biom 
+    tmp <- make_biom(norm_tab)
 
-    write_biom(norm_tab, "normalized-table.biom")
+    write_biom(tmp, "normalized-table.biom")
 
     """
 }
