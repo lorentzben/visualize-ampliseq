@@ -78,7 +78,7 @@ workflow {
 
             tsvout = TSVTOQZA(tsv_map_1, metadata_ch)
 
-            qza_table = tsvout[0]
+            qza_table = tsvout[0][1]
             //TODO Convert this call to qiime SRS and 
             //RAREFACTIONPLOT(input_ch, rare_report_ch, qza_table)
             SRSCURVE(qza_table, FILTERNEGATIVECONTROL.out.filtered_table_tsv, input_ch, srs_curve_ch, srs_min_max_ch)
@@ -160,7 +160,7 @@ workflow {
         if (params.controls) {
             filtered_table = FILTERNEGATIVECONTROL(input_ch, controls_ch, metadata_ch, contam_script_ch)
             tsvout = TSVTOQZA(FILTERNEGATIVECONTROL.out.filtered_table_biom, metadata_ch)
-            qza_table = tsvout[0]
+            qza_table = tsvout[0][1]
 
             RAREFACTIONPLOT(input_ch, rare_report_ch, qza_table)
             tax_qza = REFORMATANDQZATAX(input_ch)
