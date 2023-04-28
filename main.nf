@@ -97,10 +97,11 @@ workflow {
             norm_qza_table = TSVTOQZA2.out.qza.map{it.last()}
             
             COREMETRICPYTHON(metadata_ch, norm_qza_table, input_ch, count_minmax_ch, rare_val_ch)
-            COREMETRICSRS(metadata_ch, norm_qza_table, input_ch, count_minmax_ch, rare_val_ch)
+            
             //TODO make this a module too?
             QZATOTSV(COREMETRICPYTHON.out.vector)
-            REPORT01BARPLOT(input_ch, metadata_ch, report_one_ch, ioi_ch, FILTERNEGATIVECONTROL.out.filtered_table_tsv)
+            
+            REPORT01BARPLOT(input_ch, metadata_ch, report_one_ch, ioi_ch, SRSNORMALIZE.out.tsv_normalized)
             graphlan_dir = RUNGRAPHLAN(metadata_ch, ioi_ch, tax_qza, graph_sh_ch, graphlan_biom)
             REPORT02GRAPHLANPHYLOGENETICTREE(graphlan_dir, ioi_ch, report_two_ch, report_two_local_ch)
             REPORT03HEATMAP(input_ch, COREMETRICPYTHON.out.rare_table, tax_qza, metadata_ch, report_three_ch, ioi_ch, ord_ioi)
@@ -122,19 +123,30 @@ workflow {
             lefse_dir = LEFSEANALYSIS(LEFSEFORMAT.out.combos,lefse_analysis_ch, plot_clado_file_ch, plot_res_file_ch)
             REPORT13LEFSE(lefse_dir, report_thirteen_ch, report_thirteen_local_ch, ioi_ch, ord_ioi)
             REPORT14CITATIONS(report_fourteen_ch)
-        } else{
+        } else {
             empty_table = ord_ioi_ch
             //TODO fix the FILTERNEGATIVECONTROL.out.filtered_table_tsv so that it comes from results
             SRSCURVE(table_qza, [] , input_ch, srs_curve_ch, srs_min_max_ch)
-            //RAREFACTIONPLOT(input_ch, rare_report_ch, empty_table)
+            
+            //if we pass in empty braces, then the process will read in: "results/qiime2/abundance_tables/feature-table.biom"
+            SRSNORMALIZE( [] , input_ch, SRSCURVE.out.min_val, params.rare)
+            
+            tsv_map = SRSNORMALIZE.out.biom_normalized.map{
+                it ->  [ [id: "SRS-Normalized-Biom"], it ]
+            }
+
+            TSVTOQZA(tsv_map, metadata_ch)
+
+            norm_qza_table = TSVTOQZA.out.qza.map{it.last()}
+
             tax_qza = REFORMATANDQZATAX(input_ch)
-            (graphlan_biom, table_qza) = GENERATEBIOMFORGRAPHLAN(metadata_ch, ioi_ch, input_ch, filter_samples_ch, tax_qza, empty_table)
-            //TODO update core metric with my method
-            //COREMETRICPYTHON(metadata_ch, table_qza, input_ch, count_minmax_ch, rare_val_ch)
-            SRSNORMALIZE(empty_table, input_ch, SRSCURVE.out.min_val, params.rare )
-            COREMETRICSRS(metadata_ch, table_qza, input_ch, count_minmax_ch, rare_val_ch)
-            QZATOTSV(COREMETRICPYTHON.out.vector)
-            REPORT01BARPLOT(input_ch, metadata_ch, report_one_ch, ioi_ch, ord_ioi_ch)
+            (graphlan_biom, table_qza) = GENERATEBIOMFORGRAPHLAN(metadata_ch, ioi_ch, input_ch, filter_samples_ch, tax_qza, [])
+            
+            COREMETRICPYTHON(metadata_ch, norm_qza_table, input_ch, count_minmax_ch, rare_val_ch)
+            
+            QZATOTSV(COREMETRICPYTHON.out.vector) 
+            //empty [] in place of filtered table from decontam
+            REPORT01BARPLOT(input_ch, metadata_ch, report_one_ch, ioi_ch, [])
             graphlan_dir = RUNGRAPHLAN(metadata_ch, ioi_ch, tax_qza, graph_sh_ch, graphlan_biom)
             REPORT02GRAPHLANPHYLOGENETICTREE(graphlan_dir, ioi_ch, report_two_ch, report_two_local_ch)
             REPORT03HEATMAP(input_ch, COREMETRICPYTHON.out.rare_table, tax_qza, metadata_ch, report_three_ch, ioi_ch, ord_ioi)
@@ -142,9 +154,7 @@ workflow {
             REPORT05ALPHABOXPLOT(QZATOTSV.out.vector, ioi_ch, ord_ioi, metadata_ch, report_five_ch)
             REPORT06ORDINATION(COREMETRICPYTHON.out.rare_table, input_ch, ioi_ch, ord_ioi, report_six_ch, tax_qza, metadata_ch, COREMETRICPYTHON.out.pcoa, COREMETRICPYTHON.out.vector)
             REPORT06BNMDSORDINATION(COREMETRICPYTHON.out.rare_table, input_ch, ioi_ch, ord_ioi, report_six_b_ch, tax_qza, metadata_ch, COREMETRICPYTHON.out.pcoa, COREMETRICPYTHON.out.vector)
-            //TODO update rarefaction with SRS curve
-            //GENERATERAREFACTIONCURVE(metadata_ch, table_qza, input_ch, count_minmax_ch, rare_val_ch, empty_table)
-            //REPORT07RAREFACTION(ioi_ch,ord_ioi,input_ch, report_seven_ch, GENERATERAREFACTIONCURVE.out.rareVector, metadata_ch)
+            
             REPORT08RANKEDABUNDANCE(COREMETRICPYTHON.out.rare_table,input_ch, ioi_ch, ord_ioi, report_eight_ch, tax_qza, metadata_ch)
             REPORT09UNIFRACHEATMAP(ioi_ch, ord_ioi, metadata_ch, COREMETRICPYTHON.out.distance, report_nine_ch)
             UNCOMPRESSDIVMATS(COREMETRICPYTHON.out.distance, uncompress_script_ch)
@@ -437,8 +447,6 @@ process SRSNORMALIZE{
     val srs_min
     val rare_val
     
-    
-
     output:
     path("*.tsv"), emit: tsv_normalized
     path("*.biom"), emit: biom_normalized
@@ -461,7 +469,6 @@ process SRSNORMALIZE{
     } else {
         print("using qiime unfiltered table")
         un_rare_tab <- read_q2biom("results/qiime2/abundance_tables/feature-table.biom")
-
     }
 
     if(file.exists('$srs_min')){
@@ -488,116 +495,6 @@ process SRSNORMALIZE{
     write_biom(tmp, "normalized-table.biom")
 
     """
-}
-
-process COREMETRICSRS{
-    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/automate_16_nf:2.0' : 'lorentzb/automate_16_nf:2.0' }"
-
-    input:
-
-    file 'metadata.tsv'
-    file 'table.qza'
-    path 'results'
-    path 'count_table_minmax_reads.py'
-    val rare_val
-    
-
-    output:
-
-    path("diversity_core/*_pcoa_results.qza")   , emit: pcoa
-    path("diversity_core/*_vector.qza")         , emit: vector
-    path("diversity_core/*_distance_matrix.qza"), emit: distance
-    path("*rarefaction.txt") , emit: depth
-    path("diversity_core/rarefied_table.qza"), emit: rare_table
-
-    script:
-
-    """
-    #!/usr/bin/env python3
-
-    from qiime2.plugins import diversity
-    from qiime2 import Metadata
-    from qiime2.plugins import feature_table
-    from qiime2 import Artifact
-    import pandas as pd
-    import sys
-    import warnings
-    import os
-    import biom
-
-    os.mkdir("diversity_core")
-
-    warnings.filterwarnings('ignore')
-
-    metadata = Metadata.load('metadata.tsv')
-
-    unrarefied_table = Artifact.load('table.qza')
-
-    rooted_tree = Artifact.load('results/qiime2/phylogenetic_tree/rooted-tree.qza')
-
-    # if the default value aka use count_table_minmax_reads
-    if $rare_val == 0:
-
-        uncompress_table='results/qiime2/abundance_tables/feature-table.tsv'
-
-        # adapted from count_table_minmax_reads.py @author Daniel Straub
-        # collected from nf-core/ampliseq
-        # read tsv and skip first two rows
-        data = pd.read_csv('results/qiime2/abundance_tables/feature-table.tsv', sep="\t", skiprows=[0, 1], header=None)  # count table
-
-        # drop feature ids
-        df = data.drop(data.columns[0], axis=1)
-
-        # make sums
-        sums = df.sum()
-
-        # we want minimum values
-        mindepth = int(sums.min())
-
-        if mindepth > 10000:
-            print("Use the sampling depth of " +str(mindepth)+" for rarefaction")
-        elif mindepth < 10000 and mindepth > 5000: 
-            print("WARNING The sampling depth of "+str(mindepth)+" is quite small for rarefaction")
-        elif mindepth < 5000 and mindepth > 1000: 
-            print("WARNING The sampling depth of "+str(mindepth)+" is very small for rarefaction")
-        elif mindepth < 1000: 
-            print("WARNING The sampling depth of "+str(mindepth)+" seems too small for rarefaction")
-        else:
-            print("ERROR this shouldn't happen")
-            exit(1)
-
-        core = diversity.pipelines.core_metrics_phylogenetic(unrarefied_table, rooted_tree, mindepth, metadata)
-        file = open("rarefaction.txt", "w")
-        file.write(str(mindepth))
-        file.close 
-    
-    # else if user submits the rarefaction depth they want to use based on rarefaction plot
-    else: 
-        core = diversity.pipelines.core_metrics_phylogenetic(unrarefied_table, rooted_tree, $rare_val, metadata)
-        file = open("rarefaction.txt", "w")
-        file.write(str($rare_val))
-        file.close 
-
-    Artifact.save(core[0], "diversity_core/rarefied_table")
-    Artifact.save(core[1], "diversity_core/faith_pd_vector")
-    Artifact.save(core[2], "diversity_core/observed_features_vector")
-    Artifact.save(core[3], "diversity_core/shannon_vector")
-    Artifact.save(core[4], "diversity_core/evenness_vector")
-    Artifact.save(core[5], "diversity_core/unweighted_unifrac_distance_matrix")
-    Artifact.save(core[6], "diversity_core/weighted_unifrac_distance_matrix")
-    Artifact.save(core[7], "diversity_core/jaccard_distance_matrix")
-    Artifact.save(core[8], "diversity_core/bray_curtis_distance_matrix")
-    Artifact.save(core[9], "diversity_core/unweighted_unifrac_pcoa_results")
-    Artifact.save(core[10], "diversity_core/weighted_unifrac_pcoa_results")
-    Artifact.save(core[11], "diversity_core/jaccard_pcoa_results")
-    Artifact.save(core[12], "diversity_core/bray_curtis_pcoa_results")
-    Artifact.save(core[13], "diversity_core/unweighted_unifrac_emperor")
-    Artifact.save(core[14], "diversity_core/weighted_unifrac_emperor")
-    Artifact.save(core[15], "diversity_core/jaccard_emperor")
-    Artifact.save(core[16], "diversity_core/bray_curtis_emperor")  
-
-    """
-
 }
 
 process QZATOTSV{
@@ -708,7 +605,6 @@ process REPORT01BARPLOT{
     #!/usr/bin/env bash
    
     dt=$(date '+%d-%m-%Y_%H.%M.%S');
-
     Rscript -e "rmarkdown::render('01_report_MbA.Rmd', output_file='$PWD/01_report_$dt.html', output_format='html_document', clean=TRUE, knit_root_dir='$PWD')"
 
     #Rscript -e "rmarkdown::render('01_report_MbA.Rmd', output_file='$PWD/01_report_$dt.pdf', output_format='pdf_document', clean=TRUE, knit_root_dir='$PWD')"

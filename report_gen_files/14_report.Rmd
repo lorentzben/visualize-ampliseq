@@ -21,6 +21,7 @@ Yihui Xie (2021). knitr: A General-Purpose Package for Dynamic Report Generation
 1 Species Distribution
 
 ---
+#TODO Include and update microbiome analyst
 
 * Bolyen, E., Rideout, J.R., Dillon, M.R. et al. Reproducible, interactive, scalable and extensible microbiome data science using QIIME 2. Nat Biotechnol 37, 852–857 (2019). https://doi.org/10.1038/s41587-019-0209-9
 
