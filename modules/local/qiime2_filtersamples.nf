@@ -10,7 +10,9 @@ process QIIME2_FILTERSAMPLES {
     }
 
     input:
-    tuple path(metadata), path(table), val(filter)
+    path(metadata)
+    path(table) 
+    val(filter)
 
     output:
     path("*.qza")       , emit: qza

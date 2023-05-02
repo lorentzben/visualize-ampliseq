@@ -88,7 +88,7 @@ workflow {
 
             qza_filt_table = TSVTOQZA.out.qza.map{it.last()}
 
-            QIIME2_FILTERNC([metadata_ch, TSVTOQZA.out.qza , nc_val_ch])
+            QIIME2_FILTERNC(metadata_ch, qza_filt_table , nc_val_ch)
 
             if(params.mock){
                 QIIME2_FILTERMOCK([metadata_ch, QIIME2_FILTERNC.out.qza, mock_val_ch])
