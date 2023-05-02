@@ -175,7 +175,12 @@ workflow {
     } else {
         if (params.controls) {
             filtered_table = FILTERNEGATIVECONTROL(input_ch, controls_ch, metadata_ch, contam_script_ch)
-            tsvout = TSVTOQZA(FILTERNEGATIVECONTROL.out.filtered_table_biom, metadata_ch)
+
+            tsv_map_1 = FILTERNEGATIVECONTROL.out.filtered_table_biom.map{
+                it ->  [ [id: "Filtered-NC-Biom"], it ]
+            }
+
+            TSVTOQZA(tsv_map_1, metadata_ch)
             
             qza_table = TSVTOQZA.out.qza.map{it.last()}
            
