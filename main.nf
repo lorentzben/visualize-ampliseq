@@ -35,6 +35,8 @@ metadata_ch = Channel.fromPath(params.metadata, checkIfExists: true)
 ioi_ch = Channel.of(params.ioi)
 ord_ioi_ch = Channel.fromPath(params.ordioi)
 rare_val_ch = Channel.of(params.rare)
+mock_val_ch = Channel.of(params.mock)
+nc_val_ch = Channel.of(params.negative)
 rare_report_ch = Channel.fromPath("${projectDir}/r_scripts/rarefaction_report.Rmd")
 report_one_ch = Channel.fromPath("${projectDir}/report_gen_files/01_report_MbA.Rmd")
 filter_samples_ch = Channel.fromPath("${projectDir}/python_scripts/filter_samples.py")
@@ -86,10 +88,11 @@ workflow {
 
             qza_filt_table = TSVTOQZA.out.qza.map{it.last()}
 
-            QIIME2_FILTERNC([metadata_ch, qza_filt_table, params.negative])
+            QIIME2_FILTERNC([metadata_ch, qza_filt_table, nc_val_ch])
+
 
             if(params.mock){
-                QIIME2_FILTERMOCK([metadata_ch, QIIME2_FILTERNC.out.qza, params.mock])
+                QIIME2_FILTERMOCK([metadata_ch, QIIME2_FILTERNC.out.qza, mock_val_ch])
                 QIIME2_EXPORT_ABSOLUTE(QIIME2_FILTERMOCK.out.qza)
                 qza_table = QIIME2_FILTERMOCK.out.qza
                 tsv_table = QIIME2_EXPORT_ABSOLUTE.out.tsv
