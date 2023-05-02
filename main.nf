@@ -124,7 +124,7 @@ workflow {
             REPORT13LEFSE(lefse_dir, report_thirteen_ch, report_thirteen_local_ch, ioi_ch, ord_ioi)
             REPORT14CITATIONS(report_fourteen_ch)
         } else {
-            empty_table = ord_ioi_ch
+            (graphlan_biom, table_qza) = GENERATEBIOMFORGRAPHLAN(metadata_ch, ioi_ch, input_ch, filter_samples_ch, tax_qza, [])
             //TODO fix the FILTERNEGATIVECONTROL.out.filtered_table_tsv so that it comes from results
             SRSCURVE(table_qza, [] , input_ch, srs_curve_ch, srs_min_max_ch)
             
@@ -140,7 +140,7 @@ workflow {
             norm_qza_table = TSVTOQZA.out.qza.map{it.last()}
 
             tax_qza = REFORMATANDQZATAX(input_ch)
-            (graphlan_biom, table_qza) = GENERATEBIOMFORGRAPHLAN(metadata_ch, ioi_ch, input_ch, filter_samples_ch, tax_qza, [])
+            
             
             COREMETRICPYTHON(metadata_ch, norm_qza_table, input_ch, count_minmax_ch, rare_val_ch)
             
