@@ -128,7 +128,7 @@ workflow {
             tax_qza = REFORMATANDQZATAX(input_ch)
 
             (graphlan_biom, table_qza) = GENERATEBIOMFORGRAPHLAN(metadata_ch, ioi_ch, input_ch, filter_samples_ch, tax_qza, [])
-            
+
             //TODO fix the FILTERNEGATIVECONTROL.out.filtered_table_tsv so that it comes from results
             SRSCURVE(table_qza, [] , input_ch, srs_curve_ch, srs_min_max_ch)
             
@@ -473,6 +473,7 @@ process SRSNORMALIZE{
     } else {
         print("using qiime unfiltered table")
         un_rare_tab <- read_q2biom("results/qiime2/abundance_tables/feature-table.biom")
+        un_rare_tab <- data.frame(un_rare_tab)
     }
 
     if(file.exists('$srs_min')){
