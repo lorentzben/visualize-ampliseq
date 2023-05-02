@@ -9,7 +9,9 @@ params.ordioi = "ordered_item_of_interest.csv"
 params.outdir = "results"
 params.rare = 0
 params.controls = ""
-params.srs = false 
+params.srs = false
+params.mock = "MOCK"
+params.negative = "NC"
 
 log.info """\
          V I S U A L I Z E   P I P E L I N E    
@@ -22,6 +24,8 @@ log.info """\
          rarefaction depth : ${params.rare}
          controls: ${params.controls}
          srs: ${params.srs}
+         mock samples: ${params.mock}
+         negative control: ${params.negative}
          profile : ${workflow.profile}
          """
          .stripIndent()
@@ -65,7 +69,8 @@ if (params.controls) {
 contam_script_ch = Channel.fromPath("${projectDir}/r_scripts/contam_script.r")
     
 include { TSVTOQZA; TSVTOQZA as TSVTOQZA2 } from "${projectDir}/modules/local/tsvtoqza.nf"
-include { QIIME2_FILTERSAMPLES as QIIME2_FILTERNC; QIIME2_FILTERSAMPLES as QIIME2_FILTERMOCK} from "${projectDir}/modules/local/qiime2_filtersamples.nf"
+include { QIIME2_FILTERSAMPLES as QIIME2_FILTERNC; QIIME2_FILTERSAMPLES as QIIME2_FILTERMOCK } from "${projectDir}/modules/local/qiime2_filtersamples.nf"
+include { QIIME2_EXPORT_ABSOLUTE } from "${projectDir}/modules/local/qiime2_export_absolute.nf"
 
 workflow {
     ord_ioi = ORDERIOI(ioi_ch, metadata_ch, ord_ioi_ch)
@@ -79,14 +84,28 @@ workflow {
 
             TSVTOQZA(tsv_map_1, metadata_ch)
 
-            qza_table = TSVTOQZA.out.qza.map{it.last()}
-                     
-            //TODO Convert this call to qiime SRS and 
-            //RAREFACTIONPLOT(input_ch, rare_report_ch, qza_table)
+            qza_filt_table = TSVTOQZA.out.qza.map{it.last()}
+
+            QIIME2_FILTERNC([metadata_ch, qza_filt_table, params.negative])
+
+            if(params.mock){
+                QIIME2_FILTERMOCK([metadata_ch, QIIME2_FILTERNC.out.qza, params.mock])
+                QIIME2_EXPORT_ABSOLUTE(QIIME2_FILTERMOCK.out.qza)
+                qza_table = QIIME2_FILTERMOCK.out.qza
+                tsv_table = QIIME2_EXPORT_ABSOLUTE.out.tsv
+            } else {
+                QIIME2_EXPORT_ABSOLUTE(QIIME2_FILTERNC.out.qza)
+                tsv_table = QIIME2_EXPORT_ABSOLUTE.out.tsv
+            }
+
+              
+            //TODO filter Negative Control Samples and Mock Community Samples
+            //TODO export nc/mock filtered table to TSV
+
             SRSCURVE(qza_table, FILTERNEGATIVECONTROL.out.filtered_table_tsv, input_ch, srs_curve_ch, srs_min_max_ch)
             tax_qza = REFORMATANDQZATAX(input_ch)
             (graphlan_biom, table_qza) = GENERATEBIOMFORGRAPHLAN(metadata_ch, ioi_ch, input_ch, filter_samples_ch, tax_qza, qza_table)
-            //TODO update coremetric with my version of coremetric
+    
             SRSNORMALIZE( FILTERNEGATIVECONTROL.out.filtered_table_tsv, input_ch, SRSCURVE.out.min_val, params.rare)
             
             tsv_map_2 = SRSNORMALIZE.out.biom_normalized.map{
@@ -130,9 +149,11 @@ workflow {
 
             (graphlan_biom, table_qza) = GENERATEBIOMFORGRAPHLAN(metadata_ch, ioi_ch, input_ch, filter_samples_ch, tax_qza, [])
 
-            //TODO fix the FILTERNEGATIVECONTROL.out.filtered_table_tsv so that it comes from results
             SRSCURVE(table_qza, [] , input_ch, srs_curve_ch, srs_min_max_ch)
             
+            //TODO Filter Mock Community Samples
+            //TODO export QZA from last process for tsv and update downstream processes
+
             //if we pass in empty braces, then the process will read in: "results/qiime2/abundance_tables/feature-table.biom"
             SRSNORMALIZE( [] , input_ch, SRSCURVE.out.min_val, params.rare)
             
@@ -143,10 +164,7 @@ workflow {
             TSVTOQZA(tsv_map, metadata_ch)
 
             norm_qza_table = TSVTOQZA.out.qza.map{it.last()}
-
-            
-            
-            
+           
             COREMETRICPYTHON(metadata_ch, norm_qza_table, input_ch, count_minmax_ch, rare_val_ch)
             
             QZATOTSV(COREMETRICPYTHON.out.vector) 
@@ -184,6 +202,8 @@ workflow {
             TSVTOQZA(tsv_map_1, metadata_ch)
             
             qza_table = TSVTOQZA.out.qza.map{it.last()}
+
+            //TODO if params.mock filter out those and control samples turn to TSV and update downstream
            
             RAREFACTIONPLOT(input_ch, rare_report_ch, qza_table)
             tax_qza = REFORMATANDQZATAX(input_ch)
@@ -213,6 +233,7 @@ workflow {
             REPORT14CITATIONS(report_fourteen_ch)
         }
         else{
+            //TODO if mock remove and export to TSV and update downstream
             empty_table = ord_ioi_ch
             RAREFACTIONPLOT(input_ch, rare_report_ch, [])
             tax_qza = REFORMATANDQZATAX(input_ch)
