@@ -65,6 +65,7 @@ if (params.controls) {
 contam_script_ch = Channel.fromPath("${projectDir}/r_scripts/contam_script.r")
     
 include { TSVTOQZA; TSVTOQZA as TSVTOQZA2 } from "${projectDir}/modules/local/tsvtoqza.nf"
+include { QIIME2_FILTERSAMPLES as QIIME2_FILTERNC; QIIME2_FILTERSAMPLES as QIIME2_FILTERMOCK} from "${projectDir}/modules/local/qiime2_filtersamples.nf"
 
 workflow {
     ord_ioi = ORDERIOI(ioi_ch, metadata_ch, ord_ioi_ch)
