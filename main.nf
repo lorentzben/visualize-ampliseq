@@ -88,10 +88,10 @@ workflow {
 
             qza_filt_table = TSVTOQZA.out.qza.map{it.last()}
 
-            QIIME2_FILTERNC(metadata_ch, qza_filt_table , nc_val_ch)
+            QIIME2_FILTERNC(metadata_ch, qza_filt_table , nc_val_ch, ioi_ch)
 
             if(params.mock){
-                QIIME2_FILTERMOCK(metadata_ch, QIIME2_FILTERNC.out.qza, mock_val_ch)
+                QIIME2_FILTERMOCK(metadata_ch, QIIME2_FILTERNC.out.qza, mock_val_ch, ioi_ch)
                 QIIME2_EXPORT_ABSOLUTE(QIIME2_FILTERMOCK.out.qza)
                 qza_table = QIIME2_FILTERMOCK.out.qza
                 tsv_table = QIIME2_EXPORT_ABSOLUTE.out.tsv
