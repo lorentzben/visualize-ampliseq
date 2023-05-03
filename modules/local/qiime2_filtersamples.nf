@@ -2,7 +2,7 @@ process QIIME2_FILTERSAMPLES {
     tag "${filter}"
     label 'process_low'
 
-    container "quay.io/qiime2/core:2022.11"
+    container "lorentzb/automate_16_nf:2.0"
 
     // Exit if running this module with -profile conda / -profile mamba
     if (workflow.profile.tokenize(',').intersect(['conda', 'mamba']).size() >= 1) {
@@ -23,7 +23,7 @@ process QIIME2_FILTERSAMPLES {
     task.ext.when == null || task.ext.when
 
     script:
-    def args = task.ext.args ?: "--p-where [${ioi}]=\'${filter}\'"
+    def args = task.ext.args ?: "--p-where \"[${ioi}]!=\'${filter}\'\""
     def prefix = task.ext.prefix ?: "${filter}"
     """
     export XDG_CONFIG_HOME="\${PWD}/HOME"
