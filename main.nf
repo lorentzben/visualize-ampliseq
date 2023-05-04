@@ -75,7 +75,7 @@ rooted_tree_ch = Channel.fromPath(params.input+"results/qiime2/phylogenetic_tree
     
 include { TSVTOQZA; TSVTOQZA as TSVTOQZA2 } from "${projectDir}/modules/local/tsvtoqza.nf"
 include { QIIME2_FILTERSAMPLES as QIIME2_FILTERNC; QIIME2_FILTERSAMPLES as QIIME2_FILTERMOCK } from "${projectDir}/modules/local/qiime2_filtersamples.nf"
-include { QIIME2_EXPORT_ABSOLUTE as QIIME2_EXPORT_ABSOLUTE; QIIME2_EXPORT_ABSOLUTE as QIIME2_EXPORT_ABSOLUTE_CORE  } from "${projectDir}/modules/local/qiime2_export_absolute.nf"
+include { QIIME2_EXPORT_ABSOLUTE as QIIME2_EXPORT_ABSOLUTE_NC; QIIME2_EXPORT_ABSOLUTE as QIIME2_EXPORT_ABSOLUTE_MOCK; QIIME2_EXPORT_ABSOLUTE as QIIME2_EXPORT_ABSOLUTE_CORE  } from "${projectDir}/modules/local/qiime2_export_absolute.nf"
 
 workflow {
     ord_ioi = ORDERIOI(ioi_ch, metadata_ch, ord_ioi_ch)
@@ -105,15 +105,15 @@ workflow {
             QIIME2_FILTERNC(metadata_ch, qza_filt_table, nc_val_ch, ioi_ch)
 
             filtered_qza_table = QIIME2_FILTERNC.out.qza
-            QIIME2_EXPORT_ABSOLUTE(QIIME2_FILTERNC.out.qza)
-            filtered_tsv_table = QIIME2_EXPORT_ABSOLUTE.out.tsv
+            QIIME2_EXPORT_ABSOLUTE_NC(QIIME2_FILTERNC.out.qza)
+            filtered_tsv_table = QIIME2_EXPORT_ABSOLUTE_NC.out.tsv
         }
 
         if(params.mock){
             QIIME2_FILTERMOCK(metadata_ch, filtered_qza_table, mock_val_ch, ioi_ch)
-            QIIME2_EXPORT_ABSOLUTE(QIIME2_FILTERMOCK.out.qza)
+            QIIME2_EXPORT_ABSOLUTE_MOCK(QIIME2_FILTERMOCK.out.qza)
             filtered_qza_table = QIIME2_FILTERMOCK.out.qza
-            filtered_tsv_table = QIIME2_EXPORT_ABSOLUTE.out.tsv
+            filtered_tsv_table = QIIME2_EXPORT_ABSOLUTE_MOCK.out.tsv
         }
 
         if(params.srs){
@@ -150,7 +150,7 @@ workflow {
 
             
         //TODO update these downstream processes
-        
+
         /*
         REPORT01BARPLOT(input_ch, metadata_ch, report_one_ch, ioi_ch, SRSNORMALIZE.out.tsv_normalized, tsv_table)
         graphlan_dir = RUNGRAPHLAN(metadata_ch, ioi_ch, tax_qza, graph_sh_ch, graphlan_biom)
