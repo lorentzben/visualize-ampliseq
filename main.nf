@@ -139,8 +139,8 @@ workflow {
 
         
         tax_qza = REFORMATANDQZATAX(input_ch)
-            
-        graphlan_biom = GENERATEBIOMFORGRAPHLAN(metadata_ch, ioi_ch, input_ch, filter_samples_ch, tax_qza, filtered_qza_table)
+
+        graphlan_biom = GENERATEBIOMFORGRAPHLAN(metadata_ch, ioi_ch, input_ch, filter_samples_ch, tax_qza, filtered_qza_table, nc_val_ch, mock_val_ch)
 
             
         COREMETRICPYTHON(metadata_ch, filtered_qza_table, norm_qza_table, rooted_tree_ch, rare_val_ch)
@@ -905,6 +905,8 @@ process GENERATEBIOMFORGRAPHLAN{
     file "filter_samples.py" 
     file "taxonomy.qza"
     file "feature-table.qza"
+    val mock 
+    val nc
     
 
     output:
@@ -931,6 +933,9 @@ process GENERATEBIOMFORGRAPHLAN{
 
     ioi_set = set(metadata_table[\"${ioi}\"])
     ioi = '${ioi}'
+
+    ioi_set.discard("$mock")
+    ioi_set.discard("$nc")
 
     subprocess.run(['mkdir phylo_trees'], shell=True)
     subprocess.run(['mkdir biom_tabs'], shell=True)
