@@ -10,8 +10,8 @@ params.outdir = "results"
 params.rare = 0
 params.controls = ""
 params.srs = false
-params.mock = "MOCK"
-params.negative = "NC"
+params.mock = ""
+params.negative = ""
 
 log.info """\
          V I S U A L I Z E   P I P E L I N E    
@@ -69,6 +69,8 @@ if (params.controls) {
     controls_ch = Channel.fromPath(params.controls, checkIfExists:false)
 }
 contam_script_ch = Channel.fromPath("${projectDir}/r_scripts/contam_script.r")
+raw_tsv_table_ch = Channel.fromPath(params.input+"/qiime2/abundance_tables/feature-table.tsv")
+
     
 include { TSVTOQZA; TSVTOQZA as TSVTOQZA2 } from "${projectDir}/modules/local/tsvtoqza.nf"
 include { QIIME2_FILTERSAMPLES as QIIME2_FILTERNC; QIIME2_FILTERSAMPLES as QIIME2_FILTERMOCK } from "${projectDir}/modules/local/qiime2_filtersamples.nf"
@@ -78,6 +80,15 @@ workflow {
     ord_ioi = ORDERIOI(ioi_ch, metadata_ch, ord_ioi_ch)
     if (params.srs){
         if (params.controls) {
+            //TODO update these values and reference them for downstream processes
+            raw_qza_table = []
+            raw_tsv_table = []
+
+            filtered_qza_table = []
+            filtered_tsv_table = []
+
+            raw_tsv_table_ch.view()
+
             filtered_table = FILTERNEGATIVECONTROL(input_ch, controls_ch, metadata_ch, contam_script_ch)
 
             tsv_map_1 = FILTERNEGATIVECONTROL.out.filtered_table_biom.map{
@@ -93,9 +104,10 @@ workflow {
             if(params.mock){
                 QIIME2_FILTERMOCK(metadata_ch, QIIME2_FILTERNC.out.qza, mock_val_ch, ioi_ch)
                 QIIME2_EXPORT_ABSOLUTE(QIIME2_FILTERMOCK.out.qza)
-                qza_table = QIIME2_FILTERMOCK.out.qza
+                qza_filt_table = QIIME2_FILTERMOCK.out.qza
                 tsv_table = QIIME2_EXPORT_ABSOLUTE.out.tsv
-            } else {
+            } else if(params.negative) {
+                qza_filt_table = QIIME2_FILTERNC.out.qza
                 QIIME2_EXPORT_ABSOLUTE(QIIME2_FILTERNC.out.qza)
                 tsv_table = QIIME2_EXPORT_ABSOLUTE.out.tsv
             }
@@ -104,11 +116,11 @@ workflow {
             //TODO filter Negative Control Samples and Mock Community Samples
             //TODO export nc/mock filtered table to TSV
 
-            SRSCURVE(qza_table, FILTERNEGATIVECONTROL.out.filtered_table_tsv, input_ch, srs_curve_ch, srs_min_max_ch)
+            SRSCURVE(qza_table, tsv_table, input_ch, srs_curve_ch, srs_min_max_ch)
             tax_qza = REFORMATANDQZATAX(input_ch)
-            (graphlan_biom, table_qza) = GENERATEBIOMFORGRAPHLAN(metadata_ch, ioi_ch, input_ch, filter_samples_ch, tax_qza, qza_table)
+            (graphlan_biom, table_qza) = GENERATEBIOMFORGRAPHLAN(metadata_ch, ioi_ch, input_ch, filter_samples_ch, tax_qza, qza_filt_table)
     
-            SRSNORMALIZE( FILTERNEGATIVECONTROL.out.filtered_table_tsv, input_ch, SRSCURVE.out.min_val, params.rare)
+            SRSNORMALIZE(tsv_table, input_ch, SRSCURVE.out.min_val, params.rare)
             
             tsv_map_2 = SRSNORMALIZE.out.biom_normalized.map{
                 it ->  [ [id: "SRS-Normalized-Biom"], it ]
@@ -123,7 +135,7 @@ workflow {
             //TODO make this a module too?
             QZATOTSV(COREMETRICPYTHON.out.vector)
             
-            REPORT01BARPLOT(input_ch, metadata_ch, report_one_ch, ioi_ch, SRSNORMALIZE.out.tsv_normalized)
+            REPORT01BARPLOT(input_ch, metadata_ch, report_one_ch, ioi_ch, SRSNORMALIZE.out.tsv_normalized, tsv_table)
             graphlan_dir = RUNGRAPHLAN(metadata_ch, ioi_ch, tax_qza, graph_sh_ch, graphlan_biom)
             REPORT02GRAPHLANPHYLOGENETICTREE(graphlan_dir, ioi_ch, report_two_ch, report_two_local_ch)
             REPORT03HEATMAP(input_ch, COREMETRICPYTHON.out.rare_table, tax_qza, metadata_ch, report_three_ch, ioi_ch, ord_ioi)
@@ -480,6 +492,7 @@ process SRSNORMALIZE{
     val srs_min
     val rare_val
     
+    
     output:
     path("*.tsv"), emit: tsv_normalized
     path("*.biom"), emit: biom_normalized
@@ -497,9 +510,11 @@ process SRSNORMALIZE{
     #read in table from either decontam or results/qiime2/abundance_tables/feature-table.tsv
 
     if(file.exists('$table')){
-        print("using contam-filtered-table")
+        # Yes NC and/or Yes Mock and Yes SRS
+        print("using contam-filtered-table/mock filtered table")
         un_rare_tab <- read.table('$table')
     } else {
+        # No NC and No Mock and Yes SRS
         print("using qiime unfiltered table")
         un_rare_tab <- read_q2biom("results/qiime2/abundance_tables/feature-table.biom")
         un_rare_tab <- data.frame(un_rare_tab)
@@ -626,6 +641,7 @@ process REPORT01BARPLOT{
     path report
     file 'item_of_interest.csv'
     path table
+    path "mock-nc-removed.tsv"
 
     output:
 
