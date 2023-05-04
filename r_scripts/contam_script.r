@@ -10,7 +10,7 @@ library(readr)
 #load data into memory
 #table_dada2 <- "results/dada2/ASV_table.tsv"
 # change table to be consistant with downstream processes
-table_dada2 <- "results/qiime2/abundance_tables/feature-table.tsv"
+table_dada2 <- "feature-table.tsv"
 rooted_tree <- "results/qiime2/phylogenetic_tree/rooted-tree.qza"
 taxonomy_file <- "results/qiime2/input/taxonomy.qza"
 metadata_file <- "metadata.tsv"

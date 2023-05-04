@@ -414,7 +414,7 @@ process CLEANUPRAWTSV{
     write.table(new_table_df, "raw_table_MbA.tsv",row.names=F,sep='\t')
     collen <- dim(new_table_df)[2]
     new_table_df <- new_table_df[,2:collen]
-    write.table(new_table_df, "raw_table.tsv", row.names=T,sep='\t')
+    write.table(new_table_df, "raw_table.tsv", row.names=T ,sep='\t')
 
     """
 
@@ -683,16 +683,6 @@ process SRSNORMALIZE{
     #read in table from either decontam or results/qiime2/abundance_tables/feature-table.tsv
     un_rare_tab <- read.table('$table')
 
-    # if(file.exists('$table')){
-    #     # Yes NC and/or Yes Mock and Yes SRS
-    #     print("using contam-filtered-table/mock filtered table")
-    #     un_rare_tab <- read.table('$table')
-    # } else {
-    #     # No NC and No Mock and Yes SRS
-    #     print("using qiime unfiltered table")
-    #     un_rare_tab <- read_q2biom("results/qiime2/abundance_tables/feature-table.biom")
-    #     un_rare_tab <- data.frame(un_rare_tab)
-    # }
 
     if(file.exists('$srs_min')){
         srs_min <- as.numeric(readLines('$srs_min'))
