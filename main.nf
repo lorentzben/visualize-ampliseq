@@ -115,8 +115,8 @@ workflow {
               
             //TODO filter Negative Control Samples and Mock Community Samples
             //TODO export nc/mock filtered table to TSV
-
-            SRSCURVE(qza_table, tsv_table, input_ch, srs_curve_ch, srs_min_max_ch)
+        
+            SRSCURVE(qza_filt_table, tsv_table, input_ch, srs_curve_ch, srs_min_max_ch)
             tax_qza = REFORMATANDQZATAX(input_ch)
             (graphlan_biom, table_qza) = GENERATEBIOMFORGRAPHLAN(metadata_ch, ioi_ch, input_ch, filter_samples_ch, tax_qza, qza_filt_table)
     
