@@ -153,7 +153,7 @@ workflow {
             REPORT10BETABOXPLOT(ioi_ch,ord_ioi,metadata_ch,input_ch, report_ten_ch, GENERATEUNIFRAC.out.pairwise)
             REPORT11UPGMA( COREMETRICPYTHON.out.rare_table, input_ch, ioi_ch, ord_ioi, tax_qza, metadata_ch, report_eleven_ch)
             REPORT12PERMANOVA(COREMETRICPYTHON.out.rare_table, input_ch, ioi_ch, ord_ioi, tax_qza, metadata_ch, COREMETRICPYTHON.out.distance, report_twelve_ch)
-            LEFSEFORMAT(ioi_ch, qza_table, input_ch, tax_qza, metadata_ch, qiime_to_lefse_ch)
+            LEFSEFORMAT(ioi_ch, qza_filt_table, input_ch, tax_qza, metadata_ch, qiime_to_lefse_ch)
             lefse_dir = LEFSEANALYSIS(LEFSEFORMAT.out.combos,lefse_analysis_ch, plot_clado_file_ch, plot_res_file_ch)
             REPORT13LEFSE(lefse_dir, report_thirteen_ch, report_thirteen_local_ch, ioi_ch, ord_ioi)
             REPORT14CITATIONS(report_fourteen_ch)
