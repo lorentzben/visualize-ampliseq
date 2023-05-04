@@ -70,7 +70,7 @@ if (params.controls) {
 }
 contam_script_ch = Channel.fromPath("${projectDir}/r_scripts/contam_script.r")
 raw_tsv_table_ch = Channel.fromPath(params.input+"/qiime2/abundance_tables/feature-table.tsv")
-
+raw_biom_table_ch = Channel.fromPath(params.input+"/qiime2/abundance_tables/feature-table.biom")
     
 include { TSVTOQZA; TSVTOQZA as TSVTOQZA2 } from "${projectDir}/modules/local/tsvtoqza.nf"
 include { QIIME2_FILTERSAMPLES as QIIME2_FILTERNC; QIIME2_FILTERSAMPLES as QIIME2_FILTERMOCK } from "${projectDir}/modules/local/qiime2_filtersamples.nf"
@@ -81,13 +81,23 @@ workflow {
     if (params.srs){
         if (params.controls) {
             //TODO update these values and reference them for downstream processes
-            raw_qza_table = []
-            raw_tsv_table = []
+            
+            
 
             filtered_qza_table = []
             filtered_tsv_table = []
 
-            raw_tsv_table_ch.view()
+    
+            CLEANUPRAWTSV(raw_tsv_table_ch)
+            raw_tsv_table = CLEANUPRAWTSV.out.raw_table_tsv
+            raw_mba_table = CLEANUPRAWTSV.out.raw_MbA_table_tsv
+
+            CLEANUPRAWQZA(raw_biom_table_ch)
+            raw_qza_table = CLEANUPRAWQZA.out.raw_table_qza
+
+            raw_tsv_table.view()
+            raw_mba_table.view()
+            raw_qza_table.view()
 
             filtered_table = FILTERNEGATIVECONTROL(input_ch, controls_ch, metadata_ch, contam_script_ch)
 
@@ -279,6 +289,71 @@ workflow {
 
     }
     
+}
+
+process CLEANUPRAWTSV{
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/srs:1.0' : 'lorentzb/srs:1.0' }"
+
+    input:
+    
+    path(table)
+ 
+
+    output:
+    path("raw_table.tsv"), emit: raw_table_tsv
+    path("raw_table_MbA.tsv"), emit: raw_MbA_table_tsv
+    
+
+    script:
+
+    """
+    #!/usr/bin/env Rscript
+
+    library(tidyverse)
+    
+    new_table <- read.csv('$table',sep='\t', skip=1)
+    new_table_df <- data.frame(new_table)
+    colnames(new_table_df)[1] <- "#NAME"
+    rownames(new_table_df) <- new_table_df[,1]
+    write.table(new_table_df, "raw_table_MbA.tsv",row.names=F,sep='\t')
+    collen <- dim(new_table_df)[2]
+    new_table_df <- new_table_df[,2:collen]
+    write.table(new_table_df, "raw_table.tsv", row.names=T,sep='\t')
+
+    """
+
+}
+
+process CLEANUPRAWQZA{
+
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 'docker://lorentzb/automate_16_nf:2.0' : 'lorentzb/automate_16_nf:2.0' }"
+
+    input:
+
+    path (table_biom)
+    //results/qiime2/abundance_tables/feature-table.biom
+
+    output:
+    
+    path ("raw-feature-table.qza"), emit: raw_table_qza
+
+    script:
+
+    """
+    #!/usr/bin/env python3
+    import subprocess
+    import pandas as pd
+    import numpy as np 
+    import time
+    import os
+
+    create_qza_command = "qiime tools import \
+    --input-path $table_biom  \
+    --type 'FeatureTable[Frequency]' \
+    --input-format BIOMV210Format \
+    --output-path raw-feature-table.qza"
+    result = subprocess.run([create_qza_command], shell=True)
+    """
 }
 
 process FILTERNEGATIVECONTROL{
@@ -740,6 +815,8 @@ process GENERATEBIOMFORGRAPHLAN{
 
     //TODO add these labels back in
     //label 'process_medium'
+
+    //TODO update code below to just accept the feature table
 
     script:
     def table = table.name != 'NO_FILE' ? "$table" : ''
