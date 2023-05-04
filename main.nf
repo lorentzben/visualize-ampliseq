@@ -71,13 +71,114 @@ if (params.controls) {
 contam_script_ch = Channel.fromPath("${projectDir}/r_scripts/contam_script.r")
 raw_tsv_table_ch = Channel.fromPath(params.input+"/qiime2/abundance_tables/feature-table.tsv")
 raw_biom_table_ch = Channel.fromPath(params.input+"/qiime2/abundance_tables/feature-table.biom")
+rooted_tree_ch = Channel.fromPath(params.input+"results/qiime2/phylogenetic_tree/rooted-tree.qza")
     
 include { TSVTOQZA; TSVTOQZA as TSVTOQZA2 } from "${projectDir}/modules/local/tsvtoqza.nf"
 include { QIIME2_FILTERSAMPLES as QIIME2_FILTERNC; QIIME2_FILTERSAMPLES as QIIME2_FILTERMOCK } from "${projectDir}/modules/local/qiime2_filtersamples.nf"
-include { QIIME2_EXPORT_ABSOLUTE } from "${projectDir}/modules/local/qiime2_export_absolute.nf"
+include { QIIME2_EXPORT_ABSOLUTE as QIIME2_EXPORT_ABSOLUTE; QIIME2_EXPORT_ABSOLUTE as QIIME2_EXPORT_ABSOLUTE_CORE  } from "${projectDir}/modules/local/qiime2_export_absolute.nf"
 
 workflow {
     ord_ioi = ORDERIOI(ioi_ch, metadata_ch, ord_ioi_ch)
+                
+            
+        //TODO update these values and reference them for downstream processes
+        CLEANUPRAWTSV(raw_tsv_table_ch)
+        raw_tsv_table = CLEANUPRAWTSV.out.raw_table_tsv
+        raw_mba_table = CLEANUPRAWTSV.out.raw_MbA_table_tsv
+
+        CLEANUPRAWQZA(raw_biom_table_ch)
+        raw_qza_table = CLEANUPRAWQZA.out.raw_table_qza
+
+        filtered_qza_table = CLEANUPRAWQZA.out.raw_table_qza
+        filtered_tsv_table = CLEANUPRAWTSV.out.raw_table_tsv
+            
+        if(params.controls){
+            filtered_table = FILTERNEGATIVECONTROL(input_ch, raw_tsv_table, controls_ch, metadata_ch, contam_script_ch)
+            tsv_map_1 = FILTERNEGATIVECONTROL.out.filtered_table_biom.map{
+                it ->  [ [id: "Filtered-NC-Biom"], it ]
+            }
+
+            TSVTOQZA(tsv_map_1, metadata_ch)
+
+            qza_filt_table = TSVTOQZA.out.qza.map{it.last()}
+
+            QIIME2_FILTERNC(metadata_ch, qza_filt_table, nc_val_ch, ioi_ch)
+
+            filtered_qza_table = QIIME2_FILTERNC.out.qza
+            QIIME2_EXPORT_ABSOLUTE(QIIME2_FILTERNC.out.qza)
+            filtered_tsv_table = QIIME2_EXPORT_ABSOLUTE.out.tsv
+        }
+
+        if(params.mock){
+            QIIME2_FILTERMOCK(metadata_ch, filtered_qza_table, mock_val_ch, ioi_ch)
+            QIIME2_EXPORT_ABSOLUTE(QIIME2_FILTERMOCK.out.qza)
+            filtered_qza_table = QIIME2_FILTERMOCK.out.qza
+            filtered_tsv_table = QIIME2_EXPORT_ABSOLUTE.out.tsv
+        }
+
+        if(params.srs){
+
+            //if not NC and not Mock filtered_tsv_table should be same as raw table
+            //TODO test this
+            SRSCURVE(filtered_qza_table, filtered_tsv_table, srs_curve_ch, srs_min_max_ch)
+            //if not NC and not Mock filtered_tsv_table should be same as raw table
+            //TODO test this
+            SRSNORMALIZE(filtered_tsv_table, SRSCURVE.out.min_val, params.rare)
+
+            tsv_map_2 = SRSNORMALIZE.out.biom_normalized.map{
+                it ->  [ [id: "SRS-Normalized-Biom"], it ]
+            }
+
+            TSVTOQZA2(tsv_map_2, metadata_ch)
+
+            // what we will want to use for most analysis
+            norm_qza_table = TSVTOQZA2.out.qza.map{it.last()}
+            norm_tsv_table = SRSNORMALIZE.out.tsv_normalized
+
+        }
+
+        
+        tax_qza = REFORMATANDQZATAX(input_ch)
+            
+        graphlan_biom = GENERATEBIOMFORGRAPHLAN(metadata_ch, ioi_ch, input_ch, filter_samples_ch, tax_qza, filtered_qza_table)
+
+            
+        COREMETRICPYTHON(metadata_ch, filtered_qza_table, norm_qza_table, rooted_tree_ch, rare_val_ch)
+        norm_qza_table = COREMETRICPYTHON.out.rare_table
+        QIIME2_EXPORT_ABSOLUTE_CORE(COREMETRICPYTHON.out.rare_table)
+        norm_tsv_table = QIIME2_EXPORT_ABSOLUTE_CORE.out.tsv
+
+            
+        //TODO update these downstream processes
+        
+        /*
+        REPORT01BARPLOT(input_ch, metadata_ch, report_one_ch, ioi_ch, SRSNORMALIZE.out.tsv_normalized, tsv_table)
+        graphlan_dir = RUNGRAPHLAN(metadata_ch, ioi_ch, tax_qza, graph_sh_ch, graphlan_biom)
+        REPORT02GRAPHLANPHYLOGENETICTREE(graphlan_dir, ioi_ch, report_two_ch, report_two_local_ch)
+        REPORT03HEATMAP(input_ch, COREMETRICPYTHON.out.rare_table, tax_qza, metadata_ch, report_three_ch, ioi_ch, ord_ioi)
+        REPORT04ALPHATABLE(QZATOTSV.out.vector, ioi_ch, report_four_ch)
+        REPORT05ALPHABOXPLOT(QZATOTSV.out.vector, ioi_ch, ord_ioi, metadata_ch, report_five_ch)
+        REPORT06ORDINATION(COREMETRICPYTHON.out.rare_table, input_ch, ioi_ch, ord_ioi, report_six_ch, tax_qza, metadata_ch, COREMETRICPYTHON.out.pcoa, COREMETRICPYTHON.out.vector)
+        REPORT06BNMDSORDINATION(COREMETRICPYTHON.out.rare_table, input_ch, ioi_ch, ord_ioi, report_six_b_ch, tax_qza, metadata_ch, COREMETRICPYTHON.out.pcoa, COREMETRICPYTHON.out.vector)
+        //TODO update this curve to SRS Curve
+        if (!params.srs){
+            GENERATERAREFACTIONCURVE(metadata_ch, qza_table, input_ch, count_minmax_ch, rare_val_ch, FILTERNEGATIVECONTROL.out.filtered_table_tsv)
+            REPORT07RAREFACTION(ioi_ch,ord_ioi,input_ch, report_seven_ch, GENERATERAREFACTIONCURVE.out.rareVector, metadata_ch)
+        }
+        REPORT08RANKEDABUNDANCE(COREMETRICPYTHON.out.rare_table,input_ch, ioi_ch, ord_ioi, report_eight_ch, tax_qza, metadata_ch)
+        REPORT09UNIFRACHEATMAP(ioi_ch, ord_ioi, metadata_ch, COREMETRICPYTHON.out.distance, report_nine_ch)
+        UNCOMPRESSDIVMATS(COREMETRICPYTHON.out.distance, uncompress_script_ch)
+        GENERATEUNIFRAC(COREMETRICPYTHON.out.distance, metadata_ch, ioi_ch)
+        REPORT10BETABOXPLOT(ioi_ch,ord_ioi,metadata_ch,input_ch, report_ten_ch, GENERATEUNIFRAC.out.pairwise)
+        REPORT11UPGMA( COREMETRICPYTHON.out.rare_table, input_ch, ioi_ch, ord_ioi, tax_qza, metadata_ch, report_eleven_ch)
+        REPORT12PERMANOVA(COREMETRICPYTHON.out.rare_table, input_ch, ioi_ch, ord_ioi, tax_qza, metadata_ch, COREMETRICPYTHON.out.distance, report_twelve_ch)
+        LEFSEFORMAT(ioi_ch, qza_table, input_ch, tax_qza, metadata_ch, qiime_to_lefse_ch)
+        lefse_dir = LEFSEANALYSIS(LEFSEFORMAT.out.combos,lefse_analysis_ch, plot_clado_file_ch, plot_res_file_ch)
+        REPORT13LEFSE(lefse_dir, report_thirteen_ch, report_thirteen_local_ch, ioi_ch, ord_ioi)
+        REPORT14CITATIONS(report_fourteen_ch)
+        */
+
+    /*
     if (params.srs){
         if (params.controls) {
             //TODO update these values and reference them for downstream processes
@@ -87,17 +188,12 @@ workflow {
             filtered_qza_table = []
             filtered_tsv_table = []
 
-    
             CLEANUPRAWTSV(raw_tsv_table_ch)
             raw_tsv_table = CLEANUPRAWTSV.out.raw_table_tsv
             raw_mba_table = CLEANUPRAWTSV.out.raw_MbA_table_tsv
 
             CLEANUPRAWQZA(raw_biom_table_ch)
             raw_qza_table = CLEANUPRAWQZA.out.raw_table_qza
-
-            raw_tsv_table.view()
-            raw_mba_table.view()
-            raw_qza_table.view()
 
             filtered_table = FILTERNEGATIVECONTROL(input_ch, controls_ch, metadata_ch, contam_script_ch)
 
@@ -288,7 +384,7 @@ workflow {
         }
 
     }
-    
+    */
 }
 
 process CLEANUPRAWTSV{
@@ -366,6 +462,7 @@ process FILTERNEGATIVECONTROL{
 
     input:
     path 'results'
+    path 'feature-table.tsv'
     path controls
     path "metadata.tsv"
     path control_script
@@ -456,8 +553,8 @@ process COREMETRICPYTHON{
 
     file 'metadata.tsv'
     file 'table.qza'
-    path 'results'
-    path 'count_table_minmax_reads.py'
+    file table
+    path 'rooted-tree.qza'
     val rare_val
     
 
@@ -470,7 +567,7 @@ process COREMETRICPYTHON{
     path("diversity_core/rarefied_table.qza"), emit: rare_table
 
     script:
-
+    def table = table.name != 'NO_FILE' ? "$table" : ''
     """
     #!/usr/bin/env python3
 
@@ -483,15 +580,18 @@ process COREMETRICPYTHON{
     import warnings
     import os
 
+    if(os.path.exists($table):
+        print("$table exists")
+    else: 
+        unrarefied_table = Artifact.load('table.qza')
+
     os.mkdir("diversity_core")
 
     warnings.filterwarnings('ignore')
 
     metadata = Metadata.load('metadata.tsv')
 
-    unrarefied_table = Artifact.load('table.qza')
-
-    rooted_tree = Artifact.load('results/qiime2/phylogenetic_tree/rooted-tree.qza')
+    rooted_tree = Artifact.load('rooted-tree.qza')
 
     # if the default value aka use count_table_minmax_reads
     if $rare_val == 0:
@@ -563,17 +663,15 @@ process SRSNORMALIZE{
     input:
 
     file table
-    path "results"
     val srs_min
     val rare_val
-    
     
     output:
     path("*.tsv"), emit: tsv_normalized
     path("*.biom"), emit: biom_normalized
     
     script:
-    def table = table.name != 'NO_FILE' ? "$table" : ''
+    //def table = table.name != 'NO_FILE' ? "$table" : ''
     """
     #!/usr/bin/env Rscript
 
@@ -583,17 +681,18 @@ process SRSNORMALIZE{
     library(biomformat)
 
     #read in table from either decontam or results/qiime2/abundance_tables/feature-table.tsv
+    un_rare_tab <- read.table('$table')
 
-    if(file.exists('$table')){
-        # Yes NC and/or Yes Mock and Yes SRS
-        print("using contam-filtered-table/mock filtered table")
-        un_rare_tab <- read.table('$table')
-    } else {
-        # No NC and No Mock and Yes SRS
-        print("using qiime unfiltered table")
-        un_rare_tab <- read_q2biom("results/qiime2/abundance_tables/feature-table.biom")
-        un_rare_tab <- data.frame(un_rare_tab)
-    }
+    # if(file.exists('$table')){
+    #     # Yes NC and/or Yes Mock and Yes SRS
+    #     print("using contam-filtered-table/mock filtered table")
+    #     un_rare_tab <- read.table('$table')
+    # } else {
+    #     # No NC and No Mock and Yes SRS
+    #     print("using qiime unfiltered table")
+    #     un_rare_tab <- read_q2biom("results/qiime2/abundance_tables/feature-table.biom")
+    #     un_rare_tab <- data.frame(un_rare_tab)
+    # }
 
     if(file.exists('$srs_min')){
         srs_min <- as.numeric(readLines('$srs_min'))
@@ -799,18 +898,18 @@ process GENERATEBIOMFORGRAPHLAN{
     //container "docker://lorentzb/automate_16_nf:2.0"
 
     input:
+
     file metadata 
     val ioi 
     path 'results'
     file "filter_samples.py" 
     file "taxonomy.qza"
-    file table
+    file "feature-table.qza"
     
 
     output:
     
     path "biom_tabs/*" 
-    file "feature-table.qza"
     
 
     //TODO add these labels back in
@@ -819,7 +918,6 @@ process GENERATEBIOMFORGRAPHLAN{
     //TODO update code below to just accept the feature table
 
     script:
-    def table = table.name != 'NO_FILE' ? "$table" : ''
     """
     #!/usr/bin/env python3
     import subprocess
@@ -836,15 +934,6 @@ process GENERATEBIOMFORGRAPHLAN{
 
     subprocess.run(['mkdir phylo_trees'], shell=True)
     subprocess.run(['mkdir biom_tabs'], shell=True)
-
-    if not os.path.isfile("feature-table.qza"):
-        create_qza_command = "qiime tools import \
-        --input-path results/qiime2/abundance_tables/feature-table.biom \
-        --type 'FeatureTable[Frequency]' \
-        --input-format BIOMV210Format \
-        --output-path feature-table.qza"
-        result = subprocess.run([create_qza_command], shell=True)
-    
 
     # iterates over the items of interest to produce a circular phylogenetic tree per category e.g. CONTROL TREATMENT
     for item in ioi_set:
@@ -1208,7 +1297,6 @@ process SRSCURVE{
     input:
     file 'table.qza'
     file 'table.tsv'
-    path 'results'
     file 'srs_curve.rmd'
     file 'my_count_table_min_max.py'
     

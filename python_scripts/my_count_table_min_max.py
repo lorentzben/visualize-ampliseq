@@ -5,10 +5,9 @@ import sys
 import warnings
 import os
   
-if os.path.exists("table.tsv"):
-    uncompress_table='table.tsv'            
-else:
-    uncompress_table='results/qiime2/abundance_tables/feature-table.tsv'
+
+uncompress_table='table.tsv'            
+
 
 # adapted from count_table_minmax_reads.py @author Daniel Straub
 # collected from nf-core/ampliseq
