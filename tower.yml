@@ -1,5 +1,5 @@
 reports:
-    "**/order_item_of_interest.csv":
+    "ordered-ioi/order_item_of_interest.csv":
         display: "Ordered Item of Interest"
 
 #reports:
