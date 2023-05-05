@@ -1,5 +1,7 @@
 #!/usr/bin/env nextflow
 
+WorkflowVisualizeAmpliseq.initialise(params, log)
+
 // Input 
 
 if (params.input){
@@ -63,7 +65,7 @@ include { QIIME2_EXPORT_ABSOLUTE as QIIME2_EXPORT_ABSOLUTE_NC; QIIME2_EXPORT_ABS
 //Not sure how to use this, but it's here
 def summary_params = NfcoreSchema.paramsSummaryMap(workflow, params)
 
-workflow VISUALIZEAMPLISEQ{
+workflow VISUALIZEAMPLISEQ {
     //TODO see if this breaks it
     ORDERIOI(ioi_ch, metadata_ch, ord_ioi_ch
     ).ordered_ioi.set{ ord_ioi_ch }
