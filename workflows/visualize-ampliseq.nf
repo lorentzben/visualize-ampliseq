@@ -36,7 +36,7 @@ if(params.rare){
     rare_val_ch = Channel.of(params.rare)
 } else { rare_val_ch = Channel.of(0)}
 
-if(params.control){
+if(params.controls){
     controls_ch = Channel.fromPath(params.controls, checkIfExists:false)
 } else { controls_ch = Channel.empty() }
 
@@ -60,9 +60,6 @@ include { TSVTOQZA; TSVTOQZA as TSVTOQZA2 } from "${projectDir}/modules/local/ts
 include { QIIME2_FILTERSAMPLES as QIIME2_FILTERNC; QIIME2_FILTERSAMPLES as QIIME2_FILTERMOCK } from "${projectDir}/modules/local/qiime2_filtersamples.nf"
 include { QIIME2_EXPORT_ABSOLUTE as QIIME2_EXPORT_ABSOLUTE_NC; QIIME2_EXPORT_ABSOLUTE as QIIME2_EXPORT_ABSOLUTE_MOCK; QIIME2_EXPORT_ABSOLUTE as QIIME2_EXPORT_ABSOLUTE_CORE  } from "${projectDir}/modules/local/qiime2_export_absolute.nf"
 
-
-//Not sure how to use this, but it's here
-def summary_params = NfcoreSchema.paramsSummaryMap(workflow, params)
 
 workflow VISUALIZEAMPLISEQ {
     //TODO see if this breaks it
