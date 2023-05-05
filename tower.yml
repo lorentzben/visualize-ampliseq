@@ -1,0 +1,8 @@
+reports:
+    "**/order_item_of_interest.csv":
+        display: "Ordered Item of Interest"
+
+#reports:
+#    <path pattern>:
+#        display: text to display (required)
+#        mimeType: file mime type (optional) 
