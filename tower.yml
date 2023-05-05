@@ -1,6 +1,8 @@
 reports:
-    "order_item_of_interest.csv":
-        display: "Ordered Item of Interest"
+  "**/order_item_of_interest.csv":
+    display: "Ordered Item of Interest"
+  pipeline_info/**:
+    display: "Pipeline run info"
 
 #reports:
 #    <path pattern>:
