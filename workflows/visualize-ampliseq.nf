@@ -103,7 +103,7 @@ workflow VISUALIZEAMPLISEQ {
     } 
 
     if(params.mock){
-        if (ch_filtered_qza_table.ifEmpty()){
+        if (!ch_filtered_qza_table){
             QIIME2_FILTERMOCK(metadata_ch, ch_raw_qza_table, mock_val_ch, ioi_ch
             ).qza.set { ch_filtered_qza_table }
             QIIME2_EXPORT_ABSOLUTE_MOCK(QIIME2_FILTERMOCK.out.qza
