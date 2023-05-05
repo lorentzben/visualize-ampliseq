@@ -93,7 +93,7 @@ workflow {
         filtered_tsv_table = CLEANUPRAWTSV.out.raw_table_tsv
             
         if(params.controls){
-            filtered_table = FILTERNEGATIVECONTROL(input_ch, raw_tsv_table, controls_ch, metadata_ch, contam_script_ch)
+            filtered_table = FILTERNEGATIVECONTROL(input_ch, raw_tsv_table, controls_ch, metadata_ch, contam_script_ch, nc_val_ch)
             tsv_map_1 = FILTERNEGATIVECONTROL.out.filtered_table_biom.map{
                 it ->  [ [id: "Filtered-NC-Biom"], it ]
             }
@@ -466,6 +466,7 @@ process FILTERNEGATIVECONTROL{
     path controls
     path "metadata.tsv"
     path control_script
+    path "nc_name.txt"
  
 
     output:

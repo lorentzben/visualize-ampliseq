@@ -15,15 +15,18 @@ rooted_tree <- "results/qiime2/phylogenetic_tree/rooted-tree.qza"
 taxonomy_file <- "results/qiime2/input/taxonomy.qza"
 metadata_file <- "metadata.tsv"
 
+control_name <- read.table("nc_name.txt")
+
 #format metadata in phyloseq compatable
 metadata<- read_q2metadata(metadata_file)
 metadata <- metadata %>% remove_rownames %>% column_to_rownames(var="SampleID")
 metadata_ps <- sample_data(metadata)
 
 # format ASV table into phyloseq compatable
-table <- data.frame(read_tsv(table_dada2,skip=1))
-rownames(table) <- table$"X.OTU.ID"
-table <- table %>% select(-c("X.OTU.ID"))
+table <- data.frame(read.table(table_dada2,sep='\t'))
+#Depricated when using formatted table
+#rownames(table) <- table$"X.OTU.ID"
+#able <- table %>% select(-c("X.OTU.ID"))
 table_ps <- otu_table(table, taxa_are_rows=T)
 
 # format the taxonomy data into phylsoeq compatable
@@ -38,7 +41,8 @@ tree <- tree_obj$data
 ps <- phyloseq(table_ps, tax_ps, tree, metadata_ps)
 
 # add a variable for negative control samples, update list if needed
-sample_data(ps)$is.neg <- sample_data(ps)$Treatment %in% c("NC","Control","Negative Control","control","negative control")
+#sample_data(ps)$is.neg <- sample_data(ps)$Treatment %in% c("NC","Control","Negative Control","control","negative control")
+sample_data(ps)$is.neg <- sample_data(ps)$Treatment %in% control_name
 
 # identify the possible contaminats based on 0.5 
 # In the prevalence test there is a special value worth knowing, threshold=0.5, 
