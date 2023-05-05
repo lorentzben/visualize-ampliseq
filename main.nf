@@ -87,7 +87,7 @@ workflow VISUALIZE_AMPLISEQ{
     VISUALIZEAMPLISEQ()
 }
 
-workflow{
+workflow {
     VISUALIZE_AMPLISEQ()
 
 
