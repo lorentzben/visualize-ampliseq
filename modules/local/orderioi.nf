@@ -14,7 +14,7 @@ process ORDERIOI{
 
     output:
 
-    file ('order_item_of_interest.csv'), emit: ordered_ioi
+    path ('order_item_of_interest.csv'), emit: ordered_ioi
 
     when:
     task.ext.when == null || task.ext.when
