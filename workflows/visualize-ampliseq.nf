@@ -42,6 +42,7 @@ if(params.rare){
 
 if(params.controls){
     controls_ch = Channel.fromPath(params.controls, checkIfExists:false)
+    contam_script_ch = Channel.fromPath("${projectDir}/r_scripts/contam_script.r")
 } else { controls_ch = Channel.empty() }
 
 if(params.negative){
@@ -80,4 +81,38 @@ workflow VISUALIZEAMPLISEQ {
     CLEANUPRAWQZA(raw_biom_table_ch
     ).raw_table_qza.set { ch_raw_qza_table }
 
+    ch_filtered_qza_table = Channel.empty()
+    ch_filtered_tsv_table = Channel.empty()
+
+    if(params.controls){
+        filtered_table = FILTERNEGATIVECONTROL(input_ch, ch_raw_tsv_table, controls_ch, metadata_ch, contam_script_ch, nc_val_ch)
+        tsv_map_1 = FILTERNEGATIVECONTROL.out.filtered_table_biom.map{
+            it ->  [ [id: "Filtered-NC-Biom"], it ]
+        }
+
+        TSVTOQZA(tsv_map_1, metadata_ch
+        ).qza.map{it.last()}.set{ ch_qza_filt_table }
+
+        QIIME2_FILTERNC(metadata_ch, ch_qza_filt_table, nc_val_ch, ioi_ch
+        ).qza.set{ ch_filtered_qza_table }
+
+        QIIME2_EXPORT_ABSOLUTE_NC(QIIME2_FILTERNC.out.qza
+        ).tsv.set { ch_filtered_tsv_table }
+    
+    } 
+
+    if(params.mock){
+        if (ch_filtered_qza_table.ifEmpty()){
+            QIIME2_FILTERMOCK(metadata_ch, ch_raw_qza_table, mock_val_ch, ioi_ch
+            ).qza.set { ch_filtered_qza_table }
+            QIIME2_EXPORT_ABSOLUTE_MOCK(QIIME2_FILTERMOCK.out.qza
+            ).tsv.set { ch_filtered_tsv_table }
+        } else {
+            QIIME2_FILTERMOCK(metadata_ch, ch_filtered_qza_table, mock_val_ch, ioi_ch
+            ).qza.set { ch_filtered_qza_table }
+            QIIME2_EXPORT_ABSOLUTE_MOCK(QIIME2_FILTERMOCK.out.qza
+            ).tsv.set { ch_filtered_tsv_table }
+        }
+
+    }
 }
