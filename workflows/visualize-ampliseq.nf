@@ -73,11 +73,11 @@ workflow VISUALIZEAMPLISEQ {
     ).ordered_ioi.set{ ord_ioi_ch }
 
     CLEANUPRAWTSV(raw_tsv_table_ch
-    ).out.raw_table_tsv.set { ch_raw_tsv_table }
+    ).raw_table_tsv.set { ch_raw_tsv_table }
 
     raw_mba_table = CLEANUPRAWTSV.out.raw_MbA_table_tsv
 
     CLEANUPRAWQZA(raw_biom_table_ch
-    ).out.raw_table_qza.set { ch_raw_qza_table }
+    ).raw_table_qza.set { ch_raw_qza_table }
 
 }
