@@ -479,7 +479,7 @@ process FILTERNEGATIVECONTROL{
     '''
     #!/usr/bin/env bash
 
-    echo ${nc} > nc_name.txt
+    echo !{nc} > nc_name.txt
     Rscript contam_script.r
 
     '''
