@@ -79,7 +79,6 @@ include { QIIME2_FILTERSAMPLES as QIIME2_FILTERNC; QIIME2_FILTERSAMPLES as QIIME
 include { QIIME2_EXPORT_ABSOLUTE as QIIME2_EXPORT_ABSOLUTE_NC; QIIME2_EXPORT_ABSOLUTE as QIIME2_EXPORT_ABSOLUTE_MOCK; QIIME2_EXPORT_ABSOLUTE as QIIME2_EXPORT_ABSOLUTE_CORE  } from "${projectDir}/modules/local/qiime2_export_absolute.nf"
 */
 
-WorkflowMain.initialise(workflow, params, log)
 
 include { VISUALIZEAMPLISEQ } from "${projectDir}/workflows/visualize-ampliseq.nf"
 
