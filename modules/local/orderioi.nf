@@ -16,7 +16,12 @@ process ORDERIOI{
 
     file ('order_item_of_interest.csv'), emit: ordered_ioi
 
+    when:
+    task.ext.when == null || task.ext.when
+
     script:
+
+    def args = task.ext.args ?: ''
 
     """
     #!/usr/bin/env python3
