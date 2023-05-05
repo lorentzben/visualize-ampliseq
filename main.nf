@@ -466,7 +466,7 @@ process FILTERNEGATIVECONTROL{
     path controls
     path "metadata.tsv"
     path control_script
-    path "nc_name.txt"
+    val  nc
  
 
     output:
@@ -479,6 +479,7 @@ process FILTERNEGATIVECONTROL{
     '''
     #!/usr/bin/env bash
 
+    echo ${nc} > nc_name.txt
     Rscript contam_script.r
 
     '''
