@@ -1,6 +1,5 @@
 #!/usr/bin/env nextflow
 
-WorkflowVisualizeAmpliseq.initialise(params, log)
 
 // Input 
 
