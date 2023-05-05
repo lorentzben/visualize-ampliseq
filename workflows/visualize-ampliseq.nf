@@ -100,8 +100,8 @@ workflow VISUALIZEAMPLISEQ {
         QIIME2_EXPORT_ABSOLUTE_NC(QIIME2_FILTERNC.out.qza
         ).tsv.set { ch_filtered_tsv_table }
 
-        ch_filtered_tsv_table.view()
-        ch_filtered_qza_table.view()
+        //ch_filtered_tsv_table.view()
+        //ch_filtered_qza_table.view()
     
     } 
 
@@ -118,8 +118,8 @@ workflow VISUALIZEAMPLISEQ {
             ).tsv.set { ch_filtered_tsv_table }
         }
 
-        ch_filtered_tsv_table.view()
-        ch_filtered_qza_table.view()
+        //ch_filtered_tsv_table.view()
+        //ch_filtered_qza_table.view()
 
     }
 }
