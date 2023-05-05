@@ -7,7 +7,7 @@ if (params.input){
     input_ch = Channel.fromPath(params.input, checkIfExists: true)
     raw_tsv_table_ch = Channel.fromPath(params.input+"/qiime2/abundance_tables/feature-table.tsv", checkIfExists: true)
     raw_biom_table_ch = Channel.fromPath(params.input+"/qiime2/abundance_tables/feature-table.biom", checkIfExists: true)
-    rooted_tree_ch = Channel.fromPath(params.input+"results/qiime2/phylogenetic_tree/rooted-tree.qza", checkIfExists: true)
+    rooted_tree_ch = Channel.fromPath(params.input+"/qiime2/phylogenetic_tree/rooted-tree.qza", checkIfExists: true)
     
 } else {
     log.error "Ampliseq input is required: please check params"
