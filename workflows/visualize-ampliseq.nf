@@ -98,7 +98,6 @@ workflow VISUALIZEAMPLISEQ {
     ch_normalized_qza = Channel.empty()
     ch_normalized_tsv = Channel.empty()
 
-    ch_filtered_tsv_table.view()
 
     if(params.controls){
         filtered_table = FILTERNEGATIVECONTROL(input_ch, ch_raw_tsv_table, controls_ch, metadata_ch, contam_script_ch, nc_val_ch)
@@ -119,10 +118,6 @@ workflow VISUALIZEAMPLISEQ {
 
         CLEANUPFILTTSV.out.raw_table_tsv.set { ch_filtered_tsv_table }
         
-        print("setting nc table to filtered!")
-        ch_filtered_tsv_table.view()
-        
-        
     } 
 
     if(params.mock){
@@ -137,9 +132,6 @@ workflow VISUALIZEAMPLISEQ {
         CLEANUPFILTMOCKTSV( ch_messy_filtered_tsv_table )
 
         CLEANUPFILTMOCKTSV.out.raw_table_tsv.set { ch_filtered_tsv_table }
-        
-        print("setting filtered to Mock!")
-        ch_filtered_tsv_table.view()
         
     }
 
@@ -160,15 +152,18 @@ workflow VISUALIZEAMPLISEQ {
         TSVTOQZA2(tsv_map_2, metadata_ch
             ).qza.map{it.last()}.set{ch_normalized_qza}
         
-        print("setting filtered to SRS")
-        ch_filtered_tsv_table.view()
+        
         
     } else{
         print("no normalization with SRS")
     }
 
-    print('final table')
-    ch_filtered_tsv_table.view()
+
+    final_table_tsv = ch_normalized_tsv.ifEmpty(ch_filtered_tsv_table.ifEmpty(ch_raw_tsv_table))
+    final_table_qza = ch_normalized_qza.ifEmpty(ch_filtered_qza_table.ifEmpty(ch_raw_qza_table))
+    
+    final_table_tsv.view()
+    final_table_qza.view()
 }
 
     
