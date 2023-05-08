@@ -119,6 +119,7 @@ workflow VISUALIZEAMPLISEQ {
 
         CLEANUPFILTTSV.out.raw_table_tsv.set { ch_filtered_tsv_table }
         
+        print("setting nc table to filtered!")
         ch_filtered_tsv_table.view()
         
         
@@ -137,6 +138,7 @@ workflow VISUALIZEAMPLISEQ {
 
         CLEANUPFILTMOCKTSV.out.raw_table_tsv.set { ch_filtered_tsv_table }
         
+        print("setting filtered to Mock!")
         ch_filtered_tsv_table.view()
         
     }
@@ -158,12 +160,14 @@ workflow VISUALIZEAMPLISEQ {
         TSVTOQZA2(tsv_map_2, metadata_ch
             ).qza.map{it.last()}.set{ch_normalized_qza}
         
+        print("setting filtered to SRS")
         ch_filtered_tsv_table.view()
         
     } else{
         print("no normalization with SRS")
     }
 
+    print('final table')
     ch_filtered_tsv_table.view()
 }
 
