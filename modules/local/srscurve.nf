@@ -1,5 +1,5 @@
 process SRSCURVE{
-    
+
     //tag "$table"
     label 'process_low'
 
@@ -12,7 +12,7 @@ process SRSCURVE{
     path('table.qza')
     path('table.tsv')
     path('srs_curve.rmd')
-    path()'my_count_table_min_max.py')
+    path('my_count_table_min_max.py')
     
 
     output:
