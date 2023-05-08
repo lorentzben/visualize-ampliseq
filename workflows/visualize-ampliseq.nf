@@ -86,10 +86,12 @@ workflow VISUALIZEAMPLISEQ {
 
     CLEANUPRAWTSV.out.raw_table_tsv.set { ch_raw_tsv_table }
 
-    ch_raw_tsv_table.view()
+    CLEANUPRAWTSV.out.view()
+    
+    //ch_raw_tsv_table.view()
     raw_mba_table = CLEANUPRAWTSV.out.raw_MbA_table_tsv
 
-    raw_mba_table.view()
+    //raw_mba_table.view()
 
     CLEANUPRAWQZA(raw_biom_table_ch
     ).raw_table_qza.set { ch_raw_qza_table }
@@ -151,8 +153,8 @@ workflow VISUALIZEAMPLISEQ {
         srs_in_qza = ch_filtered_qza_table.ifEmpty(ch_raw_qza_table)
 
         srs_in_tsv.view()
-        ch_filtered_tsv_table.view()
-        ch_raw_tsv_table.view()
+        //ch_filtered_tsv_table.view()
+        //ch_raw_tsv_table.view()
 
         SRSCURVE(srs_in_qza, srs_in_tsv, srs_curve_ch, srs_min_max_ch)
 
