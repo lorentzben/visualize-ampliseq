@@ -67,7 +67,7 @@ if(params.srs) {
 / Import Modules
 */
 include { ORDERIOI } from "${projectDir}/modules/local/orderioi.nf"
-include { CLEANUPRAWTSV; CLEANUPRAWTSV as CLEANUPFILTTSV;CLEANUPRAWTSV as CLEANUPFILTSRSTSV } from "${projectDir}/modules/local/cleanuprawtsv.nf"
+include { CLEANUPRAWTSV; CLEANUPRAWTSV as CLEANUPFILTTSV; CLEANUPRAWTSV as CLEANUPFILTMOCKTSV; CLEANUPRAWTSV as CLEANUPFILTSRSTSV } from "${projectDir}/modules/local/cleanuprawtsv.nf"
 include { CLEANUPRAWQZA } from "${projectDir}/modules/local/cleanuprawqza.nf"
 include { TSVTOQZA; TSVTOQZA as TSVTOQZA2 } from "${projectDir}/modules/local/tsvtoqza.nf"
 include { FILTERNEGATIVECONTROL } from "${projectDir}/modules/local/filternegativecontrol.nf"
@@ -127,35 +127,20 @@ workflow VISUALIZEAMPLISEQ {
     } 
 
     if(params.mock){
-        if (!ch_filtered_qza_table){
-            //TODO test this (just Mock no NC)
-            print("no filtered table No NC!")
-            QIIME2_FILTERMOCK(metadata_ch, ch_raw_qza_table, mock_val_ch, ioi_ch
+        mock_in_tsv = ch_filtered_tsv_table.ifEmpty(ch_raw_tsv_table)
+        mock_in_qza = ch_filtered_qza_table.ifEmpty(ch_raw_qza_table)
+
+        QIIME2_FILTERMOCK(metadata_ch, mock_in_qza, mock_val_ch, ioi_ch
             ).qza.set { ch_filtered_qza_table }
-            QIIME2_EXPORT_ABSOLUTE_MOCK(QIIME2_FILTERMOCK.out.qza
+        QIIME2_EXPORT_ABSOLUTE_MOCK(QIIME2_FILTERMOCK.out.qza
             ).tsv.set { ch_messy_filtered_tsv_table }
 
-            CLEANUPFILTTSV( ch_messy_filtered_tsv_table )
+        CLEANUPFILTMOCKTSV( ch_messy_filtered_tsv_table )
 
-            CLEANUPFILTTSV.out.raw_table_tsv.set { ch_filtered_tsv_table }
-            print("clean filt mock tsv: ")
-            CLEANUPFILTTSV.out.raw_table_tsv.view()
-
-        } else {
-            print("there is a filtered qza table: (NC was used)")
-            QIIME2_FILTERMOCK(metadata_ch, ch_filtered_qza_table, mock_val_ch, ioi_ch
-            ).qza.set { ch_filtered_qza_table }
-            QIIME2_EXPORT_ABSOLUTE_MOCK(QIIME2_FILTERMOCK.out.qza
-            ).tsv.set { ch_messy_filtered_tsv_table }
-
-            CLEANUPFILTTSV( ch_messy_filtered_tsv_table )
-
-            CLEANUPFILTTSV.out.raw_table_tsv.set { ch_filtered_tsv_table }
-            print("clean filt mock tsv: ")
-            CLEANUPFILTTSV.out.raw_table_tsv.view()
-        }
-
-       
+        CLEANUPFILTMOCKTSV.out.raw_table_tsv.set { ch_filtered_tsv_table }
+        print("clean filt mock tsv: ")
+        CLEANUPFILTMOCKTSV.out.raw_table_tsv.view()
+        
     }
 
     if(srs){
