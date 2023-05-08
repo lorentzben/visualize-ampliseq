@@ -55,7 +55,13 @@ if(params.mock){
 
 if(params.srs) {
     srs = true
-} else { srs = false }
+    srs_curve_ch = Channel.fromPath("${projectDir}/r_scripts/srs_curve.rmd")
+    srs_min_max_ch = Channel.fromPath("${projectDir}/python_scripts/my_count_table_min_max.py")
+} else { 
+    srs = false
+    srs_curve_ch = Channel.empty()
+    srs_min_max_ch = Channel.empty()
+}
 
 /*
 / Import Modules
@@ -67,6 +73,7 @@ include { TSVTOQZA; TSVTOQZA as TSVTOQZA2 } from "${projectDir}/modules/local/ts
 include { FILTERNEGATIVECONTROL } from "${projectDir}/modules/local/filternegativecontrol.nf"
 include { QIIME2_FILTERSAMPLES as QIIME2_FILTERNC; QIIME2_FILTERSAMPLES as QIIME2_FILTERMOCK } from "${projectDir}/modules/local/qiime2_filtersamples.nf"
 include { QIIME2_EXPORT_ABSOLUTE as QIIME2_EXPORT_ABSOLUTE_NC; QIIME2_EXPORT_ABSOLUTE as QIIME2_EXPORT_ABSOLUTE_MOCK; QIIME2_EXPORT_ABSOLUTE as QIIME2_EXPORT_ABSOLUTE_CORE  } from "${projectDir}/modules/local/qiime2_export_absolute.nf"
+include { SRSCURVE } from "${projectDir}/modules/local/srscurve.nf"
 
 
 workflow VISUALIZEAMPLISEQ {
@@ -84,6 +91,8 @@ workflow VISUALIZEAMPLISEQ {
 
     ch_filtered_qza_table = Channel.empty()
     ch_filtered_tsv_table = Channel.empty()
+    ch_normalized_qza = Channel.empty()
+    ch_normalized_tsv = Channel.empty()
 
     if(params.controls){
         filtered_table = FILTERNEGATIVECONTROL(input_ch, ch_raw_tsv_table, controls_ch, metadata_ch, contam_script_ch, nc_val_ch)
@@ -112,6 +121,7 @@ workflow VISUALIZEAMPLISEQ {
             QIIME2_EXPORT_ABSOLUTE_MOCK(QIIME2_FILTERMOCK.out.qza
             ).tsv.set { ch_filtered_tsv_table }
         } else {
+            //TODO test this (just Mock no NC)
             QIIME2_FILTERMOCK(metadata_ch, ch_filtered_qza_table, mock_val_ch, ioi_ch
             ).qza.set { ch_filtered_qza_table }
             QIIME2_EXPORT_ABSOLUTE_MOCK(QIIME2_FILTERMOCK.out.qza
@@ -122,9 +132,25 @@ workflow VISUALIZEAMPLISEQ {
         //ch_filtered_qza_table.view()
     }
 
-    if (ch_filtered_tsv_table){
-        print("There is a filtered tsv table")
-    } else {
-        print("There is not a filtered tsv table")
+    if(srs){
+        srs_in_tsv = ch_filtered_tsv_table.ifEmpty(ch_raw_tsv_table)
+        srs_in_qza = ch_filtered_qza_table.ifEmpty(ch_raw_qza_table)
+
+        SRSCURVE(srs_in_qza, srs_in_tsv, srs_curve_ch, srs_min_max_ch)
+
+        SRSNORMALIZE(srs_in_tsv, SRSCURVE.out.min_val, params.rare
+            ).tsv_normalized.set{ch_normalized_tsv}
+
+        tsv_map_2 = SRSNORMALIZE.out.biom_normalized.map{
+                it ->  [ [id: "SRS-Normalized-Biom"], it ]
+        }
+
+        TSVTOQZA2(tsv_map_2, metadata_ch
+            ).qza.map{it.last()}.set{ch_normalized_qza}
+        
+    } else{
+        print("no normalization with SRS")
     }
 }
+
+    
