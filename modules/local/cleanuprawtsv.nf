@@ -34,7 +34,7 @@ process CLEANUPRAWTSV{
     collen <- dim(new_table_df)[2]
     new_table_df <- new_table_df[,2:collen]
     write.table(new_table_df, "raw_table.tsv", row.names=T ,sep='\t')
-
+    system("rm $table")
     """
 
 }

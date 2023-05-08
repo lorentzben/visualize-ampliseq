@@ -87,6 +87,8 @@ workflow VISUALIZEAMPLISEQ {
 
     raw_mba_table = CLEANUPRAWTSV.out.raw_MbA_table_tsv
 
+    raw_mba_table.view()
+
     CLEANUPRAWQZA(raw_biom_table_ch
     ).raw_table_qza.set { ch_raw_qza_table }
 
