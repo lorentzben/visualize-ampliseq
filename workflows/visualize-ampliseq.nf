@@ -82,9 +82,11 @@ workflow VISUALIZEAMPLISEQ {
     ORDERIOI(ioi_ch, metadata_ch, ord_ioi_ch
     ).ordered_ioi.set{ ord_ioi_ch }
 
-    CLEANUPRAWTSV(raw_tsv_table_ch
-    ).raw_table_tsv.set { ch_raw_tsv_table }
+    CLEANUPRAWTSV(raw_tsv_table_ch)
 
+    CLEANUPRAWTSV.out.raw_table_tsv.set { ch_raw_tsv_table }
+
+    ch_raw_tsv_table.view()
     raw_mba_table = CLEANUPRAWTSV.out.raw_MbA_table_tsv
 
     raw_mba_table.view()
@@ -112,8 +114,9 @@ workflow VISUALIZEAMPLISEQ {
         QIIME2_EXPORT_ABSOLUTE_NC(QIIME2_FILTERNC.out.qza
         ).tsv.set { ch_messy_filtered_tsv_table }
 
-        CLEANUPFILTTSV( ch_messy_filtered_tsv_table 
-            ).raw_table_tsv.set { ch_filtered_tsv_table }
+        CLEANUPFILTTSV( ch_messy_filtered_tsv_table )
+
+        CLEANUPFILTTSV.out.raw_table_tsv.set { ch_filtered_tsv_table }
 
         //ch_filtered_tsv_table.view()
         //ch_filtered_qza_table.view()
@@ -126,8 +129,9 @@ workflow VISUALIZEAMPLISEQ {
             QIIME2_EXPORT_ABSOLUTE_MOCK(QIIME2_FILTERMOCK.out.qza
             ).tsv.set { ch_messy_filtered_tsv_table }
 
-            CLEANUPFILTTSV( ch_messy_filtered_tsv_table 
-            ).raw_table_tsv.set { ch_filtered_tsv_table }
+            CLEANUPFILTTSV( ch_messy_filtered_tsv_table )
+
+            CLEANUPFILTTSV.out.raw_table_tsv.set { ch_filtered_tsv_table }
 
         } else {
             //TODO test this (just Mock no NC)
