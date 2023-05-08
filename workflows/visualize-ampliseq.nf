@@ -120,6 +120,11 @@ workflow VISUALIZEAMPLISEQ {
 
         //ch_filtered_tsv_table.view()
         //ch_filtered_qza_table.view()
+    }
 
+    if (ch_filtered_tsv_table){
+        print("There is a filtered tsv table")
+    } else {
+        print("There is not a filtered tsv table")
     }
 }
