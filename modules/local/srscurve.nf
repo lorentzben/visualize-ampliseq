@@ -16,9 +16,10 @@ process SRSCURVE{
     
 
     output:
-    file ("*.pdf"), emit: pdf_report
-    file ("*.html"), emit: html_report
-    file ("*.png"), emit: images 
+
+    path ("*.pdf"), emit: pdf_report
+    path ("*.html"), emit: html_report
+    path ("*.png"), emit: images 
     path("srs_max_curve_val.txt"), emit: max_val
     path("srs_min_curve_val.txt"), emit: min_val
 
