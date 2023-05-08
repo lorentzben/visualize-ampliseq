@@ -86,10 +86,6 @@ workflow VISUALIZEAMPLISEQ {
 
     CLEANUPRAWTSV.out.raw_table_tsv.set{ ch_raw_tsv_table }
 
-    print("raw tsv table: ")
-    CLEANUPRAWTSV.out.raw_table_tsv.view()
-
-    
     raw_mba_table = CLEANUPRAWTSV.out.raw_MbA_table_tsv
 
     
@@ -101,6 +97,8 @@ workflow VISUALIZEAMPLISEQ {
     ch_filtered_tsv_table = Channel.empty()
     ch_normalized_qza = Channel.empty()
     ch_normalized_tsv = Channel.empty()
+
+    ch_filtered_tsv_table.view()
 
     if(params.controls){
         filtered_table = FILTERNEGATIVECONTROL(input_ch, ch_raw_tsv_table, controls_ch, metadata_ch, contam_script_ch, nc_val_ch)
@@ -120,8 +118,8 @@ workflow VISUALIZEAMPLISEQ {
         CLEANUPFILTTSV( ch_messy_filtered_tsv_table )
 
         CLEANUPFILTTSV.out.raw_table_tsv.set { ch_filtered_tsv_table }
-        print("NC cleaned table : ")
-        CLEANUPFILTTSV.out.raw_table_tsv.view()
+        
+        ch_filtered_tsv_table.view()
         
         
     } 
@@ -138,8 +136,8 @@ workflow VISUALIZEAMPLISEQ {
         CLEANUPFILTMOCKTSV( ch_messy_filtered_tsv_table )
 
         CLEANUPFILTMOCKTSV.out.raw_table_tsv.set { ch_filtered_tsv_table }
-        print("clean filt mock tsv: ")
-        CLEANUPFILTMOCKTSV.out.raw_table_tsv.view()
+        
+        ch_filtered_tsv_table.view()
         
     }
 
@@ -147,16 +145,6 @@ workflow VISUALIZEAMPLISEQ {
         
         srs_in_tsv = ch_filtered_tsv_table.ifEmpty(ch_raw_tsv_table)
         srs_in_qza = ch_filtered_qza_table.ifEmpty(ch_raw_qza_table)
-
-        print("into srs normalize: ")
-        srs_in_tsv.view()
-        
-        print("filtered table: ")
-        ch_filtered_tsv_table.view()
-        
-        print("raw_tsv_table: ")
-        ch_raw_tsv_table.view()
-        
 
         SRSCURVE(srs_in_qza, srs_in_tsv, srs_curve_ch, srs_min_max_ch)
 
@@ -170,9 +158,13 @@ workflow VISUALIZEAMPLISEQ {
         TSVTOQZA2(tsv_map_2, metadata_ch
             ).qza.map{it.last()}.set{ch_normalized_qza}
         
+        ch_filtered_tsv_table.view()
+        
     } else{
         print("no normalization with SRS")
     }
+
+    ch_filtered_tsv_table.view()
 }
 
     
