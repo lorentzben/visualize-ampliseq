@@ -86,6 +86,7 @@ workflow VISUALIZEAMPLISEQ {
 
     CLEANUPRAWTSV.out.raw_table_tsv.set{ ch_raw_tsv_table }
 
+    print('raw tsv table: ')
     CLEANUPRAWTSV.out.raw_table_tsv.view()
 
     //ch_raw_tsv_table.view()
@@ -119,7 +120,8 @@ workflow VISUALIZEAMPLISEQ {
         CLEANUPFILTTSV( ch_messy_filtered_tsv_table )
 
         CLEANUPFILTTSV.out.raw_table_tsv.set { ch_filtered_tsv_table }
-
+        print('NC cleaned table : ')
+        CLEANUPFILTTSV.out.raw_table_tsv.view()
         //ch_filtered_tsv_table.view()
         //ch_filtered_qza_table.view()
     } 
@@ -134,6 +136,8 @@ workflow VISUALIZEAMPLISEQ {
             CLEANUPFILTTSV( ch_messy_filtered_tsv_table )
 
             CLEANUPFILTTSV.out.raw_table_tsv.set { ch_filtered_tsv_table }
+            print('clean filt mock tsv: ')
+            CLEANUPFILTTSV.out.raw_table_tsv.view()
 
         } else {
             //TODO test this (just Mock no NC)
@@ -152,8 +156,11 @@ workflow VISUALIZEAMPLISEQ {
         srs_in_tsv = ch_filtered_tsv_table.ifEmpty(ch_raw_tsv_table)
         srs_in_qza = ch_filtered_qza_table.ifEmpty(ch_raw_qza_table)
 
+        print('into srs normalize: ')
         srs_in_tsv.view()
-        //ch_filtered_tsv_table.view()
+        print("filtered table: ")
+        ch_filtered_tsv_table.view()
+        print('raw_tsv_table: ')
         //ch_raw_tsv_table.view()
 
         SRSCURVE(srs_in_qza, srs_in_tsv, srs_curve_ch, srs_min_max_ch)
