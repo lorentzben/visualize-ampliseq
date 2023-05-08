@@ -86,13 +86,13 @@ workflow VISUALIZEAMPLISEQ {
 
     CLEANUPRAWTSV.out.raw_table_tsv.set{ ch_raw_tsv_table }
 
-    print('raw tsv table: ',CLEANUPRAWTSV.out.raw_table_tsv.view())
-    
+    print("raw tsv table: ")
+    CLEANUPRAWTSV.out.raw_table_tsv.view()
 
-    //ch_raw_tsv_table.view()
+    
     raw_mba_table = CLEANUPRAWTSV.out.raw_MbA_table_tsv
 
-    //raw_mba_table.view()
+    
 
     CLEANUPRAWQZA(raw_biom_table_ch
     ).raw_table_qza.set { ch_raw_qza_table }
@@ -120,14 +120,16 @@ workflow VISUALIZEAMPLISEQ {
         CLEANUPFILTTSV( ch_messy_filtered_tsv_table )
 
         CLEANUPFILTTSV.out.raw_table_tsv.set { ch_filtered_tsv_table }
-        print('NC cleaned table : ',CLEANUPFILTTSV.out.raw_table_tsv.view())
+        print("NC cleaned table : ")
+        CLEANUPFILTTSV.out.raw_table_tsv.view()
         
-        //ch_filtered_tsv_table.view()
-        //ch_filtered_qza_table.view()
+        
     } 
 
     if(params.mock){
         if (!ch_filtered_qza_table){
+            //TODO test this (just Mock no NC)
+            print("no filtered table No NC!")
             QIIME2_FILTERMOCK(metadata_ch, ch_raw_qza_table, mock_val_ch, ioi_ch
             ).qza.set { ch_filtered_qza_table }
             QIIME2_EXPORT_ABSOLUTE_MOCK(QIIME2_FILTERMOCK.out.qza
@@ -136,19 +138,24 @@ workflow VISUALIZEAMPLISEQ {
             CLEANUPFILTTSV( ch_messy_filtered_tsv_table )
 
             CLEANUPFILTTSV.out.raw_table_tsv.set { ch_filtered_tsv_table }
-            print('clean filt mock tsv: ')
+            print("clean filt mock tsv: ")
             CLEANUPFILTTSV.out.raw_table_tsv.view()
 
         } else {
-            //TODO test this (just Mock no NC)
+            print("there is a filtered qza table: (NC was used)")
             QIIME2_FILTERMOCK(metadata_ch, ch_filtered_qza_table, mock_val_ch, ioi_ch
             ).qza.set { ch_filtered_qza_table }
             QIIME2_EXPORT_ABSOLUTE_MOCK(QIIME2_FILTERMOCK.out.qza
-            ).tsv.set { ch_filtered_tsv_table }
+            ).tsv.set { ch_messy_filtered_tsv_table }
+
+            CLEANUPFILTTSV( ch_messy_filtered_tsv_table )
+
+            CLEANUPFILTTSV.out.raw_table_tsv.set { ch_filtered_tsv_table }
+            print("clean filt mock tsv: ")
+            CLEANUPFILTTSV.out.raw_table_tsv.view()
         }
 
-        //ch_filtered_tsv_table.view()
-        //ch_filtered_qza_table.view()
+       
     }
 
     if(srs){
@@ -156,11 +163,14 @@ workflow VISUALIZEAMPLISEQ {
         srs_in_tsv = ch_filtered_tsv_table.ifEmpty(ch_raw_tsv_table)
         srs_in_qza = ch_filtered_qza_table.ifEmpty(ch_raw_qza_table)
 
-        print('into srs normalize: ',srs_in_tsv.view())
+        print("into srs normalize: "
+        srs_in_tsv.view()
         
-        print("filtered table: ",ch_filtered_tsv_table.view())
+        print("filtered table: ")
+        ch_filtered_tsv_table.view()
         
-        print('raw_tsv_table: ',ch_raw_tsv_table.view())
+        print("raw_tsv_table: ")
+        ch_raw_tsv_table.view()
         
 
         SRSCURVE(srs_in_qza, srs_in_tsv, srs_curve_ch, srs_min_max_ch)
