@@ -134,8 +134,13 @@ workflow VISUALIZEAMPLISEQ {
     }
 
     if(srs){
+        
         srs_in_tsv = ch_filtered_tsv_table.ifEmpty(ch_raw_tsv_table)
         srs_in_qza = ch_filtered_qza_table.ifEmpty(ch_raw_qza_table)
+
+        srs_in_tsv.view()
+        ch_filtered_tsv_table.view()
+        ch_raw_tsv_table.view()
 
         SRSCURVE(srs_in_qza, srs_in_tsv, srs_curve_ch, srs_min_max_ch)
 
