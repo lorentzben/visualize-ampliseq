@@ -163,7 +163,7 @@ workflow VISUALIZEAMPLISEQ {
         srs_in_tsv = ch_filtered_tsv_table.ifEmpty(ch_raw_tsv_table)
         srs_in_qza = ch_filtered_qza_table.ifEmpty(ch_raw_qza_table)
 
-        print("into srs normalize: "
+        print("into srs normalize: ")
         srs_in_tsv.view()
         
         print("filtered table: ")
