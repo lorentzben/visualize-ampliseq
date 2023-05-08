@@ -67,7 +67,7 @@ if(params.srs) {
 / Import Modules
 */
 include { ORDERIOI } from "${projectDir}/modules/local/orderioi.nf"
-include { CLEANUPRAWTSV } from "${projectDir}/modules/local/cleanuprawtsv.nf"
+include { CLEANUPRAWTSV; CLEANUPRAWTSV as CLEANUPFILTTSV;CLEANUPRAWTSV as CLEANUPFILTSRSTSV } from "${projectDir}/modules/local/cleanuprawtsv.nf"
 include { CLEANUPRAWQZA } from "${projectDir}/modules/local/cleanuprawqza.nf"
 include { TSVTOQZA; TSVTOQZA as TSVTOQZA2 } from "${projectDir}/modules/local/tsvtoqza.nf"
 include { FILTERNEGATIVECONTROL } from "${projectDir}/modules/local/filternegativecontrol.nf"
@@ -108,11 +108,13 @@ workflow VISUALIZEAMPLISEQ {
         ).qza.set{ ch_filtered_qza_table }
 
         QIIME2_EXPORT_ABSOLUTE_NC(QIIME2_FILTERNC.out.qza
-        ).tsv.set { ch_filtered_tsv_table }
+        ).tsv.set { ch_messy_filtered_tsv_table }
+
+        CLEANUPFILTTSV( ch_messy_filtered_tsv_table 
+            ).raw_table_tsv.set { ch_filtered_tsv_table }
 
         //ch_filtered_tsv_table.view()
         //ch_filtered_qza_table.view()
-    
     } 
 
     if(params.mock){
@@ -120,7 +122,11 @@ workflow VISUALIZEAMPLISEQ {
             QIIME2_FILTERMOCK(metadata_ch, ch_raw_qza_table, mock_val_ch, ioi_ch
             ).qza.set { ch_filtered_qza_table }
             QIIME2_EXPORT_ABSOLUTE_MOCK(QIIME2_FILTERMOCK.out.qza
-            ).tsv.set { ch_filtered_tsv_table }
+            ).tsv.set { ch_messy_filtered_tsv_table }
+
+            CLEANUPFILTTSV( ch_messy_filtered_tsv_table 
+            ).raw_table_tsv.set { ch_filtered_tsv_table }
+
         } else {
             //TODO test this (just Mock no NC)
             QIIME2_FILTERMOCK(metadata_ch, ch_filtered_qza_table, mock_val_ch, ioi_ch
