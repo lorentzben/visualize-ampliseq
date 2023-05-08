@@ -74,6 +74,7 @@ include { FILTERNEGATIVECONTROL } from "${projectDir}/modules/local/filternegati
 include { QIIME2_FILTERSAMPLES as QIIME2_FILTERNC; QIIME2_FILTERSAMPLES as QIIME2_FILTERMOCK } from "${projectDir}/modules/local/qiime2_filtersamples.nf"
 include { QIIME2_EXPORT_ABSOLUTE as QIIME2_EXPORT_ABSOLUTE_NC; QIIME2_EXPORT_ABSOLUTE as QIIME2_EXPORT_ABSOLUTE_MOCK; QIIME2_EXPORT_ABSOLUTE as QIIME2_EXPORT_ABSOLUTE_CORE  } from "${projectDir}/modules/local/qiime2_export_absolute.nf"
 include { SRSCURVE } from "${projectDir}/modules/local/srscurve.nf"
+include { SRSNORMALIZE } from "${projectDir}/modules/local/srsnormalize.nf"
 
 
 workflow VISUALIZEAMPLISEQ {

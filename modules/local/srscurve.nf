@@ -1,4 +1,5 @@
 process SRSCURVE{
+
     //tag "$table"
     label 'process_low'
 
