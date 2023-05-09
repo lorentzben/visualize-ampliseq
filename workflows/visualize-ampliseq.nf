@@ -8,6 +8,7 @@ if (params.input){
     raw_tsv_table_ch = Channel.fromPath(params.input+"/qiime2/abundance_tables/feature-table.tsv", checkIfExists: true)
     raw_biom_table_ch = Channel.fromPath(params.input+"/qiime2/abundance_tables/feature-table.biom", checkIfExists: true)
     rooted_tree_ch = Channel.fromPath(params.input+"/qiime2/phylogenetic_tree/rooted-tree.qza", checkIfExists: true)
+    asv_tsv_ch = Channel.fromPath(params.input+"/dada2/ASV_tax_species.tsv", checkIfExists: true)
     
 } else {
     log.error "Ampliseq input is required: please check params"
@@ -67,6 +68,7 @@ if(params.srs) {
 / Import Modules
 */
 include { ORDERIOI } from "${projectDir}/modules/local/orderioi.nf"
+include { REFORMATANDQZATAX } from "${projectDir}/modules/local/reformatandqzatax.nf"
 include { CLEANUPRAWTSV; CLEANUPRAWTSV as CLEANUPFILTTSV; CLEANUPRAWTSV as CLEANUPFILTMOCKTSV; CLEANUPRAWTSV as CLEANUPFILTSRSTSV } from "${projectDir}/modules/local/cleanuprawtsv.nf"
 include { CLEANUPRAWQZA } from "${projectDir}/modules/local/cleanuprawqza.nf"
 include { TSVTOQZA; TSVTOQZA as TSVTOQZA2 } from "${projectDir}/modules/local/tsvtoqza.nf"
@@ -88,7 +90,8 @@ workflow VISUALIZEAMPLISEQ {
 
     raw_mba_table = CLEANUPRAWTSV.out.raw_MbA_table_tsv
 
-    
+    REFORMATANDQZATAX(asv_tsv_ch
+        ).tax_qza.set{ ch_tax_qza }
 
     CLEANUPRAWQZA(raw_biom_table_ch
     ).raw_table_qza.set { ch_raw_qza_table }
@@ -234,8 +237,7 @@ workflow VISUALIZEAMPLISEQ {
     }
 
     
-    final_table_tsv.view()
-    final_table_qza.view()
+    
 }
 
     
