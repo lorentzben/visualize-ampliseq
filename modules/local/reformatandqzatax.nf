@@ -26,7 +26,7 @@ process REFORMATANDQZATAX{
     import numpy as np 
     import time
 
-    tax_tab = pd.read_table(, sep='\t')
+    tax_tab = pd.read_table("$asv_tsv", sep='\t')
     tax_tab.columns = tax_tab.columns.str.replace('ASV_ID', 'Feature ID')
 
     tax_tab[['Domain','Kingdom']] = tax_tab[['Domain','Kingdom']].fillna(value="Unassigned")
