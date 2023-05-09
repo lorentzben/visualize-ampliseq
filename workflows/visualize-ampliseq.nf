@@ -82,9 +82,10 @@ workflow VISUALIZEAMPLISEQ {
     ORDERIOI(ioi_ch, metadata_ch, ord_ioi_ch
     ).ordered_ioi.set{ ord_ioi_ch }
 
-    CLEANUPRAWTSV(raw_tsv_table_ch)
+    CLEANUPRAWTSV(raw_tsv_table_ch
+        ).raw_table_tsv.set{ ch_raw_tsv_table }
 
-    CLEANUPRAWTSV.out.raw_table_tsv.set{ ch_raw_tsv_table }
+    //CLEANUPRAWTSV.out
 
     raw_mba_table = CLEANUPRAWTSV.out.raw_MbA_table_tsv
 
