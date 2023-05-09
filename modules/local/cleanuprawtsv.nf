@@ -12,6 +12,7 @@ process CLEANUPRAWTSV{
  
 
     output:
+    
     path('raw_table.tsv'), emit: raw_table_tsv
     path('raw_table_MbA.tsv'), emit: raw_MbA_table_tsv
     
