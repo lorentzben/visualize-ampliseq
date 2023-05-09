@@ -82,9 +82,9 @@ workflow VISUALIZEAMPLISEQ {
     ORDERIOI(ioi_ch, metadata_ch, ord_ioi_ch
     ).ordered_ioi.set{ ord_ioi_ch }
 
-    clean_tsvs = CLEANUPRAWTSV(raw_tsv_table_ch)
+    CLEANUPRAWTSV(raw_tsv_table_ch)
 
-    clean_tsvs.raw_table_tsv.set{ ch_raw_tsv_table }
+    CLEANUPRAWTSV.out.raw_table_tsv.set{ ch_raw_tsv_table }
 
     //CLEANUPRAWTSV.out.view()
     CLEANUPRAWTSV.out.raw_table_tsv.view()
@@ -128,9 +128,9 @@ workflow VISUALIZEAMPLISEQ {
         mock_in_tsv = ch_filtered_tsv_table.ifEmpty(ch_raw_tsv_table)
         mock_in_qza = ch_filtered_qza_table.ifEmpty(ch_raw_qza_table)
 
-        mock_in_tsv.view()
-        mock_in_qza.view()
-        
+        //mock_in_tsv.view()
+        //mock_in_qza.view()
+
         QIIME2_FILTERMOCK(metadata_ch, mock_in_qza, mock_val_ch, ioi_ch
             ).qza.set { ch_filtered_qza_table }
         QIIME2_EXPORT_ABSOLUTE_MOCK(QIIME2_FILTERMOCK.out.qza
@@ -162,7 +162,7 @@ workflow VISUALIZEAMPLISEQ {
         
         
     } else{
-        print("no normalization with SRS")
+        //print("no normalization with SRS")
     }
 
 
