@@ -86,10 +86,6 @@ workflow VISUALIZEAMPLISEQ {
 
     CLEANUPRAWTSV.out.raw_table_tsv.set{ ch_raw_tsv_table }
 
-    //CLEANUPRAWTSV.out.view()
-    CLEANUPRAWTSV.out.raw_table_tsv.view()
-    ch_raw_tsv_table.view()
-
     raw_mba_table = CLEANUPRAWTSV.out.raw_MbA_table_tsv
 
     
@@ -125,11 +121,17 @@ workflow VISUALIZEAMPLISEQ {
     } 
 
     if(params.mock){
-        mock_in_tsv = ch_filtered_tsv_table.ifEmpty(ch_raw_tsv_table)
-        mock_in_qza = ch_filtered_qza_table.ifEmpty(ch_raw_qza_table)
+        if(params.controls){
+            // Yes Mock Yes Negative Control
+            mock_in_tsv = ch_filtered_tsv_table
+            mock_in_qza = ch_filtered_qza_table
 
-        mock_in_tsv.view()
-        mock_in_qza.view()
+        } else{
+            // Yes Mock No Negative Control
+            mock_in_tsv = ch_raw_tsv_table
+            mock_in_qza = ch_raw_qza_table
+        }
+        
 
         QIIME2_FILTERMOCK(metadata_ch, mock_in_qza, mock_val_ch, ioi_ch
             ).qza.set { ch_filtered_qza_table }
@@ -143,10 +145,29 @@ workflow VISUALIZEAMPLISEQ {
     }
 
     if(srs){
-        
-        srs_in_tsv = ch_filtered_tsv_table.ifEmpty(ch_raw_tsv_table)
-        srs_in_qza = ch_filtered_qza_table.ifEmpty(ch_raw_qza_table)
+        if(params.controls){
+            if(params.mock){
+                // Yes Negative Control Yes Mock Yes SRS
+                srs_in_tsv = ch_filtered_tsv_table
+                srs_in_qza = ch_filtered_qza_table
 
+            } else{
+                // Yes Negative Control No Mock Yes SRS
+                srs_in_tsv = ch_filtered_tsv_table
+                srs_in_qza = ch_filtered_qza_table
+            }
+        } else if(params.mock){
+            // No Negative Control Yes Mock Yes SRS
+            srs_in_tsv = ch_filtered_tsv_table
+            srs_in_qza = ch_filtered_qza_table
+
+        } else{
+            // No Negative Control No Mock Yes SRS
+            srs_in_tsv = ch_raw_tsv_table
+            srs_in_qza = ch_raw_qza_table
+
+        }
+        
         SRSCURVE(srs_in_qza, srs_in_tsv, srs_curve_ch, srs_min_max_ch)
 
         SRSNORMALIZE(srs_in_tsv, SRSCURVE.out.min_val, params.rare
@@ -165,12 +186,56 @@ workflow VISUALIZEAMPLISEQ {
         //print("no normalization with SRS")
     }
 
+    if (params.controls){
+        if(params.mock){
+            if(srs){
+                // Yes NC Yes Mock Yes SRS
+                final_table_tsv = ch_normalized_tsv
+                final_table_qza = ch_normalized_qza
 
-    final_table_tsv = ch_normalized_tsv.ifEmpty(ch_filtered_tsv_table.ifEmpty(ch_raw_tsv_table))
-    final_table_qza = ch_normalized_qza.ifEmpty(ch_filtered_qza_table.ifEmpty(ch_raw_qza_table))
+            } else {
+                // Yes NC Yes Mock No SRS
+                final_table_tsv = ch_filtered_tsv_table
+                final_table_qza = ch_filtered_qza_table
+            }
+        } else {
+            if(srs){
+                // Yes NC No Mock Yes SRS
+                final_table_tsv = ch_normalized_tsv
+                final_table_qza = ch_normalized_qza
+            } else {
+                // Yes NC No Mock No SRS
+                final_table_tsv = ch_filtered_tsv_table
+                final_table_qza = ch_filtered_qza_table
+            }
+        }
+    } else {
+        if(params.mock){
+            if(srs){
+                // No NC Yes Mock Yes SRS
+                final_table_tsv = ch_normalized_tsv
+                final_table_qza = ch_normalized_qza
+            } else {
+                // No NC Yes Mock No SRS
+                final_table_tsv = ch_filtered_tsv_table
+                final_table_qza = ch_filtered_qza_table
+            }
+        } else {
+            if(srs){
+                // No NC No Mock Yes SRS
+                final_table_tsv = ch_normalized_tsv
+                final_table_qza = ch_normalized_qza
+            } else {
+                // No NC No Mock No SRS
+                final_table_tsv = ch_raw_tsv_table
+                final_table_qza = ch_raw_qza_table
+            }
+        }
+    }
+
     
-    //final_table_tsv.view()
-    //final_table_qza.view()
+    final_table_tsv.view()
+    final_table_qza.view()
 }
 
     
