@@ -87,9 +87,7 @@ workflow VISUALIZEAMPLISEQ {
     clean_tsvs.raw_table_tsv.set{ ch_raw_tsv_table }
 
     //CLEANUPRAWTSV.out.view()
-    CLEANUPRAWTSV.out
-        .map{it -> [it[0], it[1]]}
-        .view{ raw, mba -> "raw tab: $raw , mba: $mba"}
+    CLEANUPRAWTSV.out.raw_table_tsv.view()
 
     raw_mba_table = CLEANUPRAWTSV.out.raw_MbA_table_tsv
 
