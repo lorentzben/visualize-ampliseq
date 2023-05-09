@@ -128,6 +128,9 @@ workflow VISUALIZEAMPLISEQ {
         mock_in_tsv = ch_filtered_tsv_table.ifEmpty(ch_raw_tsv_table)
         mock_in_qza = ch_filtered_qza_table.ifEmpty(ch_raw_qza_table)
 
+        mock_in_tsv.view()
+        mock_in_qza.view()
+        
         QIIME2_FILTERMOCK(metadata_ch, mock_in_qza, mock_val_ch, ioi_ch
             ).qza.set { ch_filtered_qza_table }
         QIIME2_EXPORT_ABSOLUTE_MOCK(QIIME2_FILTERMOCK.out.qza
@@ -166,8 +169,8 @@ workflow VISUALIZEAMPLISEQ {
     final_table_tsv = ch_normalized_tsv.ifEmpty(ch_filtered_tsv_table.ifEmpty(ch_raw_tsv_table))
     final_table_qza = ch_normalized_qza.ifEmpty(ch_filtered_qza_table.ifEmpty(ch_raw_qza_table))
     
-    final_table_tsv.view()
-    final_table_qza.view()
+    //final_table_tsv.view()
+    //final_table_qza.view()
 }
 
     
