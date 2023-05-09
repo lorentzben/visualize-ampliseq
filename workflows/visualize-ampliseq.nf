@@ -85,7 +85,8 @@ workflow VISUALIZEAMPLISEQ {
     CLEANUPRAWTSV(raw_tsv_table_ch
         ).raw_table_tsv.set{ ch_raw_tsv_table }
 
-    //CLEANUPRAWTSV.out
+    //CLEANUPRAWTSV.out.view()
+    ch_raw_tsv_table.view()
 
     raw_mba_table = CLEANUPRAWTSV.out.raw_MbA_table_tsv
 
