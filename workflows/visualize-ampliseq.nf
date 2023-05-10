@@ -246,7 +246,7 @@ workflow VISUALIZEAMPLISEQ {
         ).rare_table.set{ ch_norm_qza_table }
 
     QIIME2_EXPORT_ABSOLUTE_CORE(ch_norm_qza_table
-        ).norm_tsv_table.set{ ch_norm_tsv_table }
+        ).tsv.set{ ch_norm_tsv_table }
     
     ch_norm_qza_table.view()
     ch_norm_tsv_table.view()
