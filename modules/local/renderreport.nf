@@ -30,12 +30,12 @@ process RENDERREPORT{
     '''
     #!/usr/bin/env bash
     
-    cp "${table_tsv}" table.tsv
-    cp "${table_qza}" table.qza
+    cp "!{table_tsv}" table.tsv
+    cp "!{table_qza}" table.qza
 
     dt=$(date '+%d-%m-%Y_%H.%M.%S');
-    Rscript -e "rmarkdown::render("${report}", output_file='$PWD/!{report}_$dt.html', output_format='html_document', clean=TRUE, knit_root_dir='$PWD')"
+    Rscript -e "rmarkdown::render("!{report}", output_file='$PWD/!{report}_$dt.html', output_format='html_document', clean=TRUE, knit_root_dir='$PWD')"
 
-    #Rscript -e "rmarkdown::render("${report}", output_file='$PWD/!{report}_$dt.pdf', output_format='pdf_document', clean=TRUE, knit_root_dir='$PWD')"
+    #Rscript -e "rmarkdown::render("!{report}", output_file='$PWD/!{report}_$dt.pdf', output_format='pdf_document', clean=TRUE, knit_root_dir='$PWD')"
     '''
 }
