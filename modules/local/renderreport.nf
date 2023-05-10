@@ -16,7 +16,8 @@ process RENDERREPORT{
     path('metadata.tsv')
     path(report)
     file('item_of_interest.csv')
-    path(table)
+    path(table_tsv)
+    path(table_qza)
 
     output:
 
@@ -25,13 +26,16 @@ process RENDERREPORT{
      
     
     script:
-    def table = table.name != 'NO_FILE' ? "$table" : ''
+    
     '''
     #!/usr/bin/env bash
-   
-    dt=$(date '+%d-%m-%Y_%H.%M.%S');
-    Rscript -e "rmarkdown::render('01_report_MbA.Rmd', output_file='$PWD/01_report_$dt.html', output_format='html_document', clean=TRUE, knit_root_dir='$PWD')"
+    
+    cp !{table_tsv} table.tsv
+    cp !{table_qza} table.qza
 
-    #Rscript -e "rmarkdown::render('01_report_MbA.Rmd', output_file='$PWD/01_report_$dt.pdf', output_format='pdf_document', clean=TRUE, knit_root_dir='$PWD')"
+    dt=$(date '+%d-%m-%Y_%H.%M.%S');
+    Rscript -e "rmarkdown::render('!{report}', output_file='$PWD/!{report}_$dt.html', output_format='html_document', clean=TRUE, knit_root_dir='$PWD')"
+
+    #Rscript -e "rmarkdown::render('!{report}', output_file='$PWD/!{report}_$dt.pdf', output_format='pdf_document', clean=TRUE, knit_root_dir='$PWD')"
     '''
 }
