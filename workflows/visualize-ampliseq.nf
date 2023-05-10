@@ -243,10 +243,10 @@ workflow VISUALIZEAMPLISEQ {
         ).graphlan_biom.set{ ch_graphlan_biom }
     
     COREMETRICPYTHON(metadata_ch, final_table_qza, final_table_tsv, rooted_tree_ch, rare_val_ch
-    ).rare_table.set{ ch_norm_qza_table }
+        ).rare_table.set{ ch_norm_qza_table }
 
     QIIME2_EXPORT_ABSOLUTE_CORE(ch_norm_qza_table
-    ).norm_tsv_table.set{ ch_norm_tsv_table }
+        ).norm_tsv_table.set{ ch_norm_tsv_table }
     
     ch_norm_qza_table.view()
     ch_norm_tsv_table.view()
