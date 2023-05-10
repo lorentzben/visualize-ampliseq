@@ -242,7 +242,14 @@ workflow VISUALIZEAMPLISEQ {
     GENERATEBIOMFORGRAPHLAN(metadata_ch, ioi_ch, filter_samples_ch, ch_tax_qza, final_table_qza, nc_val_ch.ifEmpty("N/A"), mock_val_ch.ifEmpty("N/A")
         ).graphlan_biom.set{ ch_graphlan_biom }
     
-    COREMETRICPYTHON(metadata_ch, final_table_qza, final_table_tsv, rooted_tree_ch, rare_val_ch)
+    COREMETRICPYTHON(metadata_ch, final_table_qza, final_table_tsv, rooted_tree_ch, rare_val_ch
+    ).rare_table.set{ ch_norm_qza_table }
+
+    QIIME2_EXPORT_ABSOLUTE_CORE(ch_norm_qza_table
+    ).norm_tsv_table.set{ ch_norm_tsv_table }
+    
+    ch_norm_qza_table.view()
+    ch_norm_tsv_table.view()
 }
 
     
