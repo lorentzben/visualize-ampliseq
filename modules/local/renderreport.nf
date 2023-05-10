@@ -28,8 +28,6 @@ process RENDERREPORT{
     script:
     
     '''
-    #!/usr/bin/env bash
-
     echo !{report}
     
     dt=$(date '+%d-%m-%Y_%H.%M.%S');
