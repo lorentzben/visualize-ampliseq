@@ -15,7 +15,7 @@ process RENDERREPORT{
     path('results')
     path('metadata.tsv')
     path(report)
-    path('item_of_interest.csv')
+    file('item_of_interest.csv')
     path(table)
 
     output:
