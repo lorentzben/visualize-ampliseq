@@ -85,7 +85,7 @@ level = "Phylum"
 #   colnames(new_table_df)[1] <- "#NAME"
 # }
 
-new_table_df <- read_table('table.tsv', sep='\t')
+new_table_df <- read_table('table.tsv')
 
 write.table(new_table_df,file = paste0(mbadir,"/ASV-tab.txt"),sep='\t',row.names = F)
 
