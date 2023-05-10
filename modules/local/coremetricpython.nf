@@ -60,7 +60,10 @@ process COREMETRICPYTHON{
         # adapted from count_table_minmax_reads.py @author Daniel Straub
         # collected from nf-core/ampliseq
         # read tsv and skip first two rows
-        data = pd.read_csv('$table_tsv', sep="\s", skiprows=[0], header=None)  # count table
+        if "$table_tsv".find("normalized") >= 0 :
+            data = pd.read_csv('$table_tsv', sep="\s", skiprows=[0], header=None)  # count table
+        else:
+            data = pd.read_csv('$table_tsv', sep="\t", skiprows=[0], header=None)  # count table
 
         # drop feature ids
         df = data.drop(data.columns[0], axis=1)
