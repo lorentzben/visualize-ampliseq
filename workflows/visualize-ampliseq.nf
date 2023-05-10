@@ -238,7 +238,7 @@ workflow VISUALIZEAMPLISEQ {
         }
     }
 
-    GENERATEBIOMFORGRAPHLAN(metadata_ch, ioi_ch, filter_samples_ch, ch_tax_qza, final_table_qza, nc_val_ch, mock_val_ch
+    GENERATEBIOMFORGRAPHLAN(metadata_ch, ioi_ch, filter_samples_ch, ch_tax_qza, final_table_qza, nc_val_ch.ifEmpty("N/A"), mock_val_ch.ifEmpty("N/A")
         ).graphlan_biom.set{ ch_graphlan_biom }
     
 }
