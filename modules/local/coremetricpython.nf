@@ -10,7 +10,8 @@ process COREMETRICPYTHON{
     input:
 
     path(metadata)
-    path(table)
+    path(table_qza)
+    path(table_tsv)
     path('rooted-tree.qza')
     val(rare_val)
     //TODO if we want to use a raw table for rare_val=0 
@@ -43,7 +44,7 @@ process COREMETRICPYTHON{
     import os
 
   
-    unrarefied_table = Artifact.load('$table')
+    unrarefied_table = Artifact.load('$table_qza')
 
     os.mkdir("diversity_core")
 
@@ -59,7 +60,7 @@ process COREMETRICPYTHON{
         # adapted from count_table_minmax_reads.py @author Daniel Straub
         # collected from nf-core/ampliseq
         # read tsv and skip first two rows
-        data = pd.read_csv('$table', sep="\t", skiprows=[0, 1], header=None)  # count table
+        data = pd.read_csv('$table_tsv', sep="\t", skiprows=[0, 1], header=None)  # count table
 
         # drop feature ids
         df = data.drop(data.columns[0], axis=1)
