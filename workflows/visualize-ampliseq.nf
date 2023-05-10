@@ -10,6 +10,8 @@ if (params.input){
     rooted_tree_ch = Channel.fromPath(params.input+"/qiime2/phylogenetic_tree/rooted-tree.qza", checkIfExists: true)
     asv_tsv_ch = Channel.fromPath(params.input+"/dada2/ASV_tax_species.tsv", checkIfExists: true)
     
+    filter_samples_ch = Channel.fromPath("${projectDir}/python_scripts/filter_samples.py")
+    
 } else {
     log.error "Ampliseq input is required: please check params"
     System.exit(1)
@@ -77,7 +79,7 @@ include { QIIME2_FILTERSAMPLES as QIIME2_FILTERNC; QIIME2_FILTERSAMPLES as QIIME
 include { QIIME2_EXPORT_ABSOLUTE as QIIME2_EXPORT_ABSOLUTE_NC; QIIME2_EXPORT_ABSOLUTE as QIIME2_EXPORT_ABSOLUTE_MOCK; QIIME2_EXPORT_ABSOLUTE as QIIME2_EXPORT_ABSOLUTE_CORE  } from "${projectDir}/modules/local/qiime2_export_absolute.nf"
 include { SRSCURVE } from "${projectDir}/modules/local/srscurve.nf"
 include { SRSNORMALIZE } from "${projectDir}/modules/local/srsnormalize.nf"
-
+include { GENERATEBIOMFORGRAPHLAN } from "${projectDir}/modules/local/generatebiomforgraphlan.nf"
 
 workflow VISUALIZEAMPLISEQ {
     //TODO see if this breaks it
@@ -236,7 +238,8 @@ workflow VISUALIZEAMPLISEQ {
         }
     }
 
-    
+    GENERATEBIOMFORGRAPHLAN(metadata_ch, ioi_ch, filter_samples_ch, ch_tax_qza, final_table_qza, nc_val_ch, mock_val_ch
+        ).graphlan_biom.set{ ch_graphlan_biom }
     
 }
 
