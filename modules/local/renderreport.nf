@@ -21,7 +21,7 @@ process RENDERREPORT{
     output:
 
     path("*.html"), emit: html_report
-    path("figures/*") emit: figures_generated
+    path("figures/*"), emit: figures_generated
      
     
     script:
