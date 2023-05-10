@@ -38,6 +38,7 @@ outdir <- outdir_name
 library(MicrobiomeAnalystR)
 library(dplyr)
 library(tidyr)
+library(tidyverse)
 
 
 prepend <- "results/"
@@ -85,8 +86,6 @@ level = "Phylum"
 # }
 
 new_table_df <- read_table('table.tsv', sep='\t')
-new_table_df$"#NAME" <- rownames(new_table_df)
-new_table_df <- new_table_df %>% select("#NAME", everything())
 
 write.table(new_table_df,file = paste0(mbadir,"/ASV-tab.txt"),sep='\t',row.names = F)
 
