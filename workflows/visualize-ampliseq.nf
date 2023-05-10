@@ -71,7 +71,7 @@ if(params.srs) {
 */
 include { ORDERIOI } from "${projectDir}/modules/local/orderioi.nf"
 include { REFORMATANDQZATAX } from "${projectDir}/modules/local/reformatandqzatax.nf"
-include { CLEANUPRAWTSV; CLEANUPRAWTSV as CLEANUPFILTTSV; CLEANUPRAWTSV as CLEANUPFILTMOCKTSV; CLEANUPRAWTSV as CLEANUPFILTSRSTSV } from "${projectDir}/modules/local/cleanuprawtsv.nf"
+include { CLEANUPRAWTSV; CLEANUPRAWTSV as CLEANUPFILTTSV; CLEANUPRAWTSV as CLEANUPFILTMOCKTSV; CLEANUPRAWTSV as CLEANUPFILTSRSTSV; CLEANUPRAWTSV as CLEANUPNORMTSV } from "${projectDir}/modules/local/cleanuprawtsv.nf"
 include { CLEANUPRAWQZA } from "${projectDir}/modules/local/cleanuprawqza.nf"
 include { TSVTOQZA; TSVTOQZA as TSVTOQZA2 } from "${projectDir}/modules/local/tsvtoqza.nf"
 include { FILTERNEGATIVECONTROL } from "${projectDir}/modules/local/filternegativecontrol.nf"
@@ -246,10 +246,11 @@ workflow VISUALIZEAMPLISEQ {
         ).rare_table.set{ ch_norm_qza_table }
 
     QIIME2_EXPORT_ABSOLUTE_CORE(ch_norm_qza_table
-        ).tsv.set{ ch_norm_tsv_table }
+        ).tsv.set{ ch_norm_messy_tsv_table }
     
-    ch_norm_qza_table.view()
-    ch_norm_tsv_table.view()
+    CLEANUPNORMTSV( ch_norm_messy_tsv_table 
+        ).raw_table_tsv.set{ ch_norm_tsv_table }
+    
 }
 
     
