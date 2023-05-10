@@ -56,6 +56,7 @@ level = "Phylum"
 
 #import ASV table from ampliseq analysis and write out properly fomatted one
 
+#TODO update this tree with yes yes yes and no no no 
 # if filtered table is provided:
 if (file.exists("filtered-table.tsv")){
   # Yes SRS Yes NC Maybe Mock (comes from SRS directly)
