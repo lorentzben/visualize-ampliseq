@@ -256,7 +256,7 @@ workflow VISUALIZEAMPLISEQ {
     CLEANUPNORMTSV( ch_norm_messy_tsv_table 
         ).raw_table_tsv.set{ ch_norm_tsv_table }
 
-    CLEANUPNORMTSV.out.raw_table_MbA.set{ ch_norm_MBA_tsv_table }
+    CLEANUPNORMTSV.out.raw_MbA_table_tsv.set{ ch_norm_MBA_tsv_table }
     
     REPORT01BARPLOT("Report_01", input_ch, metadata_ch, report_one_ch, ioi_ch, ch_norm_MBA_tsv_table, ch_norm_qza_table)
 }
