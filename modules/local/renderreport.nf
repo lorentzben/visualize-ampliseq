@@ -14,7 +14,7 @@ process RENDERREPORT{
     val(reportName)
     path('results')
     path('metadata.tsv')
-    path('report.Rmd')
+    path(report)
     file('item_of_interest.csv')
     path("table.tsv")
     path("table.qza")
@@ -25,7 +25,7 @@ process RENDERREPORT{
     path("figures/*"), emit: figures_generated
      
     
-    script:
+    shell:
     
     '''
     #!/usr/bin/env bash
@@ -33,7 +33,7 @@ process RENDERREPORT{
     ls -lRh
     
     dt=$(date '+%d-%m-%Y_%H.%M.%S');
-    Rscript -e "rmarkdown::render('report.Rmd', output_file='$PWD/!{reportName}_$dt.html', output_format='html_document', clean=TRUE, knit_root_dir='$PWD')"
+    Rscript -e "rmarkdown::render('!{report}', output_file='$PWD/!{report}_$dt.html', output_format='html_document', clean=TRUE, knit_root_dir='$PWD')"
 
     #Rscript -e "rmarkdown::render('"!{report}"', output_file='$PWD/"!{report}"_$dt.pdf', output_format='pdf_document', clean=TRUE, knit_root_dir='$PWD')"
     '''
