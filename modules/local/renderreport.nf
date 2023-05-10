@@ -30,7 +30,7 @@ process RENDERREPORT{
     '''
     #!/usr/bin/env bash
 
-    echo "!{report}"
+    echo '!{report}'
     
     dt=$(date '+%d-%m-%Y_%H.%M.%S');
     Rscript -e "rmarkdown::render("!{report}", output_file='$PWD/"!{report}"_$dt.html', output_format='html_document', clean=TRUE, knit_root_dir='$PWD')"
