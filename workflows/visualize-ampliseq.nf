@@ -75,6 +75,7 @@ if(params.report){
     report_two_local_ch = Channel.fromPath("${projectDir}/report_gen_files/02_report_local.Rmd")
     report_three_ch = Channel.fromPath("${projectDir}/report_gen_files/03_report.Rmd")
     report_four_ch = Channel.fromPath("${projectDir}/report_gen_files/04_report.Rmd")
+    report_five_ch = Channel.fromPath("${projectDir}/report_gen_files/05_report.Rmd")
 }
 
 /*
@@ -98,6 +99,7 @@ include { REPORT01BARPLOT } from "${projectDir}/modules/local/renderreport01.nf"
 include { REPORT02GRAPHLANPHYLOGENETICTREE } from "${projectDir}/modules/local/renderreport02.nf"
 include { REPORT03HEATMAP } from "${projectDir}/modules/local/renderreport03.nf"
 include { REPORT04ALPHATABLE } from "${projectDir}/modules/local/renderreport04.nf"
+include { REPORT05ALPHABOXPLOT } from "${projectDir}/modules/local/renderreport05.nf"
 
 workflow VISUALIZEAMPLISEQ {
     //TODO see if this breaks it
@@ -278,8 +280,9 @@ workflow VISUALIZEAMPLISEQ {
     REPORT01BARPLOT("Report_01", input_ch, metadata_ch, report_one_ch, ioi_ch, ch_norm_MBA_tsv_table, ch_norm_qza_table)
     REPORT02GRAPHLANPHYLOGENETICTREE( "Report_02", ch_graphlan_dir, ioi_ch, report_two_ch, report_two_local_ch)
     REPORT03HEATMAP("Report_03", ch_norm_qza_table, rooted_tree_ch, ch_tax_qza, metadata_ch, report_three_ch, ioi_ch, ord_ioi_ch, ch_overall_summary)
-    
     REPORT04ALPHATABLE("Report_04", ch_core_vector_tsv, ioi_ch, report_four_ch)
+
+    REPORT05ALPHABOXPLOT("Report_05", ch_core_vector_tsv, ioi_ch, ord_ioi, metadata_ch, report_five_ch)
 }
 
     
