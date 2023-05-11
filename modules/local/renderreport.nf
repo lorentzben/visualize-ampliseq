@@ -3,10 +3,6 @@ process RENDERREPORT{
     tag "$reportName"
     label 'process_low'
    
-    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 
-    'docker://lorentzb/microbiome_analyst:1.1' : 
-    'lorentzb/microbiome_analyst:1.1' }"
-
     //container 'lorentzb/microbiome_analyst:1.1'
 
     input:
