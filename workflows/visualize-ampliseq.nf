@@ -68,6 +68,10 @@ if(params.srs) {
 
 if(params.report){
     report_one_ch = Channel.fromPath("${projectDir}/report_gen_files/01_report_MbA.Rmd")
+    graph_sh_ch = Channel.empty()
+    report_two_ch = Channel.fromPath("${projectDir}/report_gen_files/02_report.Rmd")
+    report_two_local_ch = Channel.fromPath("${projectDir}/report_gen_files/02_report_local.Rmd")
+
 }
 
 /*
@@ -84,8 +88,10 @@ include { QIIME2_EXPORT_ABSOLUTE as QIIME2_EXPORT_ABSOLUTE_NC; QIIME2_EXPORT_ABS
 include { SRSCURVE } from "${projectDir}/modules/local/srscurve.nf"
 include { SRSNORMALIZE } from "${projectDir}/modules/local/srsnormalize.nf"
 include { GENERATEBIOMFORGRAPHLAN } from "${projectDir}/modules/local/generatebiomforgraphlan.nf"
+include { RUNGRAPHLAN } from "${projectDir}/modules/local/graphlan.nf"
 include { COREMETRICPYTHON } from "${projectDir}/modules/local/coremetricpython.nf"
 include { REPORT01BARPLOT } from "${projectDir}/modules/local/renderreport01.nf"
+include { REPORT02GRAPHLANPHYLOGENETICTREE } from "${projectDir}/modules/local/renderreport02.nf"
 
 workflow VISUALIZEAMPLISEQ {
     //TODO see if this breaks it
@@ -259,6 +265,9 @@ workflow VISUALIZEAMPLISEQ {
     CLEANUPNORMTSV.out.raw_MbA_table_tsv.set{ ch_norm_MBA_tsv_table }
     
     REPORT01BARPLOT("Report_01", input_ch, metadata_ch, report_one_ch, ioi_ch, ch_norm_MBA_tsv_table, ch_norm_qza_table)
+    RUNGRAPHLAN(metadata_ch, ioi_ch, ch_tax_qza, graph_sh_ch, ch_graphlan_biom
+    ).graphlan_dir.set{ ch_graphlan_dir }
+    REPORT02GRAPHLANPHYLOGENETICTREE( ch_graphlan_dir, ioi_ch, report_two_ch, report_two_local_ch)
 }
 
     
