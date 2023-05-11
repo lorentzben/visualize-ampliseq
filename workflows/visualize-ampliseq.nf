@@ -279,7 +279,7 @@ workflow VISUALIZEAMPLISEQ {
     REPORT02GRAPHLANPHYLOGENETICTREE( "Report_02", ch_graphlan_dir, ioi_ch, report_two_ch, report_two_local_ch)
     REPORT03HEATMAP("Report_03", ch_norm_qza_table, rooted_tree_ch, ch_tax_qza, metadata_ch, report_three_ch, ioi_ch, ord_ioi_ch, ch_overall_summary)
     
-    REPORT04ALPHATABLE(ch_core_vector_tsv, ioi_ch, report_four_ch)
+    REPORT04ALPHATABLE("Report_04", ch_core_vector_tsv, ioi_ch, report_four_ch)
 }
 
     
