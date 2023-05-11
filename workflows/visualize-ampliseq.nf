@@ -282,7 +282,7 @@ workflow VISUALIZEAMPLISEQ {
     REPORT03HEATMAP("Report_03", ch_norm_qza_table, rooted_tree_ch, ch_tax_qza, metadata_ch, report_three_ch, ioi_ch, ord_ioi_ch, ch_overall_summary)
     REPORT04ALPHATABLE("Report_04", ch_core_vector_tsv, ioi_ch, report_four_ch)
 
-    REPORT05ALPHABOXPLOT("Report_05", ch_core_vector_tsv, ioi_ch, ord_ioi, metadata_ch, report_five_ch)
+    REPORT05ALPHABOXPLOT("Report_05", ch_core_vector_tsv, ioi_ch, ord_ioi_ch, metadata_ch, report_five_ch)
 }
 
     
