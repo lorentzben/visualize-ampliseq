@@ -85,8 +85,8 @@ level = "Phylum"
 #   colnames(new_table_df)[1] <- "#NAME"
 # }
 
-new_table_df <- read_table('table.tsv')
-
+new_table_df <- read.csv('table.tsv',sep='\t')
+colnames(new_table_df)[1] <- "#NAME"
 write.table(new_table_df,file = paste0(mbadir,"/ASV-tab.txt"),sep='\t',row.names = F)
 
 mbSet <- Read16SAbundData(mbSet,paste0(mbadir,"/ASV-tab.txt"),"text",'SILVA','T')
