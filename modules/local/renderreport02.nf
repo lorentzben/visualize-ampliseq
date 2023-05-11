@@ -11,7 +11,7 @@ process REPORT02GRAPHLANPHYLOGENETICTREE{
 
     val(reportName)
     path("phylo_trees/*")
-    path('item_of_interest.csv')
+    file('item_of_interest.csv')
     path("02_report.Rmd")
     path("02_report_local.Rmd")
 
