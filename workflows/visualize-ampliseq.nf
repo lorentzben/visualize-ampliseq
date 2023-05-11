@@ -9,6 +9,7 @@ if (params.input){
     raw_biom_table_ch = Channel.fromPath(params.input+"/qiime2/abundance_tables/feature-table.biom", checkIfExists: true)
     rooted_tree_ch = Channel.fromPath(params.input+"/qiime2/phylogenetic_tree/rooted-tree.qza", checkIfExists: true)
     asv_tsv_ch = Channel.fromPath(params.input+"/dada2/ASV_tax_species.tsv", checkIfExists: true)
+    ch_overall_summary = Channel.fromPath(params.input+"/overall_summary.tsv", checkIfExists: true)
     
     filter_samples_ch = Channel.fromPath("${projectDir}/python_scripts/filter_samples.py")
     
@@ -72,7 +73,7 @@ if(params.report){
     report_one_ch = Channel.fromPath("${projectDir}/report_gen_files/01_report_MbA.Rmd")
     report_two_ch = Channel.fromPath("${projectDir}/report_gen_files/02_report.Rmd")
     report_two_local_ch = Channel.fromPath("${projectDir}/report_gen_files/02_report_local.Rmd")
-
+    report_three_ch = Channel.fromPath("${projectDir}/report_gen_files/03_report.Rmd")
 }
 
 /*
@@ -93,6 +94,7 @@ include { RUNGRAPHLAN } from "${projectDir}/modules/local/graphlan.nf"
 include { COREMETRICPYTHON } from "${projectDir}/modules/local/coremetricpython.nf"
 include { REPORT01BARPLOT } from "${projectDir}/modules/local/renderreport01.nf"
 include { REPORT02GRAPHLANPHYLOGENETICTREE } from "${projectDir}/modules/local/renderreport02.nf"
+include { REPORT03HEATMAP } from "${projectDir}/modules/local/renderreport03.nf"
 
 workflow VISUALIZEAMPLISEQ {
     //TODO see if this breaks it
@@ -270,6 +272,8 @@ workflow VISUALIZEAMPLISEQ {
     
     REPORT01BARPLOT("Report_01", input_ch, metadata_ch, report_one_ch, ioi_ch, ch_norm_MBA_tsv_table, ch_norm_qza_table)
     REPORT02GRAPHLANPHYLOGENETICTREE( "Report_02", ch_graphlan_dir, ioi_ch, report_two_ch, report_two_local_ch)
+
+    REPORT03HEATMAP("Report_03", ch_norm_qza_table, rooted_tree_ch, ch_tax_qza, metadata_ch, report_three_ch, ioi_ch, ord_ioi_ch, ch_overall_summary)
 }
 
     

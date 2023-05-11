@@ -125,7 +125,7 @@ library(ampvis2)
 library(ggplot2)
 
 table_dada2 <- "feature-table.qza"
-rooted_tree <- "results/qiime2/phylogenetic_tree/rooted-tree.qza"
+rooted_tree <- "rooted-tree.qza"
 taxonomy_file <- "taxonomy.qza"
 metadata_file <- "metadata.tsv"
 
@@ -155,7 +155,7 @@ ggsave("heatmap.png", plot=heatmap, path=outdir)
 ```{r make data table for samples across analysis, echo=FALSE, message=FALSE, warning=FALSE}
 library(tidyverse)
 library(kableExtra)
-dadastat = read.csv("results/overall_summary.tsv",sep = '\t',strip.white = TRUE)
+dadastat = read.csv("overall_summary.tsv",sep = '\t',strip.white = TRUE)
 #dadastat_t = dadastat %>% kbl() %>% kable_classic(full_width = F)
 dadastat %>% kbl() %>% kable_styling(bootstrap_options = c("striped","condensed","responsive")) 
 ```
