@@ -1,6 +1,6 @@
 process REPORT01BARPLOT{
 
-    container = "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 
     'docker://lorentzb/microbiome_analyst:1.1' : 
     'lorentzb/microbiome_analyst:1.1' }"
 
