@@ -67,8 +67,9 @@ if(params.srs) {
 }
 
 if(params.report){
+    graph_sh_ch = Channel.fromPath("${projectDir}/bash_scripts/graph.sh")
+
     report_one_ch = Channel.fromPath("${projectDir}/report_gen_files/01_report_MbA.Rmd")
-    graph_sh_ch = Channel.empty()
     report_two_ch = Channel.fromPath("${projectDir}/report_gen_files/02_report.Rmd")
     report_two_local_ch = Channel.fromPath("${projectDir}/report_gen_files/02_report_local.Rmd")
 
