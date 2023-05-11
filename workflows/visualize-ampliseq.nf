@@ -252,6 +252,9 @@ workflow VISUALIZEAMPLISEQ {
 
     GENERATEBIOMFORGRAPHLAN(metadata_ch, ioi_ch, filter_samples_ch, ch_tax_qza, final_table_qza, nc_val_ch.ifEmpty("N/A"), mock_val_ch.ifEmpty("N/A")
         ).graphlan_biom.set{ ch_graphlan_biom }
+
+    RUNGRAPHLAN(metadata_ch, ioi_ch, ch_tax_qza, graph_sh_ch, ch_graphlan_biom
+        ).graphlan_dir.set{ ch_graphlan_dir }
     
     COREMETRICPYTHON(metadata_ch, final_table_qza, final_table_tsv, rooted_tree_ch, rare_val_ch
         ).rare_table.set{ ch_norm_qza_table }
@@ -265,8 +268,6 @@ workflow VISUALIZEAMPLISEQ {
     CLEANUPNORMTSV.out.raw_MbA_table_tsv.set{ ch_norm_MBA_tsv_table }
     
     REPORT01BARPLOT("Report_01", input_ch, metadata_ch, report_one_ch, ioi_ch, ch_norm_MBA_tsv_table, ch_norm_qza_table)
-    RUNGRAPHLAN(metadata_ch, ioi_ch, ch_tax_qza, graph_sh_ch, ch_graphlan_biom
-    ).graphlan_dir.set{ ch_graphlan_dir }
     REPORT02GRAPHLANPHYLOGENETICTREE( "Report_02", ch_graphlan_dir, ioi_ch, report_two_ch, report_two_local_ch)
 }
 

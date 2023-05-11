@@ -17,7 +17,7 @@ process REPORT02GRAPHLANPHYLOGENETICTREE{
 
     output:
 
-    path("02_report_*.html"), emit report02
+    path("02_report_*.html"), emit: report02
      
     script:
     if(workflow.profile.contains('local'))
