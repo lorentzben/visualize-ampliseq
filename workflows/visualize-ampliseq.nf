@@ -85,8 +85,8 @@ include { SRSCURVE } from "${projectDir}/modules/local/srscurve.nf"
 include { SRSNORMALIZE } from "${projectDir}/modules/local/srsnormalize.nf"
 include { GENERATEBIOMFORGRAPHLAN } from "${projectDir}/modules/local/generatebiomforgraphlan.nf"
 include { COREMETRICPYTHON } from "${projectDir}/modules/local/coremetricpython.nf"
-include { RENDERREPORT;
-          RENDERREPORT as REPORT01BARPLOT } from "${projectDir}/modules/local/renderreport.nf"
+include { REPORT01BARPLOT } from "${projectDir}/modules/local/renderreport01.nf"
+
 workflow VISUALIZEAMPLISEQ {
     //TODO see if this breaks it
     ORDERIOI(ioi_ch, metadata_ch, ord_ioi_ch
