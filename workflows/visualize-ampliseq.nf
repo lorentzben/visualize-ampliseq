@@ -267,7 +267,7 @@ workflow VISUALIZEAMPLISEQ {
     REPORT01BARPLOT("Report_01", input_ch, metadata_ch, report_one_ch, ioi_ch, ch_norm_MBA_tsv_table, ch_norm_qza_table)
     RUNGRAPHLAN(metadata_ch, ioi_ch, ch_tax_qza, graph_sh_ch, ch_graphlan_biom
     ).graphlan_dir.set{ ch_graphlan_dir }
-    REPORT02GRAPHLANPHYLOGENETICTREE( ch_graphlan_dir, ioi_ch, report_two_ch, report_two_local_ch)
+    REPORT02GRAPHLANPHYLOGENETICTREE( "Report_02", ch_graphlan_dir, ioi_ch, report_two_ch, report_two_local_ch)
 }
 
     

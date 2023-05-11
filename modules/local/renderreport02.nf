@@ -9,6 +9,7 @@ process REPORT02GRAPHLANPHYLOGENETICTREE{
    
     input:
 
+    val(reportName)
     path("phylo_trees/*")
     path('item_of_interest.csv')
     path("02_report.Rmd")
