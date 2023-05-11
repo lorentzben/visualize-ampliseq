@@ -22,7 +22,7 @@ process REPORT01BARPLOT{
     output:
 
     path("*.html"), emit: html_report
-    path("figures/*"), emit: figures_generated
+    path("barplots/*"), emit: figures_generated
      
     
     shell:
