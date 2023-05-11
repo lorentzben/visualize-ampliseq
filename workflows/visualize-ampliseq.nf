@@ -74,6 +74,7 @@ if(params.report){
     report_two_ch = Channel.fromPath("${projectDir}/report_gen_files/02_report.Rmd")
     report_two_local_ch = Channel.fromPath("${projectDir}/report_gen_files/02_report_local.Rmd")
     report_three_ch = Channel.fromPath("${projectDir}/report_gen_files/03_report.Rmd")
+    report_four_ch = Channel.fromPath("${projectDir}/report_gen_files/04_report.Rmd")
 }
 
 /*
@@ -92,9 +93,11 @@ include { SRSNORMALIZE } from "${projectDir}/modules/local/srsnormalize.nf"
 include { GENERATEBIOMFORGRAPHLAN } from "${projectDir}/modules/local/generatebiomforgraphlan.nf"
 include { RUNGRAPHLAN } from "${projectDir}/modules/local/graphlan.nf"
 include { COREMETRICPYTHON } from "${projectDir}/modules/local/coremetricpython.nf"
+include { COREQZATOTSV } from "${projectDir}/modules/local/coreqzatotsv.nf"
 include { REPORT01BARPLOT } from "${projectDir}/modules/local/renderreport01.nf"
 include { REPORT02GRAPHLANPHYLOGENETICTREE } from "${projectDir}/modules/local/renderreport02.nf"
 include { REPORT03HEATMAP } from "${projectDir}/modules/local/renderreport03.nf"
+include { REPORT04ALPHATABLE } from "${projectDir}/modules/local/renderreport04.nf"
 
 workflow VISUALIZEAMPLISEQ {
     //TODO see if this breaks it
@@ -269,11 +272,14 @@ workflow VISUALIZEAMPLISEQ {
         ).raw_table_tsv.set{ ch_norm_tsv_table }
 
     CLEANUPNORMTSV.out.raw_MbA_table_tsv.set{ ch_norm_MBA_tsv_table }
-    
+    COREQZATOTSV(COREMETRICPYTHON.out.vector
+        ).vector.set{ ch_core_vector_tsv }
+
     REPORT01BARPLOT("Report_01", input_ch, metadata_ch, report_one_ch, ioi_ch, ch_norm_MBA_tsv_table, ch_norm_qza_table)
     REPORT02GRAPHLANPHYLOGENETICTREE( "Report_02", ch_graphlan_dir, ioi_ch, report_two_ch, report_two_local_ch)
-
     REPORT03HEATMAP("Report_03", ch_norm_qza_table, rooted_tree_ch, ch_tax_qza, metadata_ch, report_three_ch, ioi_ch, ord_ioi_ch, ch_overall_summary)
+    
+    REPORT04ALPHATABLE(ch_core_vector_tsv, ioi_ch, report_four_ch)
 }
 
     
