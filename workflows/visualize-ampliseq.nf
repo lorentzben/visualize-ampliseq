@@ -270,8 +270,8 @@ workflow VISUALIZEAMPLISEQ {
     COREMETRICPYTHON(metadata_ch, final_table_qza, final_table_tsv, rooted_tree_ch, rare_val_ch
         ).rare_table.set{ ch_norm_qza_table }
 
-    COREMETRICPYTHON.out.pcoas.set{ ch_core_pcoa }
-    COREMETRICPYTHON.out.vectors.set{ ch_core_vector }
+    COREMETRICPYTHON.out.pcoa.set{ ch_core_pcoa }
+    COREMETRICPYTHON.out.vector.set{ ch_core_vector }
 
     QIIME2_EXPORT_ABSOLUTE_CORE(ch_norm_qza_table
         ).tsv.set{ ch_norm_messy_tsv_table }
