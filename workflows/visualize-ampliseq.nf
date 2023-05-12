@@ -76,6 +76,8 @@ if(params.report){
     report_three_ch = Channel.fromPath("${projectDir}/report_gen_files/03_report.Rmd")
     report_four_ch = Channel.fromPath("${projectDir}/report_gen_files/04_report.Rmd")
     report_five_ch = Channel.fromPath("${projectDir}/report_gen_files/05_report.Rmd")
+    report_six_ch = Channel.fromPath("${projectDir}/report_gen_files/06_report.Rmd")
+    report_six_b_ch = Channel.fromPath("${projectDir}/report_gen_files/06b_report.Rmd")
 }
 
 /*
@@ -100,6 +102,7 @@ include { REPORT02GRAPHLANPHYLOGENETICTREE } from "${projectDir}/modules/local/r
 include { REPORT03HEATMAP } from "${projectDir}/modules/local/renderreport03.nf"
 include { REPORT04ALPHATABLE } from "${projectDir}/modules/local/renderreport04.nf"
 include { REPORT05ALPHABOXPLOT } from "${projectDir}/modules/local/renderreport05.nf"
+include { REPORT06ORDINATION; REPORT06BNMDSORDINATION } from "${projectDir}/modules/local/renderreport06.nf"
 
 workflow VISUALIZEAMPLISEQ {
     //TODO see if this breaks it
@@ -267,6 +270,9 @@ workflow VISUALIZEAMPLISEQ {
     COREMETRICPYTHON(metadata_ch, final_table_qza, final_table_tsv, rooted_tree_ch, rare_val_ch
         ).rare_table.set{ ch_norm_qza_table }
 
+    COREMETRICPYTHON.out.pcoas.set{ ch_core_pcoa }
+    COREMETRICPYTHON.out.vectors.set{ ch_core_vector }
+
     QIIME2_EXPORT_ABSOLUTE_CORE(ch_norm_qza_table
         ).tsv.set{ ch_norm_messy_tsv_table }
     
@@ -281,8 +287,11 @@ workflow VISUALIZEAMPLISEQ {
     REPORT02GRAPHLANPHYLOGENETICTREE( "Report_02", ch_graphlan_dir, ioi_ch, report_two_ch, report_two_local_ch)
     REPORT03HEATMAP("Report_03", ch_norm_qza_table, rooted_tree_ch, ch_tax_qza, metadata_ch, report_three_ch, ioi_ch, ord_ioi_ch, ch_overall_summary)
     REPORT04ALPHATABLE("Report_04", ch_core_vector_tsv, ioi_ch, report_four_ch)
-
     REPORT05ALPHABOXPLOT("Report_05", ch_core_vector_tsv, ioi_ch, ord_ioi_ch, metadata_ch, report_five_ch)
+
+    REPORT06ORDINATION("Report_06", ch_norm_qza_table, input_ch, ioi_ch, ord_ioi_ch, report_six_ch, ch_tax_qza, metadata_ch, ch_core_pcoa, ch_core_vector)
+    REPORT06BNMDSORDINATION("Report_06b",ch_norm_qza_table, input_ch, ioi_ch, ord_ioi_ch, report_six_b_ch, ch_tax_qza, metadata_ch, ch_core_pcoa, ch_core_vector)
+
 }
 
     
