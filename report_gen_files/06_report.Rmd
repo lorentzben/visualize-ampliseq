@@ -127,7 +127,7 @@ library(ggplot2)
 library(ggConvexHull)
 
 table_dada2 <- "feature-table.qza"
-rooted_tree <- "results/qiime2/phylogenetic_tree/rooted-tree.qza"
+rooted_tree <- "rooted-tree.qza"
 taxonomy_file <- "taxonomy.qza"
 metadata_file <- "metadata.tsv"
 
