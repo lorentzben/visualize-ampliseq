@@ -289,8 +289,8 @@ workflow VISUALIZEAMPLISEQ {
     REPORT04ALPHATABLE("Report_04", ch_core_vector_tsv, ioi_ch, report_four_ch)
     REPORT05ALPHABOXPLOT("Report_05", ch_core_vector_tsv, ioi_ch, ord_ioi_ch, metadata_ch, report_five_ch)
 
-    REPORT06ORDINATION("Report_06", ch_norm_qza_table, input_ch, ioi_ch, ord_ioi_ch, report_six_ch, ch_tax_qza, metadata_ch, ch_core_pcoa, ch_core_vector)
-    REPORT06BNMDSORDINATION("Report_06b",ch_norm_qza_table, input_ch, ioi_ch, ord_ioi_ch, report_six_b_ch, ch_tax_qza, metadata_ch, ch_core_pcoa, ch_core_vector)
+    REPORT06ORDINATION("Report_06", ch_norm_qza_table, rooted_tree_ch, ch_tax_qza, metadata_ch, ioi_ch, ord_ioi_ch, report_six_ch, ch_core_pcoa, ch_core_vector)
+    REPORT06BNMDSORDINATION("Report_06b",ch_norm_qza_table, rooted_tree_ch, ch_tax_qza, metadata_ch, ioi_ch, ord_ioi_ch, report_six_b_ch, ch_core_pcoa, ch_core_vector)
 
 }
 
