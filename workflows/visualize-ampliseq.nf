@@ -105,6 +105,8 @@ include { REPORT03HEATMAP } from "${projectDir}/modules/local/renderreport03.nf"
 include { REPORT04ALPHATABLE } from "${projectDir}/modules/local/renderreport04.nf"
 include { REPORT05ALPHABOXPLOT } from "${projectDir}/modules/local/renderreport05.nf"
 include { REPORT06ORDINATION; REPORT06BNMDSORDINATION } from "${projectDir}/modules/local/renderreport06.nf"
+include { GENERATERAREFACTIONCURVE } from "${projectDir}/modules/local/generate_rarefaction_curve.nf"
+include { REPORT07RAREFACTION } from "${projectDir}/modules/local/renderreport07.nf"
 
 workflow VISUALIZEAMPLISEQ {
     //TODO see if this breaks it
