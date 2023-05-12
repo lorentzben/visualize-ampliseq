@@ -205,17 +205,17 @@ print(shapiro_res)
 
 if (shapiro_res$p.value > 0.05){
   # Data is Normally Distributed
-  obs_aov <- aov(form, data = obs_vals)
+  shannon_aov <- aov(form, data = shannon_vals)
 
-  pretty_aov <- data.frame(anova_summary(obs_aov))
-  colnames(pretty_aov) <- colnames(anova_summary(obs_aov))
+  pretty_aov <- data.frame(anova_summary(shannon_aov))
+  colnames(pretty_aov) <- colnames(anova_summary(shannon_aov))
 
   anova_kabel <- kable(pretty_aov) %>% 
     kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
 
   print(anova_kabel)
 
-  tukey_res <- tukey_hsd(x= obs_vals, formula = form, p.adjust.method = "holm")
+  tukey_res <- tukey_hsd(x= shannon_vals, formula = form, p.adjust.method = "holm")
   tukey_df <- add_significance(tukey_res , p.col="p.adj",output.col = "p.adj.signif",symbols =c("****", "***", "**", "$*$", "ns"))
 
   tukey <- kable(tukey_df) %>% 
@@ -223,10 +223,10 @@ if (shapiro_res$p.value > 0.05){
 
   print(tukey)
 
-  tukey_df <- tukey_df %>% add_xy_position(data=obs_vals, formula=form)
+  tukey_df <- tukey_df %>% add_xy_position(data=shannon_vals, formula=form)
 
 
-  p <- ggplot(obs_vals, aes(x=obs_vals[[ioi]], y=observed_features)) + geom_violin()+ geom_boxplot(width=0.1)
+  p <- ggplot(shannon_vals, aes(x=shannon_vals[[ioi]], y=shannon_entropy)) + geom_violin()+ geom_boxplot(width=0.1)
   p<- p + stat_summary(fun.y=mean, geom="point", shape=23, size=2)
   p<-p + stat_summary(fun.y=median, geom="point", size=2, color="red")
   p <- p+geom_jitter(shape=16, position=position_jitter(0.2)) + xlab(ioi) + ylab("Shannon") + theme_bw()
@@ -310,23 +310,23 @@ evenness_vals[[ioi]] <- factor(evenness_vals[[ioi]], levels=ioi_ord)
 form <- as.formula(paste0("pielou_evenness ~ ", ioi))
 
 # check normality 
-shapiro_res <- shapiro.test(shannon_vals$shannon_entropy)
+shapiro_res <- shapiro.test(evenness_vals$pielou_evenness)
 
 print(shapiro_res)
 
 if (shapiro_res$p.value > 0.05){
   # Data is Normally Distributed
-  obs_aov <- aov(form, data = obs_vals)
+  evenness_aov <- aov(form, data = evenness_vals)
 
-  pretty_aov <- data.frame(anova_summary(obs_aov))
-  colnames(pretty_aov) <- colnames(anova_summary(obs_aov))
+  pretty_aov <- data.frame(anova_summary(evenness_aov))
+  colnames(pretty_aov) <- colnames(anova_summary(evenness_aov))
 
   anova_kabel <- kable(pretty_aov) %>% 
     kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
 
   print(anova_kabel)
 
-  tukey_res <- tukey_hsd(x= obs_vals, formula = form, p.adjust.method = "holm")
+  tukey_res <- tukey_hsd(x= evenness_vals, formula = form, p.adjust.method = "holm")
   tukey_df <- add_significance(tukey_res , p.col="p.adj",output.col = "p.adj.signif",symbols =c("****", "***", "**", "$*$", "ns"))
 
   tukey <- kable(tukey_df) %>% 
@@ -334,10 +334,10 @@ if (shapiro_res$p.value > 0.05){
 
   print(tukey)
 
-  tukey_df <- tukey_df %>% add_xy_position(data=obs_vals, formula=form)
+  tukey_df <- tukey_df %>% add_xy_position(data=evenness_vals, formula=form)
 
 
-  p <- ggplot(obs_vals, aes(x=obs_vals[[ioi]], y=observed_features)) + geom_violin()+ geom_boxplot(width=0.1)
+  p <- ggplot(evenness_vals, aes(x=evenness_vals[[ioi]], y=pielou_evenness)) + geom_violin()+ geom_boxplot(width=0.1)
   p<- p + stat_summary(fun.y=mean, geom="point", shape=23, size=2)
   p<-p + stat_summary(fun.y=median, geom="point", size=2, color="red")
   p <- p+geom_jitter(shape=16, position=position_jitter(0.2)) + xlab(ioi) + ylab("Evenness") + theme_bw()
@@ -416,23 +416,23 @@ faith_pd_vals[[ioi]] <- factor(faith_pd_vals[[ioi]], levels=ioi_ord)
 
 form <- as.formula(paste0("faith_pd ~ ", ioi))
 # check normality 
-shapiro_res <- shapiro.test(shannon_vals$shannon_entropy)
+shapiro_res <- shapiro.test(faith_pd_vals$faith_pd)
 
 print(shapiro_res)
 
 if (shapiro_res$p.value > 0.05){
   # Data is Normally Distributed
-  obs_aov <- aov(form, data = obs_vals)
+  faith_pd_aov <- aov(form, data = faith_pd_vals)
 
-  pretty_aov <- data.frame(anova_summary(obs_aov))
-  colnames(pretty_aov) <- colnames(anova_summary(obs_aov))
+  pretty_aov <- data.frame(anova_summary(faith_pd_aov))
+  colnames(pretty_aov) <- colnames(anova_summary(faith_pd_aov))
 
   anova_kabel <- kable(pretty_aov) %>% 
     kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
     
   print(anova_kabel)
 
-  tukey_res <- tukey_hsd(x= obs_vals, formula = form, p.adjust.method = "holm")
+  tukey_res <- tukey_hsd(x= faith_pd_vals, formula = form, p.adjust.method = "holm")
   tukey_df <- add_significance(tukey_res , p.col="p.adj",output.col = "p.adj.signif",symbols =c("****", "***", "**", "$*$", "ns"))
 
   tukey <- kable(tukey_df) %>% 
@@ -440,10 +440,10 @@ if (shapiro_res$p.value > 0.05){
   
   print(tukey)
 
-  tukey_df <- tukey_df %>% add_xy_position(data=obs_vals, formula=form)
+  tukey_df <- tukey_df %>% add_xy_position(data=faith_pd_vals, formula=form)
 
 
-  p <- ggplot(obs_vals, aes(x=obs_vals[[ioi]], y=observed_features)) + geom_violin()+ geom_boxplot(width=0.1)
+  p <- ggplot(faith_pd_vals, aes(x=faith_pd_vals[[ioi]], y=faith_pd)) + geom_violin()+ geom_boxplot(width=0.1)
   p<- p + stat_summary(fun.y=mean, geom="point", shape=23, size=2)
   p<-p + stat_summary(fun.y=median, geom="point", size=2, color="red")
   p <- p+geom_jitter(shape=16, position=position_jitter(0.2)) + xlab(ioi) + ylab("Faith PD") + theme_bw()
