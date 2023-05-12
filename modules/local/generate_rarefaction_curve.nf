@@ -19,7 +19,7 @@ process GENERATERAREFACTIONCURVE{
     path("rarefact/observed_features.csv"), emit: rareVector
 
     script:
-    def table_tsv = table_tsv.name != 'NO_FILE' ? "$table_tsv" : ''
+   
 
     """
     #!/usr/bin/env python3
