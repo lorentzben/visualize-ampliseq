@@ -100,14 +100,15 @@ include { GENERATEBIOMFORGRAPHLAN } from "${projectDir}/modules/local/generatebi
 include { RUNGRAPHLAN } from "${projectDir}/modules/local/graphlan.nf"
 include { COREMETRICPYTHON } from "${projectDir}/modules/local/coremetricpython.nf"
 include { COREQZATOTSV } from "${projectDir}/modules/local/coreqzatotsv.nf"
+include { GENERATERAREFACTIONCURVE } from "${projectDir}/modules/local/generate_rarefaction_curve.nf"
 include { REPORT01BARPLOT } from "${projectDir}/modules/local/renderreport01.nf"
 include { REPORT02GRAPHLANPHYLOGENETICTREE } from "${projectDir}/modules/local/renderreport02.nf"
 include { REPORT03HEATMAP } from "${projectDir}/modules/local/renderreport03.nf"
 include { REPORT04ALPHATABLE } from "${projectDir}/modules/local/renderreport04.nf"
 include { REPORT05ALPHABOXPLOT } from "${projectDir}/modules/local/renderreport05.nf"
 include { REPORT06ORDINATION; REPORT06BNMDSORDINATION } from "${projectDir}/modules/local/renderreport06.nf"
-include { GENERATERAREFACTIONCURVE } from "${projectDir}/modules/local/generate_rarefaction_curve.nf"
 include { REPORT07RAREFACTION } from "${projectDir}/modules/local/renderreport07.nf"
+include { REPORT08RANKEDABUNDANCE } from "${projectDir}/modules/local/renderreport08.nf"
 
 workflow VISUALIZEAMPLISEQ {
     //TODO see if this breaks it
@@ -303,7 +304,7 @@ workflow VISUALIZEAMPLISEQ {
         REPORT07RAREFACTION("Report_07", ioi_ch, ord_ioi_ch, report_seven_ch, ch_rare_vector, metadata_ch)
     }
 
-    REPORT08RANKEDABUNDANCE("Report_08", ch_norm_qza_table, rooted_tree_ch, ch_tax_qza, metadata_ch, input_ch, ioi_ch, ord_ioi_ch, report_eight_ch)
+    REPORT08RANKEDABUNDANCE("Report_08", ch_norm_qza_table, rooted_tree_ch, ch_tax_qza, metadata_ch, ioi_ch, ord_ioi_ch, report_eight_ch)
 
 
 
