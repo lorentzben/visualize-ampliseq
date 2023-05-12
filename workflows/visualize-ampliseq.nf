@@ -80,6 +80,7 @@ if(params.report){
     report_six_ch = Channel.fromPath("${projectDir}/report_gen_files/06_report.Rmd")
     report_six_b_ch = Channel.fromPath("${projectDir}/report_gen_files/06b_report.Rmd")
     report_seven_ch = Channel.fromPath("${projectDir}/report_gen_files/07_report.Rmd")
+    report_eight_ch = Channel.fromPath("${projectDir}/report_gen_files/08_report.Rmd")
 }
 
 /*
@@ -301,6 +302,10 @@ workflow VISUALIZEAMPLISEQ {
             ).rareVector.set{ ch_rare_vector }
         REPORT07RAREFACTION("Report_07", ioi_ch, ord_ioi_ch, report_seven_ch, ch_rare_vector, metadata_ch)
     }
+
+    REPORT08RANKEDABUNDANCE("Report_08", ch_norm_qza_table, rooted_tree_ch, ch_tax_qza, metadata_ch, input_ch, ioi_ch, ord_ioi_ch, report_eight_ch)
+
+
 
 }
 
