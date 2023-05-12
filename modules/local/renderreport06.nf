@@ -12,13 +12,12 @@ process REPORT06ORDINATION{
 
     val(reportName)
     path('feature-table.qza')
-    //TODO do we need this?
-    path('results')
+    path('rooted-tree.qza')
+    path('taxonomy.qza')
+    path('metadata.tsv')
     file('item_of_interest.csv')
     path('order_item_of_interest.csv')
     path('06_report.Rmd')
-    path('taxonomy.qza')
-    path('metadata.tsv')
     path(pcoas)
     path(vectors)
 
@@ -54,12 +53,12 @@ process REPORT06BNMDSORDINATION{
 
     val(reportName)
     path('feature-table.qza')
-    path('results')
+    path('rooted-tree.qza')
+    path('taxonomy.qza')
+    path('metadata.tsv')
     file('item_of_interest.csv')
     path('order_item_of_interest.csv')
     path('06b_report.Rmd')
-    path('taxonomy.qza')
-    path('metadata.tsv')
     path(pcoas)
     path(vectors)
 
