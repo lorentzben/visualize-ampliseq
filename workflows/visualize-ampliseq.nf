@@ -65,6 +65,7 @@ if(params.srs) {
     srs = false
     srs_curve_ch = Channel.empty()
     srs_min_max_ch = Channel.empty()
+    
 }
 
 if(params.report){
@@ -78,6 +79,7 @@ if(params.report){
     report_five_ch = Channel.fromPath("${projectDir}/report_gen_files/05_report.Rmd")
     report_six_ch = Channel.fromPath("${projectDir}/report_gen_files/06_report.Rmd")
     report_six_b_ch = Channel.fromPath("${projectDir}/report_gen_files/06b_report.Rmd")
+    report_seven_ch = Channel.fromPath("${projectDir}/report_gen_files/07_report.Rmd")
 }
 
 /*
@@ -288,9 +290,15 @@ workflow VISUALIZEAMPLISEQ {
     REPORT03HEATMAP("Report_03", ch_norm_qza_table, rooted_tree_ch, ch_tax_qza, metadata_ch, report_three_ch, ioi_ch, ord_ioi_ch, ch_overall_summary)
     REPORT04ALPHATABLE("Report_04", ch_core_vector_tsv, ioi_ch, report_four_ch)
     REPORT05ALPHABOXPLOT("Report_05", ch_core_vector_tsv, ioi_ch, ord_ioi_ch, metadata_ch, report_five_ch)
-
     REPORT06ORDINATION("Report_06", ch_norm_qza_table, rooted_tree_ch, ch_tax_qza, metadata_ch, ioi_ch, ord_ioi_ch, report_six_ch, ch_core_pcoa, ch_core_vector)
     REPORT06BNMDSORDINATION("Report_06b",ch_norm_qza_table, rooted_tree_ch, ch_tax_qza, metadata_ch, ioi_ch, ord_ioi_ch, report_six_b_ch, ch_core_pcoa, ch_core_vector)
+
+    if (!params.srs){
+        // Note will always take a raw table
+        GENERATERAREFACTIONCURVE(metadata_ch, ch_raw_qza_table, rooted_tree_ch, rare_val_ch, ch_raw_tsv_table
+            ).rareVector.set{ ch_rare_vector }
+        REPORT07RAREFACTION("Report_07", ioi_ch, ord_ioi_ch, report_seven_ch, ch_rare_vector, metadata_ch)
+    }
 
 }
 
