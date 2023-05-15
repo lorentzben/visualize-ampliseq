@@ -10,12 +10,11 @@ process REPORT12PERMANOVA{
 
     val(reportName)
     path('feature-table.qza')
-    //TODO do we need this?
-    path('results')
-    file('item_of_interest.csv')
-    path('order_item_of_interest.csv')
+    path('rooted-tree.qza')
     path('taxonomy.qza')
     path('metadata.tsv')
+    file('item_of_interest.csv')
+    path('order_item_of_interest.csv')
     path(distances)
     path('12_report.Rmd')
 
