@@ -81,6 +81,8 @@ if(params.report){
     report_six_b_ch = Channel.fromPath("${projectDir}/report_gen_files/06b_report.Rmd")
     report_seven_ch = Channel.fromPath("${projectDir}/report_gen_files/07_report.Rmd")
     report_eight_ch = Channel.fromPath("${projectDir}/report_gen_files/08_report.Rmd")
+    report_nine_ch = Channel.fromPath("${projectDir}/report_gen_files/09_report.Rmd")
+    
 }
 
 /*
@@ -109,6 +111,8 @@ include { REPORT05ALPHABOXPLOT } from "${projectDir}/modules/local/renderreport0
 include { REPORT06ORDINATION; REPORT06BNMDSORDINATION } from "${projectDir}/modules/local/renderreport06.nf"
 include { REPORT07RAREFACTION } from "${projectDir}/modules/local/renderreport07.nf"
 include { REPORT08RANKEDABUNDANCE } from "${projectDir}/modules/local/renderreport08.nf"
+include { REPORT09UNIFRACHEATMAP } from "${projectDir}/modules/local/renderreport09.nf"
+
 
 workflow VISUALIZEAMPLISEQ {
     //TODO see if this breaks it
@@ -278,6 +282,7 @@ workflow VISUALIZEAMPLISEQ {
 
     COREMETRICPYTHON.out.pcoa.set{ ch_core_pcoa }
     COREMETRICPYTHON.out.vector.set{ ch_core_vector }
+    COREMETRICPYTHON.out.distance.set{ ch_core_distance }
 
     QIIME2_EXPORT_ABSOLUTE_CORE(ch_norm_qza_table
         ).tsv.set{ ch_norm_messy_tsv_table }
@@ -288,6 +293,7 @@ workflow VISUALIZEAMPLISEQ {
     CLEANUPNORMTSV.out.raw_MbA_table_tsv.set{ ch_norm_MBA_tsv_table }
     COREQZATOTSV(COREMETRICPYTHON.out.vector
         ).vector.set{ ch_core_vector_tsv }
+    
 
     REPORT01BARPLOT("Report_01", input_ch, metadata_ch, report_one_ch, ioi_ch, ch_norm_MBA_tsv_table, ch_norm_qza_table)
     REPORT02GRAPHLANPHYLOGENETICTREE( "Report_02", ch_graphlan_dir, ioi_ch, report_two_ch, report_two_local_ch)
@@ -306,7 +312,7 @@ workflow VISUALIZEAMPLISEQ {
 
     REPORT08RANKEDABUNDANCE("Report_08", ch_norm_qza_table, rooted_tree_ch, ch_tax_qza, metadata_ch, ioi_ch, ord_ioi_ch, report_eight_ch)
 
-
+    REPORT09UNIFRACHEATMAP("Report_09", ioi_ch, ord_ioi, metadata_ch, ch_core_distance, report_nine_ch)
 
 }
 
