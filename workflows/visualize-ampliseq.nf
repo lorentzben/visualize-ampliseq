@@ -91,7 +91,7 @@ if(params.report){
     report_twelve_ch = Channel.fromPath("${projectDir}/report_gen_files/12_report.Rmd")
     report_thirteen_ch = Channel.fromPath("${projectDir}/report_gen_files/13_report.Rmd")
     report_thirteen_local_ch = Channel.fromPath("${projectDir}/report_gen_files/13_report_local.Rmd")
-
+    report_fourteen_ch = Channel.fromPath("${projectDir}/report_gen_files/14_report.Rmd")
 }
 
 /*
@@ -127,7 +127,7 @@ include { REPORT10BETABOXPLOT } from "${projectDir}/modules/local/renderreport10
 include { REPORT11UPGMA } from "${projectDir}/modules/local/renderreport11.nf"
 include { REPORT12PERMANOVA } from "${projectDir}/modules/local/renderreport12.nf"
 include { REPORT13LEFSE } from "${projectDir}/modules/local/renderreport13.nf"
-
+include { REPORT14CITATIONS } from "${projectDir}/modules/local/renderreport14.nf"
 
 workflow VISUALIZEAMPLISEQ {
     //TODO see if this breaks it
@@ -337,8 +337,8 @@ workflow VISUALIZEAMPLISEQ {
     REPORT10BETABOXPLOT("Report_10", ioi_ch, ord_ioi_ch, metadata_ch, report_ten_ch, unifrac_pairwise_ch)
     REPORT11UPGMA( "Report_11", ch_norm_qza_table, rooted_tree_ch, ch_tax_qza, metadata_ch, ioi_ch, ord_ioi_ch, report_eleven_ch)
     REPORT12PERMANOVA("Report_12", ch_norm_qza_table, rooted_tree_ch, ch_tax_qza, metadata_ch, ioi_ch, ord_ioi_ch, ch_core_distance, report_twelve_ch)
-    
     REPORT13LEFSE("Report_13", ch_lefse_images, report_thirteen_ch, report_thirteen_local_ch, ioi_ch, ord_ioi_ch)
+    REPORT14CITATIONS("Report_14",report_fourteen_ch)
 }
 
     
