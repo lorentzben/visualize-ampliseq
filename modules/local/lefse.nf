@@ -1,4 +1,4 @@
-process LEFSEFORMAT {
+process LEFSEFORMAT{
 
     tag "$ioi"
     label 'process_low'
@@ -10,8 +10,7 @@ process LEFSEFORMAT {
     input:
     val(ioi)
     path("feature-table.qza")
-    //TODO do we need this
-    path("results")
+    path("rooted-tree.qza")
     path("taxonomy.qza")
     path("metadata.tsv")
     path("qiime_to_lefse.R")

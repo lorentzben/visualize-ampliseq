@@ -63,7 +63,7 @@ phyloseq_to_lefs <- function(physeq){
 }
 
 #"table-dada2.qza"
-cycle_1 <- qza_to_phyloseq("feature-table.qza","results/qiime2/phylogenetic_tree/rooted-tree.qza","taxonomy.qza","metadata.tsv")
+cycle_1 <- qza_to_phyloseq("feature-table.qza","rooted-tree.qza","taxonomy.qza","metadata.tsv")
 
 # modifications to select item of interest and remove the rest of the metadata
 new_samp_2 <- data.frame(sample_data(cycle_1))

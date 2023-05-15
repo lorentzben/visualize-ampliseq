@@ -113,6 +113,7 @@ include { COREMETRICPYTHON } from "${projectDir}/modules/local/coremetricpython.
 include { COREQZATOTSV } from "${projectDir}/modules/local/coreqzatotsv.nf"
 include { GENERATERAREFACTIONCURVE } from "${projectDir}/modules/local/generate_rarefaction_curve.nf"
 include { GENERATEUNIFRAC } from "${projectDir}/modules/local/generate_unifrac.nf"
+include { LEFSEFORMAT; LEFSEANALYSIS } from "${projectDir}/modules/local/lefse.nf"
 include { REPORT01BARPLOT } from "${projectDir}/modules/local/renderreport01.nf"
 include { REPORT02GRAPHLANPHYLOGENETICTREE } from "${projectDir}/modules/local/renderreport02.nf"
 include { REPORT03HEATMAP } from "${projectDir}/modules/local/renderreport03.nf"
@@ -126,6 +127,7 @@ include { REPORT10BETABOXPLOT } from "${projectDir}/modules/local/renderreport10
 include { REPORT11UPGMA } from "${projectDir}/modules/local/renderreport11.nf"
 include { REPORT12PERMANOVA } from "${projectDir}/modules/local/renderreport12.nf"
 include { REPORT13LEFSE } from "${projectDir}/modules/local/renderreport13.nf"
+
 
 workflow VISUALIZEAMPLISEQ {
     //TODO see if this breaks it
@@ -310,7 +312,7 @@ workflow VISUALIZEAMPLISEQ {
     GENERATEUNIFRAC(ch_core_distance, metadata_ch, ioi_ch
         ).pairwise.set{ unifrac_pairwise_ch }
 
-    LEFSEFORMAT(ioi_ch, ch_norm_qza_table, input_ch, ch_tax_qza, metadata_ch, qiime_to_lefse_ch
+    LEFSEFORMAT(ioi_ch, ch_norm_qza_table, rooted_tree_ch, ch_tax_qza, metadata_ch, qiime_to_lefse_ch
         ).combos.set{ ch_lefse_combos }
     LEFSEANALYSIS( ch_lefse_combos, lefse_analysis_ch, plot_clado_file_ch, plot_res_file_ch
         ).lefse_images.set{ ch_lefse_images }
