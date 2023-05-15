@@ -70,6 +70,10 @@ if(params.srs) {
 
 if(params.report){
     graph_sh_ch = Channel.fromPath("${projectDir}/bash_scripts/graph.sh")
+    qiime_to_lefse_ch = Channel.fromPath("${projectDir}/r_scripts/qiime_to_lefse.R")
+    lefse_analysis_ch = Channel.fromPath("${projectDir}/bin/lefse_analysis.sh")
+    plot_clado_file_ch = Channel.fromPath("${projectDir}/python_scripts/plot_cladogram.py")
+    plot_res_file_ch = Channel.fromPath("${projectDir}/python_scripts/plot_res.py")
 
     report_one_ch = Channel.fromPath("${projectDir}/report_gen_files/01_report_MbA.Rmd")
     report_two_ch = Channel.fromPath("${projectDir}/report_gen_files/02_report.Rmd")
@@ -85,6 +89,8 @@ if(params.report){
     report_ten_ch = Channel.fromPath("${projectDir}/report_gen_files/10_report.Rmd")
     report_eleven_ch = Channel.fromPath("${projectDir}/report_gen_files/11_report.Rmd")
     report_twelve_ch = Channel.fromPath("${projectDir}/report_gen_files/12_report.Rmd")
+    report_thirteen_ch = Channel.fromPath("${projectDir}/report_gen_files/13_report.Rmd")
+    report_thirteen_local_ch = Channel.fromPath("${projectDir}/report_gen_files/13_report_local.Rmd")
 
 }
 
@@ -119,6 +125,7 @@ include { REPORT09UNIFRACHEATMAP } from "${projectDir}/modules/local/renderrepor
 include { REPORT10BETABOXPLOT } from "${projectDir}/modules/local/renderreport10.nf"
 include { REPORT11UPGMA } from "${projectDir}/modules/local/renderreport11.nf"
 include { REPORT12PERMANOVA } from "${projectDir}/modules/local/renderreport12.nf"
+include { REPORT13LEFSE } from "${projectDir}/modules/local/renderreport13.nf"
 
 workflow VISUALIZEAMPLISEQ {
     //TODO see if this breaks it
@@ -303,6 +310,11 @@ workflow VISUALIZEAMPLISEQ {
     GENERATEUNIFRAC(ch_core_distance, metadata_ch, ioi_ch
         ).pairwise.set{ unifrac_pairwise_ch }
 
+    LEFSEFORMAT(ioi_ch, ch_norm_qza_table, input_ch, ch_tax_qza, metadata_ch, qiime_to_lefse_ch
+        ).combos.set{ ch_lefse_combos }
+    LEFSEANALYSIS( ch_lefse_combos, lefse_analysis_ch, plot_clado_file_ch, plot_res_file_ch
+        ).lefse_images.set{ ch_lefse_images }
+
     REPORT01BARPLOT("Report_01", input_ch, metadata_ch, report_one_ch, ioi_ch, ch_norm_MBA_tsv_table, ch_norm_qza_table)
     REPORT02GRAPHLANPHYLOGENETICTREE( "Report_02", ch_graphlan_dir, ioi_ch, report_two_ch, report_two_local_ch)
     REPORT03HEATMAP("Report_03", ch_norm_qza_table, rooted_tree_ch, ch_tax_qza, metadata_ch, report_three_ch, ioi_ch, ord_ioi_ch, ch_overall_summary)
@@ -322,8 +334,9 @@ workflow VISUALIZEAMPLISEQ {
     REPORT09UNIFRACHEATMAP("Report_09", ioi_ch, ord_ioi_ch, metadata_ch, ch_core_distance, report_nine_ch)
     REPORT10BETABOXPLOT("Report_10", ioi_ch, ord_ioi_ch, metadata_ch, report_ten_ch, unifrac_pairwise_ch)
     REPORT11UPGMA( "Report_11", ch_norm_qza_table, rooted_tree_ch, ch_tax_qza, metadata_ch, ioi_ch, ord_ioi_ch, report_eleven_ch)
-
     REPORT12PERMANOVA("Report_12", ch_norm_qza_table, rooted_tree_ch, ch_tax_qza, metadata_ch, ioi_ch, ord_ioi_ch, ch_core_distance, report_twelve_ch)
+    
+    REPORT13LEFSE("Report_13", ch_lefse_images, report_thirteen_ch, report_thirteen_local_ch, ioi_ch, ord_ioi_ch)
 }
 
     
