@@ -82,6 +82,7 @@ if(params.report){
     report_seven_ch = Channel.fromPath("${projectDir}/report_gen_files/07_report.Rmd")
     report_eight_ch = Channel.fromPath("${projectDir}/report_gen_files/08_report.Rmd")
     report_nine_ch = Channel.fromPath("${projectDir}/report_gen_files/09_report.Rmd")
+    report_ten_ch = Channel.fromPath("${projectDir}/report_gen_files/10_report.Rmd")
 
 }
 
@@ -103,6 +104,7 @@ include { RUNGRAPHLAN } from "${projectDir}/modules/local/graphlan.nf"
 include { COREMETRICPYTHON } from "${projectDir}/modules/local/coremetricpython.nf"
 include { COREQZATOTSV } from "${projectDir}/modules/local/coreqzatotsv.nf"
 include { GENERATERAREFACTIONCURVE } from "${projectDir}/modules/local/generate_rarefaction_curve.nf"
+include { GENERATEUNIFRAC } from "${projectDir}/modules/local/generate_unifrac.nf"
 include { REPORT01BARPLOT } from "${projectDir}/modules/local/renderreport01.nf"
 include { REPORT02GRAPHLANPHYLOGENETICTREE } from "${projectDir}/modules/local/renderreport02.nf"
 include { REPORT03HEATMAP } from "${projectDir}/modules/local/renderreport03.nf"
@@ -112,7 +114,7 @@ include { REPORT06ORDINATION; REPORT06BNMDSORDINATION } from "${projectDir}/modu
 include { REPORT07RAREFACTION } from "${projectDir}/modules/local/renderreport07.nf"
 include { REPORT08RANKEDABUNDANCE } from "${projectDir}/modules/local/renderreport08.nf"
 include { REPORT09UNIFRACHEATMAP } from "${projectDir}/modules/local/renderreport09.nf"
-
+include { REPORT10BETABOXPLOT } from "${projectDir}/modules/local/renderreport10.nf"
 
 workflow VISUALIZEAMPLISEQ {
     //TODO see if this breaks it
@@ -294,6 +296,8 @@ workflow VISUALIZEAMPLISEQ {
     COREQZATOTSV(COREMETRICPYTHON.out.vector
         ).vector.set{ ch_core_vector_tsv }
     
+    GENERATEUNIFRAC(ch_core_distance, metadata_ch, ioi_ch
+        ).pairwise.set{ unifrac_pairwise_ch }
 
     REPORT01BARPLOT("Report_01", input_ch, metadata_ch, report_one_ch, ioi_ch, ch_norm_MBA_tsv_table, ch_norm_qza_table)
     REPORT02GRAPHLANPHYLOGENETICTREE( "Report_02", ch_graphlan_dir, ioi_ch, report_two_ch, report_two_local_ch)
@@ -311,9 +315,9 @@ workflow VISUALIZEAMPLISEQ {
     }
 
     REPORT08RANKEDABUNDANCE("Report_08", ch_norm_qza_table, rooted_tree_ch, ch_tax_qza, metadata_ch, ioi_ch, ord_ioi_ch, report_eight_ch)
-
     REPORT09UNIFRACHEATMAP("Report_09", ioi_ch, ord_ioi_ch, metadata_ch, ch_core_distance, report_nine_ch)
 
+    REPORT10BETABOXPLOT("Report_10", ioi_ch, ord_ioi_ch, metadata_ch, report_ten_ch, unifrac_pairwise_ch)
 }
 
     
