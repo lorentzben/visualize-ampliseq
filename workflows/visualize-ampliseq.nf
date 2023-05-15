@@ -82,7 +82,7 @@ if(params.report){
     report_seven_ch = Channel.fromPath("${projectDir}/report_gen_files/07_report.Rmd")
     report_eight_ch = Channel.fromPath("${projectDir}/report_gen_files/08_report.Rmd")
     report_nine_ch = Channel.fromPath("${projectDir}/report_gen_files/09_report.Rmd")
-    
+
 }
 
 /*
@@ -312,7 +312,7 @@ workflow VISUALIZEAMPLISEQ {
 
     REPORT08RANKEDABUNDANCE("Report_08", ch_norm_qza_table, rooted_tree_ch, ch_tax_qza, metadata_ch, ioi_ch, ord_ioi_ch, report_eight_ch)
 
-    REPORT09UNIFRACHEATMAP("Report_09", ioi_ch, ord_ioi, metadata_ch, ch_core_distance, report_nine_ch)
+    REPORT09UNIFRACHEATMAP("Report_09", ioi_ch, ord_ioi_ch, metadata_ch, ch_core_distance, report_nine_ch)
 
 }
 
