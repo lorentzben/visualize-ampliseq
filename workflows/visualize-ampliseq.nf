@@ -84,6 +84,7 @@ if(params.report){
     report_nine_ch = Channel.fromPath("${projectDir}/report_gen_files/09_report.Rmd")
     report_ten_ch = Channel.fromPath("${projectDir}/report_gen_files/10_report.Rmd")
     report_eleven_ch = Channel.fromPath("${projectDir}/report_gen_files/11_report.Rmd")
+    report_twelve_ch = Channel.fromPath("${projectDir}/report_gen_files/12_report.Rmd")
 
 }
 
@@ -117,6 +118,7 @@ include { REPORT08RANKEDABUNDANCE } from "${projectDir}/modules/local/renderrepo
 include { REPORT09UNIFRACHEATMAP } from "${projectDir}/modules/local/renderreport09.nf"
 include { REPORT10BETABOXPLOT } from "${projectDir}/modules/local/renderreport10.nf"
 include { REPORT11UPGMA } from "${projectDir}/modules/local/renderreport11.nf"
+include { REPORT12PERMANOVA } from "${projectDir}/modules/local/renderreport12.nf"
 
 workflow VISUALIZEAMPLISEQ {
     //TODO see if this breaks it
@@ -319,8 +321,9 @@ workflow VISUALIZEAMPLISEQ {
     REPORT08RANKEDABUNDANCE("Report_08", ch_norm_qza_table, rooted_tree_ch, ch_tax_qza, metadata_ch, ioi_ch, ord_ioi_ch, report_eight_ch)
     REPORT09UNIFRACHEATMAP("Report_09", ioi_ch, ord_ioi_ch, metadata_ch, ch_core_distance, report_nine_ch)
     REPORT10BETABOXPLOT("Report_10", ioi_ch, ord_ioi_ch, metadata_ch, report_ten_ch, unifrac_pairwise_ch)
-
     REPORT11UPGMA( "Report_11", ch_norm_qza_table, rooted_tree_ch, ch_tax_qza, metadata_ch, ioi_ch, ord_ioi_ch, report_eleven_ch)
+
+    REPORT12PERMANOVA("Report_12", ch_norm_qza_table, rooted_tree_ch, ch_tax_qza, metadata_ch, ioi_ch, ord_ioi_ch, ch_core_distance, report_twelve_ch)
 }
 
     
