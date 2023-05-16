@@ -10,7 +10,7 @@ if (params.input){
     rooted_tree_ch = Channel.fromPath(params.input+"/qiime2/phylogenetic_tree/rooted-tree.qza", checkIfExists: true)
     asv_tsv_ch = Channel.fromPath(params.input+"/dada2/ASV_tax_species.tsv", checkIfExists: true)
     ch_overall_summary = Channel.fromPath(params.input+"/overall_summary.tsv", checkIfExists: true)
-    
+    ch_tree_nwk = Channel.fromPath(params.input+"/qiime2/phylogenetic_tree/tree.nwk")
     filter_samples_ch = Channel.fromPath("${projectDir}/python_scripts/filter_samples.py")
     
 } else {
@@ -317,7 +317,7 @@ workflow VISUALIZEAMPLISEQ {
     LEFSEANALYSIS( ch_lefse_combos, lefse_analysis_ch, plot_clado_file_ch, plot_res_file_ch
         ).lefse_images.set{ ch_lefse_images }
 
-    REPORT01BARPLOT("Report_01", input_ch, metadata_ch, report_one_ch, ioi_ch, ch_norm_MBA_tsv_table, ch_norm_qza_table)
+    REPORT01BARPLOT("Report_01", asv_tsv_ch, ch_tree_nwk, metadata_ch, report_one_ch, ioi_ch, ch_norm_MBA_tsv_table, ch_norm_qza_table)
     REPORT02GRAPHLANPHYLOGENETICTREE( "Report_02", ch_graphlan_dir, ioi_ch, report_two_ch, report_two_local_ch)
     REPORT03HEATMAP("Report_03", ch_norm_qza_table, rooted_tree_ch, ch_tax_qza, metadata_ch, report_three_ch, ioi_ch, ord_ioi_ch, ch_overall_summary)
     REPORT04ALPHATABLE("Report_04", ch_core_vector_tsv, ioi_ch, report_four_ch)

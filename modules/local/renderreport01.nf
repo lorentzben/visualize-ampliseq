@@ -12,7 +12,8 @@ process REPORT01BARPLOT{
     input:
 
     val(reportName)
-    path('results')
+    path('ASV_tax_species.tsv')
+    path('tree.nwk')
     path('metadata.tsv')
     path(report)
     file('item_of_interest.csv')
