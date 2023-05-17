@@ -70,7 +70,6 @@ process GENERATERAREFACTIONCURVE{
             print("ERROR this shouldn't happen")
             exit(1)
 
-        # TODO convert this from bash to python
         #check values
         
         if maxdepth > 75000:

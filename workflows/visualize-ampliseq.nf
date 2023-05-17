@@ -130,7 +130,6 @@ include { REPORT13LEFSE } from "${projectDir}/modules/local/renderreport13.nf"
 include { REPORT14CITATIONS } from "${projectDir}/modules/local/renderreport14.nf"
 
 workflow VISUALIZEAMPLISEQ {
-    //TODO see if this breaks it
     ORDERIOI(ioi_ch, metadata_ch, ord_ioi_ch
     ).ordered_ioi.set{ ord_ioi_ch }
 

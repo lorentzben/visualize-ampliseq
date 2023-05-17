@@ -21,7 +21,8 @@ Yihui Xie (2021). knitr: A General-Purpose Package for Dynamic Report Generation
 1 Species Distribution
 
 ---
-#TODO Include and update microbiome analyst
+
+* Xia J, Chong J, Liu P (????). _MicrobiomeAnalystR: MicrobiomeAnalystR A comprehensive R package for statistical, visual, and functional analysis of the microbiome._. R package version 0.0.0.9000.
 
 * Bolyen, E., Rideout, J.R., Dillon, M.R. et al. Reproducible, interactive, scalable and extensible microbiome data science using QIIME 2. Nat Biotechnol 37, 852–857 (2019). https://doi.org/10.1038/s41587-019-0209-9
 
@@ -34,6 +35,18 @@ https://CRAN.R-project.org/package=forcats
 
 * H. Wickham. ggplot2: Elegant Graphics for Data Analysis. Springer-Verlag New York, 2016.
 
+*  Wickham H, François R, Henry L, Müller K (2022). _dplyr: A Grammar of Data Manipulation_. https://dplyr.tidyverse.org, https://github.com/tidyverse/dplyr.
+
+* Wickham H, Girlich M (2022). _tidyr: Tidy Messy Data_. https://tidyr.tidyverse.org, https://github.com/tidyverse/tidyr.
+
+* Wickham H, Averick M, Bryan J, Chang W, McGowan LD, François R, Grolemund G, Hayes A, Henry L, Hester J, Kuhn M, Pedersen TL, Miller E, Bache SM, Müller K, Ooms J, Robinson D, Seidel DP, Spinu V, Takahashi K, Vaughan D, Wilke C, Woo K, Yutani H (2019). “Welcome to the tidyverse.” _Journal of Open Source Software_, *4*(43), 1686. doi:10.21105/joss.01686 <https://doi.org/10.21105/joss.01686>.
+
+* Yihui Xie (2022). knitr: A General-Purpose Package for Dynamic Report Generation in R. R package version 1.40.
+
+* Yihui Xie (2015) Dynamic Documents with R and knitr. 2nd edition. Chapman and Hall/CRC. ISBN 978-1498716963
+
+* Yihui Xie (2014) knitr: A Comprehensive Tool for Reproducible Research in R. In Victoria Stodden, Friedrich Leisch and Roger D. Peng, editors, Implementing Reproducible Computational Research. Chapman and Hall/CRC. ISBN 978-1466561595
+
 \
 
 2 Phylogentic Trees
@@ -45,6 +58,15 @@ https://CRAN.R-project.org/package=forcats
 
 * Asnicar F, Weingart G, Tickle TL, Huttenhower C, Segata N. 2015. Compact graphical representation of phylogenetic data and metadata with GraPhlAn. PeerJ 3:e1029 https://doi.org/10.7717/peerj.1029
 
+* Yihui Xie (2022). knitr: A General-Purpose Package for Dynamic Report Generation in R. R package version 1.40.
+
+* Yihui Xie (2015) Dynamic Documents with R and knitr. 2nd edition. Chapman and Hall/CRC. ISBN 978-1498716963
+
+* Yihui Xie (2014) knitr: A Comprehensive Tool for Reproducible Research in R. In Victoria Stodden, Friedrich Leisch and Roger D. Peng, editors, Implementing Reproducible Computational Research. Chapman and Hall/CRC. ISBN 978-1466561595
+
+* Bolker B, Warnes G, Lumley T (2022). _gtools: Various R Programming Tools_. R package version 3.9.3, <https://github.com/r-gregmisc/gtools>.
+
+
 \
 
 3 Species Abundance Heatmap
@@ -54,6 +76,24 @@ https://CRAN.R-project.org/package=forcats
 * phyloseq_to_ampvis2.R Andersen K.S. (2019), GitHub gist, https://gist.github.com/KasperSkytte/8d0ca4206a66be7ff6d76fc4ab8e66c6 
 
 * ampvis2: an R package to analyse and visualise 16S rRNA amplicon  data. Andersen K.S., Kirkegaard R.H., Karst S.M., Albertsen M. (2018)  bioRxiv. doi: https://doi.org/10.1101/299537
+
+* qiime2R: Importing QIIME2 artifacts and associated data into R sessions. Jordan E Bisanz (2018) https://github.com/jbisanz/qiime2R.
+
+* phyloseq: An R package for reproducible interactive analysis and graphics of microbiome census data. Paul J. McMurdie and Susan Holmes (2013) PLoS ONE 8(4):e61217.
+
+* Wickham H, Averick M, Bryan J, Chang W, McGowan LD, François R, Grolemund G, Hayes A, Henry L, Hester J, Kuhn M, Pedersen TL, Miller E, Bache SM, Müller K, Ooms J, Robinson D, Seidel DP, Spinu V, Takahashi K, Vaughan D, Wilke C, Woo K, Yutani H (2019). “Welcome to the tidyverse.” _Journal of Open Source Software_, *4*(43), 1686. doi:10.21105/joss.01686 <https://doi.org/10.21105/joss.01686>.
+
+* Hao Zhu (2021). kableExtra: Construct Complex Table with 'kable' and Pipe Syntax. R package version 1.3.4. https://CRAN.R-project.org/package=kableExtra
+
+\
+
+4 Alpha Diversity Table
+
+--- 
+
+* Hao Zhu (2021). kableExtra: Construct Complex Table with 'kable' and Pipe Syntax. R package version 1.3.4. https://CRAN.R-project.org/package=kableExtra
+
+* Wickham H, Averick M, Bryan J, Chang W, McGowan LD, François R, Grolemund G, Hayes A, Henry L, Hester J, Kuhn M, Pedersen TL, Miller E, Bache SM, Müller K, Ooms J, Robinson D, Seidel DP, Spinu V, Takahashi K, Vaughan D, Wilke C, Woo K, Yutani H (2019). “Welcome to the tidyverse.” _Journal of Open Source Software_, *4*(43), 1686. doi:10.21105/joss.01686 <https://doi.org/10.21105/joss.01686>.
 
 \
 
@@ -65,6 +105,13 @@ https://CRAN.R-project.org/package=forcats
 
 * Alboukadel Kassambara (2020). ggpubr: 'ggplot2' Based Publication Ready Plots. R package version 0.4.0.  https://CRAN.R-project.org/package=ggpubr
 
+* H. Wickham. ggplot2: Elegant Graphics for Data Analysis. Springer-Verlag New York, 2016.
+
+* Wickham H, Averick M, Bryan J, Chang W, McGowan LD, François R, Grolemund G, Hayes A, Henry L, Hester J, Kuhn M, Pedersen TL, Miller E, Bache SM, Müller K, Ooms J, Robinson D, Seidel DP, Spinu V, Takahashi K, Vaughan D, Wilke C, Woo K, Yutani H (2019). “Welcome to the tidyverse.” _Journal of Open Source Software_, *4*(43), 1686. doi:10.21105/joss.01686 <https://doi.org/10.21105/joss.01686>.
+
+* Hao Zhu (2021). kableExtra: Construct Complex Table with 'kable' and Pipe Syntax. R package version 1.3.4. https://CRAN.R-project.org/package=kableExtra
+
+
 \
 
 6 Beta Diversity Ordinations
@@ -73,8 +120,15 @@ https://CRAN.R-project.org/package=forcats
 
 * Charles A. Martin (2017). ggConvexHull: Add a convex hull geom to ggplot2. R package version 0.1.0. http://github.com/cmartin/ggConvexHull
 
-*  Legendre, P. and Gallagher, E.D. (2001). Ecologically meaningful transformations for ordination of
-species data. Oecologia 129, 271-280.
+*  Legendre, P. and Gallagher, E.D. (2001). Ecologically meaningful transformations for ordination of species data. Oecologia 129, 271-280.
+
+* qiime2R: Importing QIIME2 artifacts and associated data into R sessions. Jordan E Bisanz (2018) https://github.com/jbisanz/qiime2R.
+
+*  Wickham H, François R, Henry L, Müller K (2022). _dplyr: A Grammar of Data Manipulation_. https://dplyr.tidyverse.org, https://github.com/tidyverse/dplyr.
+
+* phyloseq: An R package for reproducible interactive analysis and graphics of microbiome census data. Paul J. McMurdie and Susan Holmes (2013) PLoS ONE 8(4):e61217.
+
+* H. Wickham. ggplot2: Elegant Graphics for Data Analysis. Springer-Verlag New York, 2016.
 
 \
 
@@ -84,13 +138,47 @@ species data. Oecologia 129, 271-280.
 
 * Hadley Wickham (2007). Reshaping Data with the reshape Package. Journal of Statistical Software, 21(12), 1-20. URL http://www.jstatsoft.org/v21/i12/
 
+* Wickham H, Averick M, Bryan J, Chang W, McGowan LD, François R, Grolemund G, Hayes A, Henry L, Hester J, Kuhn M, Pedersen TL, Miller E, Bache SM, Müller K, Ooms J, Robinson D, Seidel DP, Spinu V, Takahashi K, Vaughan D, Wilke C, Woo K, Yutani H (2019). “Welcome to the tidyverse.” _Journal of Open Source Software_, *4*(43), 1686. doi:10.21105/joss.01686 <https://doi.org/10.21105/joss.01686>.
+
+*  Wickham H, François R, Henry L, Müller K (2022). _dplyr: A Grammar of Data Manipulation_. https://dplyr.tidyverse.org, https://github.com/tidyverse/dplyr.
+
+* H. Wickham. ggplot2: Elegant Graphics for Data Analysis. Springer-Verlag New York, 2016.
+
+\
+
+8 Ranked Abundance Curves
+
+* ampvis2: an R package to analyse and visualise 16S rRNA amplicon data. Andersen K.S., Kirkegaard R.H., Karst S.M., Albertsen M. (2018) bioRxiv. doi: https://doi.org/10.1101/299537
+
+* H. Wickham. ggplot2: Elegant Graphics for Data Analysis. Springer-Verlag New York, 2016.
+
+* qiime2R: Importing QIIME2 artifacts and associated data into R sessions. Jordan E Bisanz (2018) https://github.com/jbisanz/qiime2R.
+
+* phyloseq: An R package for reproducible interactive analysis and graphics of microbiome census data. Paul J. McMurdie and Susan Holmes (2013) PLoS ONE 8(4):e61217. 
+
+* Wickham H, Averick M, Bryan J, Chang W, McGowan LD, François R, Grolemund G, Hayes A, Henry L, Hester J, Kuhn M, Pedersen TL, Miller E, Bache SM, Müller K, Ooms J, Robinson D, Seidel DP, Spinu V, Takahashi K, Vaughan D, Wilke C, Woo K, Yutani H (2019). “Welcome to the tidyverse.” _Journal of Open Source Software_, *4*(43), 1686. doi:10.21105/joss.01686 <https://doi.org/10.21105/joss.01686>.
+ 
+--- 
+
 \
 
 9 Unifrac Heatmap
 
 ---
 
+* qiime2R: Importing QIIME2 artifacts and associated data into R sessions. Jordan E Bisanz (2018) https://github.com/jbisanz/qiime2R.
+
 * Raivo Kolde (2019). pheatmap: Pretty Heatmaps. R package version 1.0.12. https://CRAN.R-project.org/package=pheatmap
+
+* H. Wickham. ggplot2: Elegant Graphics for Data Analysis. Springer-Verlag New York, 2016.
+
+\
+
+10 Beta Diversity Between Groups
+
+---
+
+* H. Wickham. ggplot2: Elegant Graphics for Data Analysis. Springer-Verlag New York, 2016.
 
 \
 
@@ -98,15 +186,33 @@ species data. Oecologia 129, 271-280.
 
 ---
 
+* H. Wickham. ggplot2: Elegant Graphics for Data Analysis. Springer-Verlag New York, 2016.
+
+* qiime2R: Importing QIIME2 artifacts and associated data into R sessions. Jordan E Bisanz (2018) https://github.com/jbisanz/qiime2R.
+
+* phyloseq: An R package for reproducible interactive analysis and graphics of microbiome census data. Paul J. McMurdie and Susan Holmes (2013) PLoS ONE 8(4):e61217. 
+
 * Andrie de Vries and Brian D. Ripley (2020). ggdendro: Create Dendrograms and Tree Diagrams Using 'ggplot2'. R package version 0.1.22. https://CRAN.R-project.org/package=ggdendro
 
-* Sarkar, Deepayan (2008) Lattice: Multivariate Data Visualization with R. Springer, New York. ISBN 978-0-387-75968-5
+* R Core Team (2021). R: A language and environment for statistical computing. R Foundation for Statistical Computing, Vienna, Austria. URL https://www.R-project.org/.
+
+* Wickham H, Averick M, Bryan J, Chang W, McGowan LD, François R, Grolemund G, Hayes A, Henry L, Hester J, Kuhn M, Pedersen TL, Miller E, Bache SM, Müller K, Ooms J, Robinson D, Seidel DP, Spinu V, Takahashi K, Vaughan D, Wilke C, Woo K, Yutani H (2019). “Welcome to the tidyverse.” _Journal of Open Source Software_, *4*(43), 1686. doi:10.21105/joss.01686 <https://doi.org/10.21105/joss.01686>.
+
+* Alboukadel Kassambara (2020). ggpubr: 'ggplot2' Based Publication Ready Plots. R package version 0.4.0.  https://CRAN.R-project.org/package=ggpubr
 
 \
 
 12 Beta Diversity Statistical Tests
 
 ---
+
+* Alboukadel Kassambara (2020). rstatix: Pipe-Friendly Framework for Basic Statistical Tests. R package version 0.6.0. https://CRAN.R-project.org/package=rstatix
+
+* H. Wickham. ggplot2: Elegant Graphics for Data Analysis. Springer-Verlag New York, 2016.
+
+* Alboukadel Kassambara (2020). ggpubr: 'ggplot2' Based Publication Ready Plots. R package version 0.4.0.  https://CRAN.R-project.org/package=ggpubr
+
+* phyloseq: An R package for reproducible interactive analysis and graphics of microbiome census data. Paul J. McMurdie and Susan Holmes (2013) PLoS ONE 8(4):e61217. 
 
 * Jari Oksanen, F. Guillaume Blanchet, Michael Friendly, Roeland Kindt, Pierre Legendre, Dan McGlinn, Peter R. Minchin, R. B. O'Hara, Gavin L. Simpson, Peter Solymos, M. Henry H. Stevens, Eduard Szoecs and Helene Wagner (2020). vegan: Community Ecology Package. R package version 2.5-7. https://CRAN.R-project.org/package=vegan
 
@@ -130,3 +236,10 @@ species data. Oecologia 129, 271-280.
 
 * Hadley Wickham, Romain François, Lionel Henry and Kirill Müller (2021). dplyr: A Grammar of Data Manipulation. R package version 1.0.4. https://CRAN.R-project.org/package=dplyr
 
+* Gregory R. Warnes, Ben Bolker and Thomas Lumley (2021). gtools: Various R Programming Tools. R package version 3.9.2. https://CRAN.R-project.org/package=gtools
+
+* Yihui Xie (2022). knitr: A General-Purpose Package for Dynamic Report Generation in R. R package version 1.39.
+
+* Yihui Xie (2015) Dynamic Documents with R and knitr. 2nd edition. Chapman and Hall/CRC. ISBN 978-1498716963
+
+* Yihui Xie (2014) knitr: A Comprehensive Tool for Reproducible Research in R. In Victoria Stodden, Friedrich Leisch and Roger D. Peng, editors, Implementing Reproducible Computational Research. Chapman and Hall/CRC. ISBN 978-1466561595

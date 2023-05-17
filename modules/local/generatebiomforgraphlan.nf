@@ -11,8 +11,6 @@ process GENERATEBIOMFORGRAPHLAN{
 
     path(metadata)
     val(ioi)
-    //TODO do we need this?
-    //path 'results'
     path("filter_samples.py")
     path("taxonomy.qza")
     path("feature-table.qza")
