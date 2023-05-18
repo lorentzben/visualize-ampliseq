@@ -57,6 +57,15 @@ if(params.mock){
     mock_val_ch = Channel.of(params.mock)
 } else { mock_val_ch = Channel.empty() }
 
+if(params.refSeq){
+    refrence_seq_ch = Channel.fromPath(params.refSeq)
+} else { refrence_seq_ch = Channel.empty() }
+
+if(params.refTab){
+    reference_table_ch = Channel.fromPath(params.refTab)
+} else{ reference_table_ch = Channel.empty() }
+
+
 if(params.srs) {
     srs = true
     srs_curve_ch = Channel.fromPath("${projectDir}/r_scripts/srs_curve.rmd")
@@ -114,6 +123,8 @@ include { COREQZATOTSV } from "${projectDir}/modules/local/coreqzatotsv.nf"
 include { GENERATERAREFACTIONCURVE } from "${projectDir}/modules/local/generate_rarefaction_curve.nf"
 include { GENERATEUNIFRAC } from "${projectDir}/modules/local/generate_unifrac.nf"
 include { LEFSEFORMAT; LEFSEANALYSIS } from "${projectDir}/modules/local/lefse.nf"
+include { QIIME2_EVALUATE_SEQS } from "${projectDir}/modules/local/qiime2_evaluate_seqs.nf"
+include { QIIME2_EVALUATE_COMPOSITION } from "${projectDir}/modules/local/qiime2_evaluate_composition.nf"
 include { REPORT01BARPLOT } from "${projectDir}/modules/local/renderreport01.nf"
 include { REPORT02GRAPHLANPHYLOGENETICTREE } from "${projectDir}/modules/local/renderreport02.nf"
 include { REPORT03HEATMAP } from "${projectDir}/modules/local/renderreport03.nf"
@@ -344,11 +355,13 @@ workflow VISUALIZEAMPLISEQ {
         // Step 1 filter repseqs for only Mock Data
         // Step 2 QIIME2 quality-control evaluate-seqs
         // in: refrence seqs (made elsewhere); observed seqs from step 1
+        QIIME2_EVALUATE_SEQS(refrence_seq_ch,)
 
         // Test 2 Check Quality of Samples with known composition
         // Step 1 filter qza table for only Mock Data
         // Step 2 QIIME2 quality-control evaluate-composition
         // in: expected qza table (made elsewhere); observed qza table from right before
+        QIIME2_EVALUATE_COMPOSITION(reference_table_ch,)
     }
 }
 
