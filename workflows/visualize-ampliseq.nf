@@ -371,7 +371,7 @@ workflow VISUALIZEAMPLISEQ {
             ).qza.set { ch_only_mock_qza_table }
         // Step 2 QIIME2 quality-control evaluate-composition
         // in: expected qza table (made elsewhere); observed qza table from right before
-        QIIME2_EVALUATE_COMPOSITION(reference_table_ch, ch_only_mock_qza_table)
+        QIIME2_EVALUATE_COMPOSITION(ch_only_mock_qza_table, ch_tax_qza, reference_table_ch)
     }
 }
 

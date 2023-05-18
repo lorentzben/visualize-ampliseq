@@ -9,8 +9,10 @@ process QIIME2_EVALUATE_COMPOSITION {
     }
 
     input:
-    path(reference-table)
     path(experimental-table)
+    path(taxonomy)
+    path(reference-table)
+    
 
     output:
     path("expected-observed-comparison.qzv"), emit: table_viz
@@ -23,10 +25,21 @@ process QIIME2_EVALUATE_COMPOSITION {
     """
     export XDG_CONFIG_HOME="\${PWD}/HOME"
 
+    # TODO fix this all 
+    qiime taxa collapse \\
+        --i-table ${experimental-table} \\
+        --i-taxonomy ${taxonomy} \\
+        --p-level 7 \\
+        --o-collapsed-table collapsed-table.qza
+
+    qiime feature-table relative-frequency \\
+        --i-table collapsed-table.qza \\
+        --o-relative-frequency-table relative-table.qza
+
     # use quality control evaluate-seqs to check mock community
     qiime quality-control evaluate-composition \\
         --i-expected-features ${reference-table} \\
-        --i-observed-features ${experimental-table} \\
+        --i-observed-features relative-table.qza \\
         --o-visualization expected-observed-comparison.qzv
 
 
