@@ -338,6 +338,18 @@ workflow VISUALIZEAMPLISEQ {
     REPORT12PERMANOVA("Report_12", ch_norm_qza_table, rooted_tree_ch, ch_tax_qza, metadata_ch, ioi_ch, ord_ioi_ch, ch_core_distance, report_twelve_ch)
     REPORT13LEFSE("Report_13", ch_lefse_images, report_thirteen_ch, report_thirteen_local_ch, ioi_ch, ord_ioi_ch)
     REPORT14CITATIONS("Report_14",report_fourteen_ch)
+
+    if(params.mock){
+        // Test 1 Check Sequence Quality
+        // Step 1 filter repseqs for only Mock Data
+        // Step 2 QIIME2 quality-control evaluate-seqs
+        // in: refrence seqs (made elsewhere); observed seqs from step 1
+
+        // Test 2 Check Quality of Samples with known composition
+        // Step 1 filter qza table for only Mock Data
+        // Step 2 QIIME2 quality-control evaluate-composition
+        // in: expected qza table (made elsewhere); observed qza table from right before
+    }
 }
 
     
