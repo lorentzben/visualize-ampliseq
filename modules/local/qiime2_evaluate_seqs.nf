@@ -9,8 +9,8 @@ process QIIME2_EVALUATE_SEQS {
     }
 
     input:
-    path(query-seqs)
-    path(reference-seqs)
+    path(querySeqs)
+    path(referenceSeqs)
 
     output:
     path("eval-seqs-test.qzv")        , emit: seqs_viz
@@ -25,8 +25,8 @@ process QIIME2_EVALUATE_SEQS {
 
     # use quality control evaluate-seqs to check mock community
     qiime quality-control evaluate-seqs \\
-        --i-query-sequences ${query-seqs} \\
-        --i-reference-sequences ${reference-seqs} \\
+        --i-query-sequences ${querySeqs} \\
+        --i-reference-sequences ${referenceSeqs} \\
         --o-visualization eval-seqs-test.qzv
 
 
