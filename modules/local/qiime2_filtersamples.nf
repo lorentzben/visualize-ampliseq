@@ -1,4 +1,4 @@
-process QIIME2_FILTERSAMPLES {
+process QIIME2_FILTERONLYSAMPLES {
     tag "${filter}"
     label 'process_low'
 
