@@ -32,7 +32,7 @@ process QIIME2_FILTERSEQS {
         --i-data ${data} \\
         --m-metadata-file ${metadata} \\
         $args \\
-        --o-filtered-table ${prefix}.qza
+        --o-filtered-data ${prefix}.qza
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
