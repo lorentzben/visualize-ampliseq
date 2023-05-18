@@ -9,9 +9,9 @@ process QIIME2_EVALUATE_COMPOSITION {
     }
 
     input:
-    path(experimental-table)
+    path(experimentalTable)
     path(taxonomy)
-    path(reference-table)
+    path(referenceTable)
     
 
     output:
@@ -27,7 +27,7 @@ process QIIME2_EVALUATE_COMPOSITION {
 
     # TODO fix this all 
     qiime taxa collapse \\
-        --i-table ${experimental-table} \\
+        --i-table ${experimentalTable} \\
         --i-taxonomy ${taxonomy} \\
         --p-level 7 \\
         --o-collapsed-table collapsed-table.qza
@@ -38,7 +38,7 @@ process QIIME2_EVALUATE_COMPOSITION {
 
     # use quality control evaluate-seqs to check mock community
     qiime quality-control evaluate-composition \\
-        --i-expected-features ${reference-table} \\
+        --i-expected-features ${referenceTable} \\
         --i-observed-features relative-table.qza \\
         --o-visualization expected-observed-comparison.qzv
 
