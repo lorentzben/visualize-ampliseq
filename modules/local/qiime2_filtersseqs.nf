@@ -1,4 +1,4 @@
-process QIIME2_FILTERSAMPLES {
+process QIIME2_FILTERSEQS {
     tag "${filter}"
     label 'process_low'
 
@@ -11,7 +11,7 @@ process QIIME2_FILTERSAMPLES {
 
     input:
     path(metadata)
-    path(table) 
+    path(data) 
     val(filter)
     val(ioi)
 
@@ -28,8 +28,8 @@ process QIIME2_FILTERSAMPLES {
     """
     export XDG_CONFIG_HOME="\${PWD}/HOME"
 
-    qiime feature-table filter-samples \\
-        --i-table ${table} \\
+    qiime feature-table filter-seqs \\
+        --i-data ${data} \\
         --m-metadata-file ${metadata} \\
         $args \\
         --o-filtered-table ${prefix}.qza

@@ -59,7 +59,11 @@ if(params.mock){
 
 if(params.refSeq){
     refrence_seq_ch = Channel.fromPath(params.refSeq)
-} else { refrence_seq_ch = Channel.empty() }
+    rep_seq_ch = Channel.fromPath(params.input+"/qiime2/representative_sequences/filtered-sequences.qza", checkIfExists: true)
+} else { 
+    refrence_seq_ch = Channel.empty() 
+    rep_seq_ch = Channel.empty()
+}
 
 if(params.refTab){
     reference_table_ch = Channel.fromPath(params.refTab)
@@ -112,7 +116,9 @@ include { CLEANUPRAWTSV; CLEANUPRAWTSV as CLEANUPFILTTSV; CLEANUPRAWTSV as CLEAN
 include { CLEANUPRAWQZA } from "${projectDir}/modules/local/cleanuprawqza.nf"
 include { TSVTOQZA; TSVTOQZA as TSVTOQZA2 } from "${projectDir}/modules/local/tsvtoqza.nf"
 include { FILTERNEGATIVECONTROL } from "${projectDir}/modules/local/filternegativecontrol.nf"
-include { QIIME2_FILTERSAMPLES as QIIME2_FILTERNC; QIIME2_FILTERSAMPLES as QIIME2_FILTERMOCK } from "${projectDir}/modules/local/qiime2_filtersamples.nf"
+include { QIIME2_FILTERSAMPLES as QIIME2_FILTERNC; QIIME2_FILTERSAMPLES as QIIME2_FILTERMOCK } from "${projectDir}/modules/local/qiime2_filternotsamples.nf"
+include { QIIME2_FILTERONLYSAMPLES as QIIME2_ONLYMOCK } from "${projectDir}/modules/local/qiime2_filtersamples.nf"
+include { QIIME2_FILTERSEQS } from "${projectDir}/modules/local/qiime2_filtersseqs.nf"
 include { QIIME2_EXPORT_ABSOLUTE as QIIME2_EXPORT_ABSOLUTE_NC; QIIME2_EXPORT_ABSOLUTE as QIIME2_EXPORT_ABSOLUTE_MOCK; QIIME2_EXPORT_ABSOLUTE as QIIME2_EXPORT_ABSOLUTE_CORE  } from "${projectDir}/modules/local/qiime2_export_absolute.nf"
 include { SRSCURVE } from "${projectDir}/modules/local/srscurve.nf"
 include { SRSNORMALIZE } from "${projectDir}/modules/local/srsnormalize.nf"
@@ -353,15 +359,19 @@ workflow VISUALIZEAMPLISEQ {
     if(params.mock){
         // Test 1 Check Sequence Quality
         // Step 1 filter repseqs for only Mock Data
+        QIIME2_FILTERSEQS(metadata_ch, rep_seq_ch, mock_val_ch, ioi_ch
+            ).qza.set { ch_only_mock_seq }
         // Step 2 QIIME2 quality-control evaluate-seqs
         // in: refrence seqs (made elsewhere); observed seqs from step 1
-        QIIME2_EVALUATE_SEQS(refrence_seq_ch,)
+        QIIME2_EVALUATE_SEQS(refrence_seq_ch, ch_only_mock_seq)
 
         // Test 2 Check Quality of Samples with known composition
         // Step 1 filter qza table for only Mock Data
+        QIIME2_ONLYMOCK(metadata_ch, mock_in_qza, mock_val_ch, ioi_ch
+            ).qza.set { ch_only_mock_qza_table }
         // Step 2 QIIME2 quality-control evaluate-composition
         // in: expected qza table (made elsewhere); observed qza table from right before
-        QIIME2_EVALUATE_COMPOSITION(reference_table_ch,)
+        QIIME2_EVALUATE_COMPOSITION(reference_table_ch, ch_only_mock_qza_table)
     }
 }
 

@@ -23,7 +23,7 @@ process QIIME2_FILTERSAMPLES {
     task.ext.when == null || task.ext.when
 
     script:
-    def args = task.ext.args ?: "--p-where \"[${ioi}]=\'${filter}\'\""
+    def args = task.ext.args ?: "--p-where \"[${ioi}]!=\'${filter}\'\""
     def prefix = task.ext.prefix ?: "${filter}"
     """
     export XDG_CONFIG_HOME="\${PWD}/HOME"
