@@ -312,6 +312,7 @@ workflow VISUALIZEAMPLISEQ {
     RUNGRAPHLAN(metadata_ch, ioi_ch, ch_tax_qza, graph_sh_ch, ch_graphlan_biom
         ).graphlan_dir.set{ ch_graphlan_dir }
     
+    /*
     //TODO Use the filtered table to filter repseqs
     if( params.srs || params.mock){
         QIIME2_FILTER_REPSEQS(final_table_qza, rep_seq_ch, "REPSEQ"
@@ -322,7 +323,7 @@ workflow VISUALIZEAMPLISEQ {
         QIIME2_BUILD_ROOTED_TREE( ch_new_rep_seq 
             ).rootedTree.set{ rooted_tree_ch }
     }
-
+    */
     COREMETRICPYTHON(metadata_ch, final_table_qza, final_table_tsv, rooted_tree_ch, rare_val_ch
         ).rare_table.set{ ch_norm_qza_table }
 
