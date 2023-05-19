@@ -319,7 +319,7 @@ workflow VISUALIZEAMPLISEQ {
 
     //TODO Rebuild the rooted_tree
 
-    QIIME2_BUILD_ROOTED_TREE( rooted_tree_ch, ch_new_rep_seq 
+    QIIME2_BUILD_ROOTED_TREE( ch_new_rep_seq 
         ).rootedTree{ new_rooted_tree_ch }
 
     COREMETRICPYTHON(metadata_ch, final_table_qza, final_table_tsv, new_rooted_tree_ch, rare_val_ch
