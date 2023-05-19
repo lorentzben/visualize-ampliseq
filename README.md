@@ -2,25 +2,27 @@
 
 A pipeline built using DSL2 and nextflow to visualize the output from a [nf-core/ampliseq](https://github.com/nf-core/ampliseq) analysis. 
 
-### Example Parameters:
+## Example Parameters:
+
+Only select the text to the left of the pipe (|) character 
 
 ```yaml
 # paramfile.yaml
 
-input: "/cycle-4/litter-srs | result directory absolute path from nf-core/ampliseq "
-ioi: "Treatment | "item of interest" column located in metadata that comparisions will be based on"
-metadata: "/cycle-4/litter-srs/metadata.tsv | absolute filepath to metadata file from nf-core/ampliseq analysis"
-outdir: "/cycle-4/litter-srs-nc-mock-16500-with-viz | outdir of this analysis where resultfiles will be published"
-ordioi: "/cycle-4/litter/ord_ioi.csv | "ordered item of interest" if you prefer a sepecific ordering control vs treatment"
+input: "/cycle-4/litter-srs" | result directory absolute path from nf-core/ampliseq 
+ioi: "Treatment" | "item of interest" column located in metadata that comparisions will be based on
+metadata: "/cycle-4/litter-srs/metadata.tsv" | absolute filepath to metadata file from nf-core/ampliseq analysis
+outdir: "/cycle-4/litter-srs-nc-mock-16500-with-viz" | outdir of this analysis where resultfiles will be published
+ordioi: "/cycle-4/litter/ord_ioi.csv" | "ordered item of interest" if you prefer a sepecific ordering control vs treatment
 rare: 16500 | rarefaction depth can be determined by examining rarefaction/srs curve
 srs: true | does SRS need to be utilized?
-negative: "NC | what is the value of negative controls in your ioi col"
-mock: "MOCK | what is the value of positive control/mock community in your ioi col"
-refSeq: "/reference-community/atcc_20_ref.qza | reference sequences for your mock community in qza format, see below"
-refTab: "/reference-community/expected-taxonomy.qza | reference abundances for mock community in qza format, see below"
+negative: "NC" | what is the value of negative controls in your ioi col
+mock: "MOCK" | what is the value of positive control/mock community in your ioi col
+refSeq: "/reference-community/atcc_20_ref.qza" | reference sequences for your mock community in qza format, see below
+refTab: "/reference-community/expected-taxonomy.qza" | reference abundances for mock community in qza format, see below
 ```
 
-### To run:
+## To run:
 
 One note I suggest is to put the command below and the paramfile in a git repository and log commits as you change paramters for reproducibility 
 
@@ -55,13 +57,13 @@ $ nextflow run lorentzben/visualize-ampliseq \
 If you have a directory of sequnences you can use the following command:
 
 ```bash
-cd /reference-community
-cat *.fasta > atcc_20_ref.fasta
-head /work/sealab/bjl34716/ade/reference-community/atcc_20_ref.fasta
+$ cd /reference-community
+$ cat *.fasta > atcc_20_ref.fasta
+$ head /reference-community/atcc_20_ref.fasta
 
-qiime tools import \
-  --input-path /work/sealab/bjl34716/ade/reference-community/atcc_20_ref.fasta \
-  --output-path /work/sealab/bjl34716/ade/reference-community/atcc_20_ref.qza \
+$ qiime tools import \
+  --input-path /reference-community/atcc_20_ref.fasta \
+  --output-path /reference-community/atcc_20_ref.qza \
   --type 'FeatureData[Sequence]'
 ```
 
@@ -69,7 +71,7 @@ qiime tools import \
 
 ```bash
 
-nano reftab.tsv
+$ nano reftab.tsv
 
 Taxonomy        MOCK167 MOCK288 MOCK323 MOCK71
 D_0__Bacteria;D_1__Proteobacteria;D_2__Gammaproteobacteria;D_3__Pseudomonadales;D_4__Moraxellaceae;D_5__Acinetobacter;D_6__baumannii    0.05    0.05    0.05    0.05
@@ -98,15 +100,15 @@ Taking in the file reftab.tsv you can generate the qza you need as below. You mu
 
 ```bash
 
-biom convert \
+$ biom convert \
   -i reftab.tsv \
   -o expected-taxonomy.biom \
   --table-type="OTU table" \
   --to-json
 
-qiime tools import \
+$ qiime tools import \
  --type FeatureTable[RelativeFrequency] \
  --input-path expected-taxonomy.biom \
  --input-format BIOMV100Format \
- --output-path /work/sealab/bjl34716/ade/reference-community/expected-taxonomy.qza
+ --output-path /reference-community/expected-taxonomy.qza
 ```
