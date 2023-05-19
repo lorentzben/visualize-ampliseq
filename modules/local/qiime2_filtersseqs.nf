@@ -12,6 +12,7 @@ process QIIME2_FILTERSEQS {
     input:
     path(table)
     path(data) 
+    val(prefix)
 
     output:
     path("*.qza")       , emit: qza
@@ -21,8 +22,7 @@ process QIIME2_FILTERSEQS {
     task.ext.when == null || task.ext.when
 
     script:
-    //def args = task.ext.args ?: "--p-where \"[${ioi}]=\'${filter}\'\""
-    def prefix = task.ext.prefix ?: "${filter}"
+    
     """
     export XDG_CONFIG_HOME="\${PWD}/HOME"
 

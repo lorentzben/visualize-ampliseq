@@ -314,7 +314,7 @@ workflow VISUALIZEAMPLISEQ {
     
     //TODO Use the filtered table to filter repseqs
 
-    QIIME2_FILTER_REPSEQS(final_table_qza, rep_seq_ch
+    QIIME2_FILTER_REPSEQS(final_table_qza, rep_seq_ch, "REPSEQ"
         ).qza.set{ ch_new_rep_seq }
 
     //TODO Rebuild the rooted_tree
@@ -377,7 +377,7 @@ workflow VISUALIZEAMPLISEQ {
 
         // Test 1 Check Sequence Quality
         // Step 1 filter repseqs for only Mock Data
-        QIIME2_FILTERSEQS(ch_only_mock_qza_table, rep_seq_ch
+        QIIME2_FILTERSEQS(ch_only_mock_qza_table, rep_seq_ch, mock_val_ch
             ).qza.set { ch_only_mock_seq }
         // Step 2 QIIME2 quality-control evaluate-seqs
         // in: refrence seqs (made elsewhere); observed seqs from step 1

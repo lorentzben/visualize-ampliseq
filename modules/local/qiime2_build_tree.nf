@@ -23,8 +23,8 @@ process QIIME2_BUILD_ROOTED_TREE {
     task.ext.when == null || task.ext.when
 
     script:
-    //def args = task.ext.args ?: "--p-where \"[${ioi}]=\'${filter}\'\""
-    def prefix = task.ext.prefix ?: "${filter}"
+    
+    def prefix = task.ext.prefix ?: "${repSeqs}"
     """
     export XDG_CONFIG_HOME="\${PWD}/HOME"
 
