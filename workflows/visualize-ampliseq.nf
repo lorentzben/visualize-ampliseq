@@ -313,14 +313,18 @@ workflow VISUALIZEAMPLISEQ {
         ).graphlan_dir.set{ ch_graphlan_dir }
     
     //TODO Use the filtered table to filter repseqs
+    if( params.srs || params.mock){
+        QIIME2_FILTER_REPSEQS(final_table_qza, rep_seq_ch, "REPSEQ"
+            ).qza.set{ ch_new_rep_seq }
 
-    QIIME2_FILTER_REPSEQS(final_table_qza, rep_seq_ch, "REPSEQ"
-        ).qza.set{ ch_new_rep_seq }
+        //TODO Rebuild the rooted_tree
 
-    //TODO Rebuild the rooted_tree
-
-    QIIME2_BUILD_ROOTED_TREE( ch_new_rep_seq 
-        ).rootedTree.set{ new_rooted_tree_ch }
+        QIIME2_BUILD_ROOTED_TREE( ch_new_rep_seq 
+            ).rootedTree.set{ new_rooted_tree_ch }
+    } else {
+        new_rooted_tree_ch = rooted_tree_ch
+    }
+    
 
     COREMETRICPYTHON(metadata_ch, final_table_qza, final_table_tsv, new_rooted_tree_ch, rare_val_ch
         ).rare_table.set{ ch_norm_qza_table }
