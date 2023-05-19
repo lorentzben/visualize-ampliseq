@@ -1,5 +1,4 @@
-process QIIME2_FILTERSEQS {
-    tag "${table}"
+process QIIME2_BUILD_ROOTED_TREE {
     label 'process_low'
 
     container "lorentzb/automate_16_nf:2.0"
@@ -10,12 +9,15 @@ process QIIME2_FILTERSEQS {
     }
 
     input:
-    path(table)
-    path(data) 
+    path(repSeqs)
+     
 
     output:
-    path("*.qza")       , emit: qza
-    path "versions.yml" , emit: versions
+    path("aligned-rep-seqs.qza"), emit: alignment
+    path("masked-aligned-rep-seqs.qza"), emit: maskedAlignment
+    path("unrooted-tree.qza"), emit: unrootedTree
+    path("rooted-tree.qza"), emit: rootedTree
+    path "versions.yml", emit: versions
 
     when:
     task.ext.when == null || task.ext.when
@@ -26,11 +28,12 @@ process QIIME2_FILTERSEQS {
     """
     export XDG_CONFIG_HOME="\${PWD}/HOME"
 
-
-    qiime feature-table filter-seqs \\
-        --i-data ${data} \\
-        --i-table ${table} \\
-        --o-filtered-data ${prefix}_seqs.qza
+    qiime phylogeny align-to-tree-mafft-fasttree \\
+        --i-sequences ${repSeqs} \\
+        --o-alignment aligned-rep-seqs.qza \\
+        --o-masked-alignment masked-aligned-rep-seqs.qza \\
+        --o-tree unrooted-tree.qza \\
+        --o-rooted-tree rooted-tree.qza
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
