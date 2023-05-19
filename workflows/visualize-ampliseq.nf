@@ -44,14 +44,14 @@ if(params.rare){
     rare_val_ch = Channel.of(params.rare)
 } else { rare_val_ch = Channel.of(0)}
 
-if(params.controls){
+if(params.controls && params.negative){
     controls_ch = Channel.fromPath(params.controls, checkIfExists:false)
     contam_script_ch = Channel.fromPath("${projectDir}/r_scripts/contam_script.r")
-} else { controls_ch = Channel.empty() }
-
-if(params.negative){
     nc_val_ch = Channel.of(params.negative)
-} else { nc_val_ch = Channel.empty() }
+} else { 
+    controls_ch = Channel.empty()
+    nc_val_ch = Channel.empty()
+}
 
 if(params.mock){
     mock_val_ch = Channel.of(params.mock)
