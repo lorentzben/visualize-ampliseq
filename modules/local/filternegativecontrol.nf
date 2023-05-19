@@ -7,12 +7,11 @@ process FILTERNEGATIVECONTROL{
     'lorentzb/decontam:1.2' }"
 
     input:
-    path 'results'
-    path 'feature-table.tsv'
-    path controls
-    path "metadata.tsv"
-    path control_script
-    val  nc
+    path('results')
+    path('feature-table.tsv')
+    path("metadata.tsv")
+    path(control_script)
+    val(nc)
  
 
     output:

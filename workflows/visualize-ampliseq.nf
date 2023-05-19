@@ -44,12 +44,10 @@ if(params.rare){
     rare_val_ch = Channel.of(params.rare)
 } else { rare_val_ch = Channel.of(0)}
 
-if(params.controls && params.negative){
-    controls_ch = Channel.fromPath(params.controls, checkIfExists:false)
+if(params.negative){
     contam_script_ch = Channel.fromPath("${projectDir}/r_scripts/contam_script.r")
     nc_val_ch = Channel.of(params.negative)
 } else { 
-    controls_ch = Channel.empty()
     contam_script_ch = Channel.empty()
     nc_val_ch = Channel.empty()
 }
@@ -170,8 +168,8 @@ workflow VISUALIZEAMPLISEQ {
     ch_normalized_tsv = Channel.empty()
 
 
-    if(params.controls){
-        filtered_table = FILTERNEGATIVECONTROL(input_ch, ch_raw_tsv_table, controls_ch, metadata_ch, contam_script_ch, nc_val_ch)
+    if(params.negative){
+        filtered_table = FILTERNEGATIVECONTROL(input_ch, ch_raw_tsv_table, metadata_ch, contam_script_ch, nc_val_ch)
         tsv_map_1 = FILTERNEGATIVECONTROL.out.filtered_table_biom.map{
             it ->  [ [id: "Filtered-NC-Biom"], it ]
         }
@@ -192,7 +190,7 @@ workflow VISUALIZEAMPLISEQ {
     } 
 
     if(params.mock){
-        if(params.controls){
+        if(params.negative){
             // Yes Mock Yes Negative Control
             mock_in_tsv = ch_filtered_tsv_table
             mock_in_qza = ch_filtered_qza_table
@@ -216,7 +214,7 @@ workflow VISUALIZEAMPLISEQ {
     }
 
     if(srs){
-        if(params.controls){
+        if(params.negative){
             if(params.mock){
                 // Yes Negative Control Yes Mock Yes SRS
                 srs_in_tsv = ch_filtered_tsv_table
@@ -257,7 +255,7 @@ workflow VISUALIZEAMPLISEQ {
         //print("no normalization with SRS")
     }
 
-    if (params.controls){
+    if (params.negative){
         if(params.mock){
             if(srs){
                 // Yes NC Yes Mock Yes SRS
