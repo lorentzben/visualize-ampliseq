@@ -358,7 +358,7 @@ workflow VISUALIZEAMPLISEQ {
 
     if(params.mock){
         // Step 1 filter qza table for only Mock Data
-        QIIME2_ONLYMOCK(metadata_ch, raw_table_qza, mock_val_ch, ioi_ch
+        QIIME2_ONLYMOCK(metadata_ch, ch_raw_qza_table, mock_val_ch, ioi_ch
             ).qza.set { ch_only_mock_qza_table }
 
         // Test 1 Check Sequence Quality
