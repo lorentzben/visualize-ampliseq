@@ -31,7 +31,7 @@ process QIIME2_FILTERSEQS {
     qiime feature-table filter-seqs \\
         --i-data ${data} \\
         --i-table ${table} \\
-        --o-filtered-data ${prefix}.qza
+        --o-filtered-data ${prefix}_seqs.qza
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
