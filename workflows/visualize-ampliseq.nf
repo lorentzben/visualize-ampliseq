@@ -320,13 +320,10 @@ workflow VISUALIZEAMPLISEQ {
         //TODO Rebuild the rooted_tree
 
         QIIME2_BUILD_ROOTED_TREE( ch_new_rep_seq 
-            ).rootedTree.set{ new_rooted_tree_ch }
-    } else {
-        new_rooted_tree_ch = rooted_tree_ch
+            ).rootedTree.set{ rooted_tree_ch }
     }
-    
 
-    COREMETRICPYTHON(metadata_ch, final_table_qza, final_table_tsv, new_rooted_tree_ch, rare_val_ch
+    COREMETRICPYTHON(metadata_ch, final_table_qza, final_table_tsv, rooted_tree_ch, rare_val_ch
         ).rare_table.set{ ch_norm_qza_table }
 
     COREMETRICPYTHON.out.pcoa.set{ ch_core_pcoa }
@@ -346,31 +343,31 @@ workflow VISUALIZEAMPLISEQ {
     GENERATEUNIFRAC(ch_core_distance, metadata_ch, ioi_ch
         ).pairwise.set{ unifrac_pairwise_ch }
 
-    LEFSEFORMAT(ioi_ch, ch_norm_qza_table, new_rooted_tree_ch, ch_tax_qza, metadata_ch, qiime_to_lefse_ch
+    LEFSEFORMAT(ioi_ch, ch_norm_qza_table, rooted_tree_ch, ch_tax_qza, metadata_ch, qiime_to_lefse_ch
         ).combos.set{ ch_lefse_combos }
     LEFSEANALYSIS( ch_lefse_combos, lefse_analysis_ch, plot_clado_file_ch, plot_res_file_ch
         ).lefse_images.set{ ch_lefse_images }
 
     REPORT01BARPLOT("Report_01", asv_tsv_ch, ch_tree_nwk, metadata_ch, report_one_ch, ioi_ch, ch_norm_MBA_tsv_table, ch_norm_qza_table)
     REPORT02GRAPHLANPHYLOGENETICTREE( "Report_02", ch_graphlan_dir, ioi_ch, report_two_ch, report_two_local_ch)
-    REPORT03HEATMAP("Report_03", ch_norm_qza_table, new_rooted_tree_ch, ch_tax_qza, metadata_ch, report_three_ch, ioi_ch, ord_ioi_ch, ch_overall_summary)
+    REPORT03HEATMAP("Report_03", ch_norm_qza_table, rooted_tree_ch, ch_tax_qza, metadata_ch, report_three_ch, ioi_ch, ord_ioi_ch, ch_overall_summary)
     REPORT04ALPHATABLE("Report_04", ch_core_vector_tsv, ioi_ch, report_four_ch)
     REPORT05ALPHABOXPLOT("Report_05", ch_core_vector_tsv, ioi_ch, ord_ioi_ch, metadata_ch, report_five_ch)
-    REPORT06ORDINATION("Report_06", ch_norm_qza_table, new_rooted_tree_ch, ch_tax_qza, metadata_ch, ioi_ch, ord_ioi_ch, report_six_ch, ch_core_pcoa, ch_core_vector)
-    REPORT06BNMDSORDINATION("Report_06b",ch_norm_qza_table, new_rooted_tree_ch, ch_tax_qza, metadata_ch, ioi_ch, ord_ioi_ch, report_six_b_ch, ch_core_pcoa, ch_core_vector)
+    REPORT06ORDINATION("Report_06", ch_norm_qza_table, rooted_tree_ch, ch_tax_qza, metadata_ch, ioi_ch, ord_ioi_ch, report_six_ch, ch_core_pcoa, ch_core_vector)
+    REPORT06BNMDSORDINATION("Report_06b",ch_norm_qza_table, rooted_tree_ch, ch_tax_qza, metadata_ch, ioi_ch, ord_ioi_ch, report_six_b_ch, ch_core_pcoa, ch_core_vector)
 
     if (!params.srs){
         // Note will always take a raw table
-        GENERATERAREFACTIONCURVE(metadata_ch, ch_raw_qza_table, new_rooted_tree_ch, rare_val_ch, ch_raw_tsv_table
+        GENERATERAREFACTIONCURVE(metadata_ch, ch_raw_qza_table, rooted_tree_ch, rare_val_ch, ch_raw_tsv_table
             ).rareVector.set{ ch_rare_vector }
         REPORT07RAREFACTION("Report_07", ioi_ch, ord_ioi_ch, report_seven_ch, ch_rare_vector, metadata_ch)
     }
 
-    REPORT08RANKEDABUNDANCE("Report_08", ch_norm_qza_table, new_rooted_tree_ch, ch_tax_qza, metadata_ch, ioi_ch, ord_ioi_ch, report_eight_ch)
+    REPORT08RANKEDABUNDANCE("Report_08", ch_norm_qza_table, rooted_tree_ch, ch_tax_qza, metadata_ch, ioi_ch, ord_ioi_ch, report_eight_ch)
     REPORT09UNIFRACHEATMAP("Report_09", ioi_ch, ord_ioi_ch, metadata_ch, ch_core_distance, report_nine_ch)
     REPORT10BETABOXPLOT("Report_10", ioi_ch, ord_ioi_ch, metadata_ch, report_ten_ch, unifrac_pairwise_ch)
-    REPORT11UPGMA( "Report_11", ch_norm_qza_table, new_rooted_tree_ch, ch_tax_qza, metadata_ch, ioi_ch, ord_ioi_ch, report_eleven_ch)
-    REPORT12PERMANOVA("Report_12", ch_norm_qza_table, new_rooted_tree_ch, ch_tax_qza, metadata_ch, ioi_ch, ord_ioi_ch, ch_core_distance, report_twelve_ch)
+    REPORT11UPGMA( "Report_11", ch_norm_qza_table, rooted_tree_ch, ch_tax_qza, metadata_ch, ioi_ch, ord_ioi_ch, report_eleven_ch)
+    REPORT12PERMANOVA("Report_12", ch_norm_qza_table, rooted_tree_ch, ch_tax_qza, metadata_ch, ioi_ch, ord_ioi_ch, ch_core_distance, report_twelve_ch)
     REPORT13LEFSE("Report_13", ch_lefse_images, report_thirteen_ch, report_thirteen_local_ch, ioi_ch, ord_ioi_ch)
     REPORT14CITATIONS("Report_14",report_fourteen_ch)
 
