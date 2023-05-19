@@ -357,18 +357,19 @@ workflow VISUALIZEAMPLISEQ {
     REPORT14CITATIONS("Report_14",report_fourteen_ch)
 
     if(params.mock){
+        // Step 1 filter qza table for only Mock Data
+        QIIME2_ONLYMOCK(metadata_ch, mock_in_qza, mock_val_ch, ioi_ch
+            ).qza.set { ch_only_mock_qza_table }
+
         // Test 1 Check Sequence Quality
         // Step 1 filter repseqs for only Mock Data
-        QIIME2_FILTERSEQS(metadata_ch, rep_seq_ch, mock_val_ch, ioi_ch
+        QIIME2_FILTERSEQS(ch_only_mock_qza_table, rep_seq_ch, mock_val_ch, ioi_ch
             ).qza.set { ch_only_mock_seq }
         // Step 2 QIIME2 quality-control evaluate-seqs
         // in: refrence seqs (made elsewhere); observed seqs from step 1
         QIIME2_EVALUATE_SEQS(refrence_seq_ch, ch_only_mock_seq)
 
         // Test 2 Check Quality of Samples with known composition
-        // Step 1 filter qza table for only Mock Data
-        QIIME2_ONLYMOCK(metadata_ch, mock_in_qza, mock_val_ch, ioi_ch
-            ).qza.set { ch_only_mock_qza_table }
         // Step 2 QIIME2 quality-control evaluate-composition
         // in: expected qza table (made elsewhere); observed qza table from right before
         QIIME2_EVALUATE_COMPOSITION(ch_only_mock_qza_table, ch_tax_qza, reference_table_ch)

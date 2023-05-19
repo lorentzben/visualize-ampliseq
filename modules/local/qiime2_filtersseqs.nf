@@ -10,7 +10,7 @@ process QIIME2_FILTERSEQS {
     }
 
     input:
-    path(metadata)
+    path(table)
     path(data) 
     val(filter)
     val(ioi)
@@ -23,15 +23,14 @@ process QIIME2_FILTERSEQS {
     task.ext.when == null || task.ext.when
 
     script:
-    def args = task.ext.args ?: "--p-where \"[${ioi}]=\'${filter}\'\""
+    //def args = task.ext.args ?: "--p-where \"[${ioi}]=\'${filter}\'\""
     def prefix = task.ext.prefix ?: "${filter}"
     """
     export XDG_CONFIG_HOME="\${PWD}/HOME"
 
     qiime feature-table filter-seqs \\
         --i-data ${data} \\
-        --m-metadata-file ${metadata} \\
-        $args \\
+        --i-table ${table} \\
         --o-filtered-data ${prefix}.qza
 
     cat <<-END_VERSIONS > versions.yml
