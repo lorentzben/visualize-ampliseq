@@ -363,7 +363,7 @@ workflow VISUALIZEAMPLISEQ {
 
         // Test 1 Check Sequence Quality
         // Step 1 filter repseqs for only Mock Data
-        QIIME2_FILTERSEQS(ch_only_mock_qza_table, rep_seq_ch, mock_val_ch, ioi_ch
+        QIIME2_FILTERSEQS(ch_only_mock_qza_table, rep_seq_ch, ch_tax_qza, mock_val_ch, ioi_ch
             ).qza.set { ch_only_mock_seq }
         // Step 2 QIIME2 quality-control evaluate-seqs
         // in: refrence seqs (made elsewhere); observed seqs from step 1

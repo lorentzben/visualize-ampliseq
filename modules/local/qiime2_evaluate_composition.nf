@@ -25,7 +25,6 @@ process QIIME2_EVALUATE_COMPOSITION {
     """
     export XDG_CONFIG_HOME="\${PWD}/HOME"
 
-    # TODO fix this all 
     qiime taxa collapse \\
         --i-table ${experimentalTable} \\
         --i-taxonomy ${taxonomy} \\
