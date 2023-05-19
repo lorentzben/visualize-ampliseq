@@ -29,19 +29,10 @@ process QIIME2_FILTERSEQS {
     """
     export XDG_CONFIG_HOME="\${PWD}/HOME"
 
-    qiime taxa collapse \\
-        --i-table ${table} \\
-        --i-taxonomy ${taxonomy} \\
-        --p-level 7 \\
-        --o-collapsed-table collapsed-table.qza
-
-    qiime feature-table relative-frequency \\
-        --i-table collapsed-table.qza \\
-        --o-relative-frequency-table relative-table.qza
 
     qiime feature-table filter-seqs \\
         --i-data ${data} \\
-        --i-table relative-table.qza \\
+        --i-table ${table} \\
         --o-filtered-data ${prefix}_seqs.qza
 
     cat <<-END_VERSIONS > versions.yml
