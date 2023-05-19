@@ -50,6 +50,7 @@ if(params.controls && params.negative){
     nc_val_ch = Channel.of(params.negative)
 } else { 
     controls_ch = Channel.empty()
+    contam_script_ch = Channel.empty()
     nc_val_ch = Channel.empty()
 }
 
