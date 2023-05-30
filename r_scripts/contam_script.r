@@ -68,4 +68,9 @@ biom <- make_biom(data=otu_table(ps.noncontam))
 write_biom(biom, "filtered-table.biom")
 
 # save contaminents to disk
-write.table(otu_table(ps.contam), sep='\t', "contam-features.tsv")
+sample_data <- psmelt(ps.contam)
+otu_table <- otu_table(ps.contam)
+
+contam_together <- merge(otu_table,sample_data)
+
+write.table(contam_together, sep='\t', "contam-features.tsv")
