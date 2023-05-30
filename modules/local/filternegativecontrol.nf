@@ -17,6 +17,7 @@ process FILTERNEGATIVECONTROL{
     output:
     path("*.biom"), emit: filtered_table_biom
     path("*.tsv"), emit: filtered_table_tsv
+    path("contam-features.tsv"), emit: contams_tsv
     
 
     script:
@@ -24,7 +25,7 @@ process FILTERNEGATIVECONTROL{
     '''
     #!/usr/bin/env bash
 
-    echo !{nc} > nc_name.txt
+    echo ${nc} > nc_name.txt
     Rscript contam_script.r
 
     '''

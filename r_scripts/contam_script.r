@@ -50,15 +50,22 @@ sample_data(ps)$is.neg <- sample_data(ps)$Treatment %in% control_name
 
 contamdf.prev05 <- isContaminant(ps, method="prevalence", neg="is.neg", threshold=0.5)
 
+#TODO save these contams to disk so we can examine them
+
+ps.contam <- phyloseq::prune_taxa(contamdf.prev05$contaminant,ps)
+
 # filter the phyloseq object to remove contamination
 ps.noncontam <- phyloseq::prune_taxa(!contamdf.prev05$contaminant,ps)
 
 # save ASV table to disk
 
-write.table(otu_table(ps),sep='\t', "filtered-table.tsv")
+write.table(otu_table(ps.noncontam),sep='\t', "filtered-table.tsv")
 
 # turn phyloseq object into a biom file
 biom <- make_biom(data=otu_table(ps.noncontam))
 
 # save biom file to disk
 write_biom(biom, "filtered-table.biom")
+
+# save contaminents to disk
+write.table(otu_table(ps.contam), sep='\t', "contam-features.tsv")
