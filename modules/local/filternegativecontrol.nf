@@ -20,12 +20,12 @@ process FILTERNEGATIVECONTROL{
     path("contam-features.tsv"), emit: contams_tsv
     
 
-    script:
+    shell:
 
     '''
     #!/usr/bin/env bash
 
-    echo ${nc} > nc_name.txt
+    echo !{nc} > nc_name.txt
     Rscript contam_script.r
 
     '''
