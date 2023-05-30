@@ -73,4 +73,4 @@ otu_table <- otu_table(ps.contam)
 
 contam_together <- merge(otu_table,sample_data)
 
-write.table(contam_together, sep='\t', "contam-features.tsv")
+write.table(contam_together, sep='\t', "contam-features.tsv",row.names=FALSE)
