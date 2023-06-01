@@ -42,9 +42,6 @@ process GENERATEBIOMFORGRAPHLAN{
     
     ioi = '${ioi}'
 
-    ioi_set.discard("$mock")
-    ioi_set.discard("$nc")
-
     # TODO check that all ioi set present in table?
 
     feature_table = pd.read_table('feature-table.tsv', sep=' ')
@@ -53,6 +50,9 @@ process GENERATEBIOMFORGRAPHLAN{
     metadata_table = metadata_table[metadata_table['ID'].isin(samples)]
 
     ioi_set = set(metadata_table[\"${ioi}\"])
+    
+    ioi_set.discard("$mock")
+    ioi_set.discard("$nc")
         
 
 
