@@ -305,7 +305,7 @@ workflow VISUALIZEAMPLISEQ {
         }
     }
 
-    GENERATEBIOMFORGRAPHLAN(metadata_ch, ioi_ch, filter_samples_ch, ch_tax_qza, final_table_qza, nc_val_ch.ifEmpty("N/A"), mock_val_ch.ifEmpty("N/A")
+    GENERATEBIOMFORGRAPHLAN(metadata_ch, ioi_ch, filter_samples_ch, ch_tax_qza, final_table_qza, final_table_tsv, nc_val_ch.ifEmpty("N/A"), mock_val_ch.ifEmpty("N/A")
         ).graphlan_biom.set{ ch_graphlan_biom }
 
     RUNGRAPHLAN(metadata_ch, ioi_ch, ch_tax_qza, graph_sh_ch, ch_graphlan_biom

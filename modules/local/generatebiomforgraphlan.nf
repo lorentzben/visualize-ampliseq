@@ -14,6 +14,7 @@ process GENERATEBIOMFORGRAPHLAN{
     path("filter_samples.py")
     path("taxonomy.qza")
     path("feature-table.qza")
+    path("feature-table.tsv")
     val(mock)
     val(nc)
     
@@ -43,6 +44,10 @@ process GENERATEBIOMFORGRAPHLAN{
 
     ioi_set.discard("$mock")
     ioi_set.discard("$nc")
+
+    # TODO check that all ioi set present in table?
+
+
 
     subprocess.run(['mkdir phylo_trees'], shell=True)
     subprocess.run(['mkdir biom_tabs'], shell=True)
