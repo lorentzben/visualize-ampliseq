@@ -39,7 +39,7 @@ process GENERATEBIOMFORGRAPHLAN{
     metadata_table= pd.read_table(\"${metadata}\", sep='\t')
     metadata_table = metadata_table.drop([0,1])
 
-    ioi_set = set(metadata_table[\"${ioi}\"])
+    
     ioi = '${ioi}'
 
     ioi_set.discard("$mock")
@@ -47,6 +47,13 @@ process GENERATEBIOMFORGRAPHLAN{
 
     # TODO check that all ioi set present in table?
 
+    feature_table = pd.read_table('feature-table.tsv', sep=' ')
+    samples = list(feature_table.columns)
+
+    metadata_table = metadata_table[metadata_table['ID'].isin(samples)]
+
+    ioi_set = set(metadata_table[\"${ioi}\"])
+        
 
 
     subprocess.run(['mkdir phylo_trees'], shell=True)
