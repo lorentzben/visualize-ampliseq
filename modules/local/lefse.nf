@@ -1,7 +1,7 @@
 process LEFSEFORMAT{
 
     tag "$ioi"
-    label 'process_low'
+    label 'process_high'
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 
         'docker://lorentzb/qiime2lefse:1.0' : 
@@ -30,7 +30,7 @@ process LEFSEFORMAT{
 
 process LEFSEANALYSIS{
 
-    label 'process_low'
+    label 'process_high'
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ? 
         'docker://lorentzb/py2_env:1.0' : 
