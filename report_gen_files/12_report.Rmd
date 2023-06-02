@@ -154,6 +154,8 @@ ioi_present<- droplevels(cycle_1@sam_data[[ioi]])
 ioi_present <- na.exclude(ioi_present)
 cycle_1@sam_data <- cycle_1@sam_data[cycle_1@sam_data[[ioi]] %in% ioi_present]
 
+cycle_1 <- prune_samples(rownames(cycle_1@sam_data), cycle_1)
+
 # PERMANOVA of Weighted Unifrac
 u_unifrac <- UniFrac(cycle_1, weighted = T)
 
@@ -195,6 +197,8 @@ ioi_present<- droplevels(cycle_1@sam_data[[ioi]])
 ioi_present <- na.exclude(ioi_present)
 cycle_1@sam_data <- cycle_1@sam_data[cycle_1@sam_data[[ioi]] %in% ioi_present]
 
+cycle_1 <- prune_samples(rownames(cycle_1@sam_data), cycle_1)
+
 # PERMANOVA of Unweighted Unifrac
 u_unifrac <- UniFrac(cycle_1, weighted = F)
 grp <- get_variable(cycle_1, ioi)
@@ -233,6 +237,7 @@ sample_data(cycle_1)[[ioi]] <- factor(sample_data(cycle_1)[[ioi]], levels=ioi_or
 ioi_present<- droplevels(cycle_1@sam_data[[ioi]])
 ioi_present <- na.exclude(ioi_present)
 cycle_1@sam_data <- cycle_1@sam_data[cycle_1@sam_data[[ioi]] %in% ioi_present]
+cycle_1 <- prune_samples(rownames(cycle_1@sam_data), cycle_1)
 #PERMANOVA Bray Curtis
 grp <- get_variable(cycle_1, ioi)
 
@@ -268,6 +273,7 @@ sample_data(cycle_1)[[ioi]] <- factor(sample_data(cycle_1)[[ioi]], levels=ioi_or
 ioi_present<- droplevels(cycle_1@sam_data[[ioi]])
 ioi_present <- na.exclude(ioi_present)
 cycle_1@sam_data <- cycle_1@sam_data[cycle_1@sam_data[[ioi]] %in% ioi_present]
+cycle_1 <- prune_samples(rownames(cycle_1@sam_data), cycle_1)
 # PERMANOVA Jaccard distance
 grp <- get_variable(cycle_1, ioi)
 
@@ -373,7 +379,7 @@ ioi_present <- droplevels(cycle_1@sam_data[[ioi]])
 ioi_present <- na.exclude(ioi_present)
 
 cycle_1@sam_data <- cycle_1@sam_data[cycle_1@sam_data[[ioi]] %in% ioi_present]
-
+cycle_1 <- prune_samples(rownames(cycle_1@sam_data), cycle_1)
 #Weighted Unifrac Anosim
 tmp <- UniFrac(cycle_1, weighted=T)
 res <- anosim(tmp, cycle_1@sam_data[[ioi]]) #sample_data(cycle_1)[[ioi]])
@@ -546,6 +552,7 @@ sample_data(cycle_1)[[ioi]] <- factor(sample_data(cycle_1)[[ioi]], levels=ioi_or
 ioi_present<- droplevels(cycle_1@sam_data[[ioi]])
 ioi_present <- na.exclude(ioi_present)
 cycle_1@sam_data <- cycle_1@sam_data[cycle_1@sam_data[[ioi]] %in% ioi_present]
+cycle_1 <- prune_samples(rownames(cycle_1@sam_data), cycle_1)
 
 # Weighted Unifrac
 w_uni <- UniFrac(cycle_1, weighted = T)
@@ -670,6 +677,7 @@ sample_data(cycle_1)[[ioi]] <- factor(sample_data(cycle_1)[[ioi]], levels=ioi_or
 ioi_present<- droplevels(cycle_1@sam_data[[ioi]])
 ioi_present <- na.exclude(ioi_present)
 cycle_1@sam_data <- cycle_1@sam_data[cycle_1@sam_data[[ioi]] %in% ioi_present]
+cycle_1 <- prune_samples(rownames(cycle_1@sam_data), cycle_1)
 #AMOVA Weighted Unifrac
 tmp <- UniFrac(cycle_1, weighted = T)
 w_uni_grp <- get_variable(cycle_1, ioi)
