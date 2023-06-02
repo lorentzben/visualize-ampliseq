@@ -151,7 +151,7 @@ metadata_file <- "metadata.tsv"
 cycle_1 <- qza_to_phyloseq(table_dada2,rooted_tree,taxonomy_file,metadata_file)
 sample_data(cycle_1)[[ioi]] <- factor(sample_data(cycle_1)[[ioi]], levels=ioi_ord)
 ioi_present<- droplevels(cycle_1@sam_data[[ioi]])
-
+ioi_present <- na.exclude(ioi_present)
 cycle_1@sam_data <- cycle_1@sam_data[cycle_1@sam_data[[ioi]] %in% ioi_present]
 
 # PERMANOVA of Weighted Unifrac
@@ -192,7 +192,7 @@ library(tidyverse)
 cycle_1 <- qza_to_phyloseq(table_dada2,rooted_tree,taxonomy_file,metadata_file)
 sample_data(cycle_1)[[ioi]] <- factor(sample_data(cycle_1)[[ioi]], levels=ioi_ord)
 ioi_present<- droplevels(cycle_1@sam_data[[ioi]])
-
+ioi_present <- na.exclude(ioi_present)
 cycle_1@sam_data <- cycle_1@sam_data[cycle_1@sam_data[[ioi]] %in% ioi_present]
 
 # PERMANOVA of Unweighted Unifrac
@@ -231,7 +231,7 @@ library(tidyverse)
 cycle_1 <- qza_to_phyloseq(table_dada2,rooted_tree,taxonomy_file,metadata_file)
 sample_data(cycle_1)[[ioi]] <- factor(sample_data(cycle_1)[[ioi]], levels=ioi_ord)
 ioi_present<- droplevels(cycle_1@sam_data[[ioi]])
-
+ioi_present <- na.exclude(ioi_present)
 cycle_1@sam_data <- cycle_1@sam_data[cycle_1@sam_data[[ioi]] %in% ioi_present]
 #PERMANOVA Bray Curtis
 grp <- get_variable(cycle_1, ioi)
@@ -266,7 +266,7 @@ library(tidyverse)
 cycle_1 <- qza_to_phyloseq(table_dada2,rooted_tree,taxonomy_file,metadata_file)
 sample_data(cycle_1)[[ioi]] <- factor(sample_data(cycle_1)[[ioi]], levels=ioi_ord)
 ioi_present<- droplevels(cycle_1@sam_data[[ioi]])
-
+ioi_present <- na.exclude(ioi_present)
 cycle_1@sam_data <- cycle_1@sam_data[cycle_1@sam_data[[ioi]] %in% ioi_present]
 # PERMANOVA Jaccard distance
 grp <- get_variable(cycle_1, ioi)
@@ -368,13 +368,15 @@ library(ggvegan)
 
 cycle_1 <- qza_to_phyloseq(table_dada2,rooted_tree,taxonomy_file,metadata_file)
 sample_data(cycle_1)[[ioi]] <- factor(sample_data(cycle_1)[[ioi]], levels=ioi_ord)
-ioi_present<- droplevels(cycle_1@sam_data[[ioi]])
+
+ioi_present <- droplevels(cycle_1@sam_data[[ioi]])
+ioi_present <- na.exclude(ioi_present)
 
 cycle_1@sam_data <- cycle_1@sam_data[cycle_1@sam_data[[ioi]] %in% ioi_present]
 
 #Weighted Unifrac Anosim
 tmp <- UniFrac(cycle_1, weighted=T)
-res <- anosim(tmp, sample_data(cycle_1)[[ioi]])
+res <- anosim(tmp, cycle_1@sam_data[[ioi]]) #sample_data(cycle_1)[[ioi]])
 res
 
 
@@ -542,7 +544,7 @@ library(qiime2R)
 cycle_1 <- qza_to_phyloseq(table_dada2,rooted_tree,taxonomy_file,metadata_file)
 sample_data(cycle_1)[[ioi]] <- factor(sample_data(cycle_1)[[ioi]], levels=ioi_ord)
 ioi_present<- droplevels(cycle_1@sam_data[[ioi]])
-
+ioi_present <- na.exclude(ioi_present)
 cycle_1@sam_data <- cycle_1@sam_data[cycle_1@sam_data[[ioi]] %in% ioi_present]
 
 # Weighted Unifrac
@@ -666,7 +668,7 @@ library(tidyverse)
 cycle_1 <- qza_to_phyloseq(table_dada2,rooted_tree,taxonomy_file,metadata_file)
 sample_data(cycle_1)[[ioi]] <- factor(sample_data(cycle_1)[[ioi]], levels=ioi_ord)
 ioi_present<- droplevels(cycle_1@sam_data[[ioi]])
-
+ioi_present <- na.exclude(ioi_present)
 cycle_1@sam_data <- cycle_1@sam_data[cycle_1@sam_data[[ioi]] %in% ioi_present]
 #AMOVA Weighted Unifrac
 tmp <- UniFrac(cycle_1, weighted = T)
