@@ -1,5 +1,25 @@
 #!/usr/bin/env nextflow
 
+// Print Params to Terminal
+
+log.info """\
+         V I S U A L I Z E   P I P E L I N E    
+         ===================================
+         input    : ${params.input }
+         metadata : ${params.metadata}
+         item of interest : ${params.ioi}
+         ordered item of interest : ${params.ordioi}
+         outdir   : ${params.outdir}
+         rarefaction depth : ${params.rare}
+         controls: ${params.negative}
+         mock: ${params.mock}
+         mock reference sequences: ${params.refSeq}
+         mock reference tax: ${params.refTab}
+         srs: ${params.srs}
+         make report: ${params.report}
+         profile : ${workflow.profile}
+         """
+         .stripIndent()
 
 // Input 
 
