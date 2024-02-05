@@ -54,7 +54,7 @@ $ nextflow run lorentzben/visualize-ampliseq \
 
 ### RefSeq
 
-If you have a directory of sequnences you can use the following command:
+If you have a directory of sequences you can use the following command:
 
 ```bash
 $ cd /reference-community
